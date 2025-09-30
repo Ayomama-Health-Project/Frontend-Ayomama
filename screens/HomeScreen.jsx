@@ -1,4 +1,4 @@
-import { ScrollView, Text } from "react-native-web";
+import { ScrollView, Text } from "react-native";
 
 export default function HomeScreen() {
   return (

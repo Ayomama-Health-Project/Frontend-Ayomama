@@ -1,6 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "../screens/HomeScreen";
-
+import Index from "../app/(tabs)/Index";
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigation() {
@@ -8,7 +7,7 @@ export default function AppNavigation() {
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
-        component={HomeScreen}
+        component={Index}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
