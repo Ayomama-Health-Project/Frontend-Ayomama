@@ -1,4 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
@@ -16,19 +17,19 @@ const slides = [
   {
     key: "1",
     title: "Your pregnancy journey guided with care and love",
-    image: require("../../assets/images/Pregnant black woman.png"),
+    image: require("../assets/images/Pregnant black woman.png"),
   },
   {
     key: "2",
     title: "Together with your partner every step of the way",
-    image: require("../../assets/images/Husband and wife.png"),
+    image: require("../assets/images/Husband and wife.png"),
   },
 ];
 
 const Onboarding = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
-  const navigation = useNavigation();
+
 
   const handleScroll = (event) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / width);
@@ -45,10 +46,7 @@ const Onboarding = () => {
         {slides.map((_, dotIndex) => (
           <View
             key={dotIndex}
-            style={[
-              styles.dot,
-              currentIndex === dotIndex && styles.activeDot,
-            ]}
+            style={[styles.dot, currentIndex === dotIndex && styles.activeDot]}
           />
         ))}
       </View>
@@ -71,7 +69,7 @@ const Onboarding = () => {
       {/* Logo */}
       <View style={styles.logoWrapper}>
         <Image
-          source={require("../../assets/images/Ayomama Logo.png")}
+          source={require("../assets/images/Ayomama Logo.png")}
           style={styles.logo}
         />
       </View>
@@ -92,13 +90,13 @@ const Onboarding = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.signupButton}
-          onPress={() => navigation.navigate("SignUp")}
+          onPress={() => router.push("/auth/signup")}
         >
           <Text style={styles.signupText}>Sign Up</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => navigation.navigate("LogIn")}
+          onPress={() => router.push("/auth/login")}
         >
           <Text style={styles.loginText}>Log In</Text>
         </TouchableOpacity>
