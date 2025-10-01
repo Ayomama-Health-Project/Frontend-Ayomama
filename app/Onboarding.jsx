@@ -96,7 +96,7 @@ const Onboarding = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => router.push("/auth/login")}
+          onPress={() => router.push("/(tabs)")}
         >
           <Text style={styles.loginText}>Log In</Text>
         </TouchableOpacity>
