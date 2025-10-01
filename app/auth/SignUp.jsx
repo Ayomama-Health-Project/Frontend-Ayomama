@@ -93,6 +93,7 @@ const SignUp = () => {
         </TouchableOpacity>
       </View>
     </View>
+
   );
 };
 

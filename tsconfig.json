@@ -16,7 +16,7 @@
     "app/(tabs)/SignUp.jsx",
     "app/Onboarding.jsx",
     "app/(tabs)/Login.jsx",
-    "app/(tabs)/Index.jsx",
+    "app/(tabs)/index.jsx",
     "nativewind-env.d.ts"
   ]
 }

@@ -14,6 +14,7 @@ const Home = () => {
     return () => clearTimeout(timer);
   }, [router]);
 
+
   return (
     <View className="flex-1 items-center justify-center">
       <Image
