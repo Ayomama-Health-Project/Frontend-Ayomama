@@ -22,7 +22,7 @@ export default function HomeScreen() {
         className={`flex flex-row justify-between items-center px-6 ${topMargin} pt-16`}
       >
         <Image
-          source={require("../../assets/images/Husband and wife.png")}
+          source={require("../../assets/images/Husbandandwife.png")}
           style={{ width: 40, height: 40 }}
           className="rounded-full"
         />
@@ -54,7 +54,7 @@ export default function HomeScreen() {
             }}
           >
             <View className="border-[0.9px] border-[#FF7F50] h-[203px] rounded-2xl py-[10px] px-[8px]">
-              <View className="bg-[#FCFCFC] w-[100px] rounded-2xl flex h-[44px] px-[13px] py-[10px] mb-3 ">
+              <View className="bg-[#FCFCFC] w-[108px] rounded-2xl flex  px-[13px] py-[10px] mb-3 ">
                 <Text className="text-[#293231] text-[20px] text-center leading-[100%] font-semibold">
                   Week 18
                 </Text>
@@ -69,7 +69,7 @@ export default function HomeScreen() {
                   </Text>
                 </View>
                 <Image
-                  source={require("../../assets/images/Pregnant black woman.png")}
+                  source={require("../../assets/images/Pregnantblackwoman.png")}
                   style={{ width: 60, height: 60 }}
                   className="ml-4"
                   resizeMode="contain"

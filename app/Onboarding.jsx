@@ -9,12 +9,12 @@ const slides = [
   {
     key: "1",
     title: "Your pregnancy journey guided with care and love",
-    image: require("../../assets/images/Pregnantblackwoman.png"),
+    image: require("../assets/images/Pregnantblackwoman.png"),
   },
   {
     key: "2",
     title: "Together with your partner every step of the way",
-    image: require("../../assets/images/Husbandandwife.png"),
+    image: require("../assets/images/Husbandandwife.png"),
   },
 ];
 
@@ -59,7 +59,7 @@ const Onboarding = () => {
       {/* Logo */}
       <View className="mt-5 ml-5 items-start">
         <Image
-          source={require("../../assets/images/AyomamaLogo.png")}
+          source={require("../assets/images/AyomamaLogo.png")}
           className="w-24 h-24"
           resizeMode="contain"
         />
