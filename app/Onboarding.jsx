@@ -9,12 +9,12 @@ const slides = [
   {
     key: "1",
     title: "Your pregnancy journey guided with care and love",
-    image: require("../../assets/images/Pregnant black woman.png"),
+    image: require("../../assets/images/Pregnantblackwoman.png"),
   },
   {
     key: "2",
     title: "Together with your partner every step of the way",
-    image: require("../../assets/images/Husband and wife.png"),
+    image: require("../../assets/images/Husbandandwife.png"),
   },
 ];
 
@@ -59,7 +59,7 @@ const Onboarding = () => {
       {/* Logo */}
       <View className="mt-5 ml-5 items-start">
         <Image
-          source={require("../../assets/images/Ayomama Logo.png")}
+          source={require("../../assets/images/AyomamaLogo.png")}
           className="w-24 h-24"
           resizeMode="contain"
         />
@@ -95,13 +95,13 @@ const Onboarding = () => {
       <View className="flex-row justify-center gap-4 mb-8 mt-6">
         <TouchableOpacity
           className="bg-black py-3 px-8 rounded-full"
-          onPress={() => router.push("/auth/SignUp")}
+          onPress={() => router.push("/auth/signup")}
         >
           <Text className="text-white text-base font-bold">Sign Up</Text>
         </TouchableOpacity>
         <TouchableOpacity
           className="border-2 border-black py-3 px-8 rounded-full"
-          onPress={() => router.push("/auth/LogIn")}
+          onPress={() => router.push("/auth/login")}
         >
           <Text className="text-black text-base font-bold">Log In</Text>
         </TouchableOpacity>

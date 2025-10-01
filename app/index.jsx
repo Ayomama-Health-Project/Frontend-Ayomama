@@ -16,7 +16,7 @@ export default function SplashScreen() {
   return (
     <View className="flex-1 justify-center items-center bg-white">
       <Image
-        source={require("../assets/images/Ayomama Logo.png")}
+        source={require("../assets/images/AyomamaLogo.png")}
         className="w-48 h-48"
         resizeMode="contain"
       />

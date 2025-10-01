@@ -32,7 +32,7 @@ const SignUp = () => {
       {/* Logo */}
       <View className="mt-5 items-start">
         <Image
-          source={require("../../assets/images/Ayomama Logo.png")}
+          source={require("../../assets/images/AyomamaLogo.png")}
           className="w-24 h-24"
           resizeMode="contain"
         />
