@@ -1,50 +1,227 @@
-# Welcome to your Expo app 👋
+# 🏥 Ayomama Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> **Maternal Health Tracking App for African Mothers**
 
-## Get started
+![Ayomama Banner]
+## 📋 Table of Contents
 
-1. Install dependencies
+- [Overview](#overview)
+- [Tech Stack](#tech-stack-)
+- [Project Structure](#project-structure-)
+- [Features](#features-)
+- [Installation](#installation-)
+- [Development](#development-)
+- [Testing](#testing-)
+- [Contributing](#contributing-)
 
-   ```bash
-   npm install
-   ```
+## 🎯 Overview
 
-2. Start the app
+Ayomama is a **maternal health tracking app** designed specifically for Nigerian and African mothers. This frontend repository contains the user interface and client-side logic built to support pregnant women and community health workers in **low-connectivity environments**.
 
-   ```bash
-   npx expo start
-   ```
+**Key Focus Areas:**
 
-In the output, you'll find options to open the app in a
+- 🤰 Mother-centered design
+- 📱 Offline-first functionality
+- 🎧 Multi-language audio support
+- 🏥 Emergency response features
+- 👩‍⚕️ CHW integration
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🛠 Tech Stack
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+| Category             | Technology                   |
+| -------------------- | ---------------------------- |
+| **Framework**        | React Native
+| **State Management** | Redux Toolkit                |
+| **Navigation**       | React Navigation             |
+| **Offline Storage**  | AsyncStorage + Redux Persist |
+| **Languages**        | TypeScript, JavaScript       |
+| **Styling**          | Styled Components            |
+| **Icons**            | React Native Vector Icons    |
 
-## Get a fresh project
+## 📁 Project Structure
 
-When you're ready, run:
+src/
+├── 📦 components/ # Reusable UI components
+│ ├── common/ # Buttons, inputs, modals
+│ ├── mothers/ # Mother-specific components
+│ └── chw/ # CHW-specific components
+├── 🖥 screens/ # App screens
+│ ├── mothers/ # Mother user flows
+│ ├── chw/ # CHW dashboard flows
+│ └── auth/ # Authentication flows
+├── 🧭 navigation/ # Navigation configuration
+├── 🗃 store/ # Redux store and slices
+├── 🔌 services/ # API calls and external services
+├── 🛠 utils/ # Helper functions
+├── 🎨 assets/ # Images, icons, audio files
+├── ⚙️ constants/ # App constants
+└── 📝 types/ # TypeScript type definitions
+
+text
+
+## ✨ Features
+
+### 🎯 Must-Have (MVP)
+
+| Feature                     | Status | Description                                |
+| --------------------------- | ------ | ------------------------------------------ |
+| **Antenatal Visit Tracker** | ✅     | Smart reminders via push, SMS, voice notes |
+| **Pregnancy Milestones**    | ✅     | Local context with visual references       |
+| **Emergency SOS Button**    | ✅     | Offline capability with GPS                |
+| **Medication Tracker**      | ✅     | Audio prompts for low literacy             |
+| **Local Language Audio**    | ✅     | Yoruba, Igbo, Hausa, English               |
+| **CHW Dashboard**           | ✅     | Risk flag system (🟢/🟡/🔴)                |
+| **Offline-First**           | ✅     | Data sync when online                      |
+
+### 🔄 Secondary Features
+
+| Feature                    | Status | Description                          |
+| -------------------------- | ------ | ------------------------------------ |
+| Community Mother Circles   | 🚧     | Language-based discussion spaces     |
+| Emergency Facility Mapping | 🚧     | Offline maps with hospital locations |
+| Symptom Checker            | 🚧     | Red flag alerts system               |
+| Partner/Family Mode        | 🚧     | Shared responsibility features       |
+
+## 🚀 Installation
+
+### Prerequisites
+
+- Node.js 16+
+- npm or yarn
+- Android Studio (for Android development)
+- Xcode (for iOS development)
+
+### Setup Steps
 
 ```bash
-npm run reset-project
+# 1. Clone the repository
+git clone https://github.com/ayomama/frontend.git
+cd ayomama-frontend
+
+# 2. Install dependencies
+npm install
+
+# 3. Install iOS dependencies (if developing for iOS)
+cd ios && pod install && cd ..
+
+# 4. Start the development server
+npm start
+
+# 5. Run on Android
+npm run android
+
+# 6. Run on iOS
+npm run ios
+Environment Configuration
+Create a .env file in the root directory:
+
+env
+# API Configuration
+API_BASE_URL=your_api_url
+SMS_API_KEY=your_sms_service_key
+
+# Maps & Location
+MAPS_API_KEY=your_maps_api_key
+EMERGENCY_HOTLINE=+234-XXX-XXXX
+
+# App Settings
+SYNC_INTERVAL=300000
+DEFAULT_LANGUAGE=en
+💻 Development
+Code Style Guidelines
+✅ Use TypeScript for type safety
+
+✅ Follow React Native best practices
+
+✅ Implement proper error boundaries
+
+✅ Write descriptive component names
+
+✅ Use functional components with hooks
+
+Accessibility Standards
+🎯 Large, touch-friendly buttons (min 44px)
+
+🎯 High contrast color schemes
+
+🎯 Voice-over and screen reader support
+
+🎯 Audio alternatives for text content
+
+🎯 Simple, recognizable icons
+
+Offline-First Example
+typescript
+// Example: Offline-first data sync
+const syncVisits = async (visits: Visit[]) => {
+  try {
+    // 1. Store locally first
+    await AsyncStorage.setItem('pending_visits', JSON.stringify(visits));
+
+    // 2. Attempt server sync
+    const response = await api.syncVisits(visits);
+
+    // 3. Clear local storage on success
+    if (response.success) {
+      await AsyncStorage.removeItem('pending_visits');
+    }
+  } catch (error) {
+    // 4. Data remains available offline
+    console.log('Sync failed - data stored locally for offline access');
+  }
+};
+🧪 Testing
+bash
+# Run unit tests
+npm test
+
+# Run integration tests
+npm run test:integration
+
+# Test accessibility
+npm run test:accessibility
+
+# Test offline functionality
+npm run test:offline
+
+# Run all tests with coverage
+npm run test:coverage
+🤝 Contributing
+We welcome contributions! Please follow these steps:
+
+Fork the repository
+
+Create a feature branch: git checkout -b feature/amazing-feature
+
+Commit your changes: git commit -m 'Add amazing feature'
+
+Push to the branch: git push origin feature/amazing-feature
+
+Open a Pull Request
+
+Branch Naming Convention
+feature/ - for new features
+
+fix/ - for bug fixes
+
+docs/ - for documentation updates
+
+refactor/ - for code refactoring
+
+🆘 Support
+Channel	Contact
+GitHub Issues	Create an issue
+Email	dev-support@ayomama.org
+Slack	#ayomama-frontend
+📄 License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+🙏 Acknowledgments
+Nigerian Ministry of Health
+
+Partner NGOs and healthcare organizations
+
+Community health workers and mothers
+
+Open source healthcare technology community
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
