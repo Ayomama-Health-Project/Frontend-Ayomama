@@ -1,4 +1,6 @@
+import { Checkbox } from "expo-checkbox";
 import { LinearGradient } from "expo-linear-gradient";
+import { useState } from "react";
 import {
   Dimensions,
   Image,
@@ -15,6 +17,12 @@ const ios = Platform.OS === "ios";
 const topMargin = ios ? "" : "mt-3";
 
 export default function HomeScreen() {
+  const [isChecked, setChecked] = useState({
+    supplement: false,
+    water: false,
+    walk: false,
+    clinic: false,
+  });
   return (
     <View className="flex-1 bg-[#FCFCFC]">
       {/* Header */}
@@ -42,6 +50,7 @@ export default function HomeScreen() {
       >
         <View
           style={{ paddingHorizontal: width * 0.06, paddingTop: height * 0.03 }}
+          className="flex flex-col gap-10"
         >
           {/* Baby Development Info */}
           <LinearGradient
@@ -49,7 +58,7 @@ export default function HomeScreen() {
             style={{
               borderRadius: 28,
               height: 233,
-              width: 355,
+              // width: 355,
               padding: 15,
             }}
           >
@@ -61,63 +70,134 @@ export default function HomeScreen() {
               </View>
               <View className="flex-row items-center">
                 <View className="flex-1">
-                  <Text className="text-gray-700 text-base leading-6">
-                    Your baby is now about the size of a lime 😊{"\n"}
+                  <Text className="text-[#293231] text-base text-[14px] leading-6">
+                    Your baby is now about the size of a lime 🍋‍🟩{"\n"}
                     {"\n"}
                     Tiny fingers and toes are forming. Remember to rest and eat
                     well mama.
                   </Text>
                 </View>
                 <Image
-                  source={require("../../assets/images/Pregnantblackwoman.png")}
-                  style={{ width: 60, height: 60 }}
+                  source={require("../../assets/images/infant.png")}
+                  style={{ width: 100, height: 134 }}
                   className="ml-4"
                   resizeMode="contain"
                 />
               </View>
             </View>
           </LinearGradient>
+
           {/* Daily Checklist */}
-          <View className="mb-8">
+          <LinearGradient
+            colors={["#FBE9E2", "#A5DFD7"]}
+            style={{
+              borderRadius: 20,
+              height: 384,
+              // width: 355,
+              padding: 20,
+            }}
+          >
             <Text className="text-xl font-bold text-gray-900 mb-4">
-              Daily Checklist
+              ✔️Daily Checklist
             </Text>
 
-            <View className="space-y-3">
+            <View className="flex flex-col gap-6">
               {/* Checklist Item 1 */}
               <View
-                style={{ minHeight: height * 0.08 }}
-                className="flex-row items-center bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
+                style={{ height: 60, borderRadius: 28 }}
+                className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-[10px] py-[5px] border-[#FCFCFC]"
               >
-                <View className="w-6 h-6 border-2 border-[#8A4FFF] rounded-full mr-3" />
-                <Text className="text-gray-800 text-base flex-1">
-                  Take iron supplement
-                </Text>
+                <View className="flex flex-row gap-3 items-center">
+                  <Image
+                    source={require("../../assets/images/ironSupplement.png")}
+                    style={{ width: 45, height: 50 }}
+                  />
+                  <Text className="text-[#293231] text-base flex-1">
+                    Take iron supplement
+                  </Text>
+                </View>
+                <Checkbox
+                  value={isChecked.supplement}
+                  onValueChange={() =>
+                    setChecked({
+                      ...isChecked,
+                      supplement: !isChecked.supplement,
+                    })
+                  }
+                  style={{ width: 17, height: 17, marginLeft: -20 }}
+                />
               </View>
 
               {/* Checklist Item 2 */}
               <View
-                style={{ minHeight: height * 0.08 }}
-                className="flex-row items-center bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
+                style={{ height: 60, borderRadius: 28 }}
+                className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-[10px] py-[5px] border-[#FCFCFC]"
               >
-                <View className="w-6 h-6 border-2 border-[#8A4FFF] rounded-full mr-3" />
-                <Text className="text-gray-800 text-base flex-1">
-                  Drink 8 glasses of water
-                </Text>
+                <View className="flex flex-row gap-3 items-center">
+                  <Image
+                    source={require("../../assets/images/water.png")}
+                    style={{ width: 45, height: 50 }}
+                  />
+                  <Text className="text-[#293231] text-base flex-1">
+                    Drink 8 glasses of water
+                  </Text>
+                </View>
+                <Checkbox
+                  value={isChecked.water}
+                  onValueChange={() =>
+                    setChecked({ ...isChecked, water: !isChecked.water })
+                  }
+                  style={{ width: 17, height: 17, marginLeft: -20 }}
+                />
               </View>
 
               {/* Checklist Item 3 */}
               <View
-                style={{ minHeight: height * 0.08 }}
-                className="flex-row items-center bg-white rounded-2xl p-4 shadow-sm border border-gray-100"
+                style={{ height: 60, borderRadius: 28 }}
+                className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-[10px] py-[5px] border-[#FCFCFC]"
               >
-                <View className="w-6 h-6 border-2 border-[#8A4FFF] rounded-full mr-3" />
-                <Text className="text-gray-800 text-base flex-1">
-                  Walk 5 miles
-                </Text>
+                <View className="flex flex-row gap-3 items-center">
+                  <Image
+                    source={require("../../assets/images/shoe.png")}
+                    style={{ width: 45, height: 50 }}
+                  />
+                  <Text className="text-[#293231] text-base flex-1">
+                    Walk 5 miles
+                  </Text>
+                </View>
+                <Checkbox
+                  value={isChecked.walk}
+                  onValueChange={() =>
+                    setChecked({ ...isChecked, walk: !isChecked.walk })
+                  }
+                  style={{ width: 17, height: 17, marginLeft: -20 }}
+                />
+              </View>
+
+              {/* Checklist Item 4 */}
+              <View
+                style={{ height: 60, borderRadius: 28 }}
+                className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-[10px] py-[5px] border-[#FCFCFC]"
+              >
+                <View className="flex flex-row gap-3 items-center">
+                  <Image
+                    source={require("../../assets/images/clinic.png")}
+                    style={{ width: 45, height: 50 }}
+                  />
+                  <Text className="text-[#293231] text-base flex-1">
+                    Clinic visit tomorrow
+                  </Text>
+                </View>
+                <Checkbox
+                  value={isChecked.clinic}
+                  onValueChange={() =>
+                    setChecked({ ...isChecked, clinic: !isChecked.clinic })
+                  }
+                  style={{ width: 17, height: 17, marginLeft: -20 }}
+                />
               </View>
             </View>
-          </View>
+          </LinearGradient>
           {/* Clinic Visit Reminder */}
           <View
             style={{ minHeight: height * 0.1 }}

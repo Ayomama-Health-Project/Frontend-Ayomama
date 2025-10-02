@@ -1,5 +1,5 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { Text } from "react-native";
 
 export default function TabLayout() {
   return (
@@ -26,8 +26,15 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ focused, color }) => (
-            <Text style={{ fontSize: 24, color }}>🏠</Text>
+          tabBarStyle: {
+            display: "none",
+          },
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "home" : "home"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -35,8 +42,12 @@ export default function TabLayout() {
         name="visit"
         options={{
           title: "Visit",
-          tabBarIcon: ({ focused, color }) => (
-            <Text style={{ fontSize: 24, color }}>📅</Text>
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "calendar" : "calendar"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -44,8 +55,12 @@ export default function TabLayout() {
         name="emergency"
         options={{
           title: "Emergency",
-          tabBarIcon: ({ focused, color }) => (
-            <Text style={{ fontSize: 24, color }}>🚨</Text>
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "medkit" : "medkit"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -53,8 +68,12 @@ export default function TabLayout() {
         name="learn"
         options={{
           title: "Learn",
-          tabBarIcon: ({ focused, color }) => (
-            <Text style={{ fontSize: 24, color }}>📚</Text>
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "headset" : "headset"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
@@ -62,8 +81,12 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ focused, color }) => (
-            <Text style={{ fontSize: 24, color }}>👤</Text>
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={focused ? "person" : "person"}
+              size={24}
+              color={color}
+            />
           ),
         }}
       />
