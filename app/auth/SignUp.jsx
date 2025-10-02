@@ -24,7 +24,7 @@ const SignUp = () => {
     setError(""); 
 
     // Navigate to login after signup
-    router.push("/auth/LogIn");
+    router.push("/auth/login");
   };
 
   return (
@@ -88,7 +88,7 @@ const SignUp = () => {
       {/* Already have an account */}
       <View className="flex-row justify-center mt-4">
         <Text className="text-gray-600">Already have an account? </Text>
-        <TouchableOpacity onPress={() => router.push("/auth/LogIn")}>
+        <TouchableOpacity onPress={() => router.push("/auth/login")}>
           <Text className="text-blue-600 font-semibold">Log In</Text>
         </TouchableOpacity>
       </View>

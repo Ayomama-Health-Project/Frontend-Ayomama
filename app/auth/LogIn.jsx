@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Image, Text, TextInput, TouchableOpacity, View, } from "react-native";
+import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const LogIn = () => {
   const router = useRouter();
@@ -11,13 +11,30 @@ const LogIn = () => {
   const [error, setError] = useState("");
 
   const handleLogIn = () => {
-    if (!email || !password) {
-      setError("All fields are required");
+    if (!email) {
+      setError("Email is required");
       return;
     }
 
-    // Navigate to login after signup
-    router.push("/");
+    if (!password) {
+      setError("Password is required");
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Please enter a valid email");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setError("");
+
+    // Navigate to language page
+    router.push("/Language");
   };
 
   return (
@@ -33,7 +50,7 @@ const LogIn = () => {
 
       {/* Title */}
       <Text className="text-2xl font-bold text-left mt-6 mb-4">
-        Create an Account
+        Log In to Your Account
       </Text>
 
       {/* Email Input */}
@@ -69,11 +86,10 @@ const LogIn = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* Already have an account */}
+      {/* Don't have an account */}
       <View className="flex-row justify-center mt-4">
-
         <Text className="text-gray-600">Don&apos;t have an account? </Text>
-        <TouchableOpacity onPress={() => router.push("/auth/SignUp")}>
+        <TouchableOpacity onPress={() => router.push("/auth/signup")}>
           <Text className="text-blue-600 font-semibold">Sign up</Text>
         </TouchableOpacity>
       </View>
