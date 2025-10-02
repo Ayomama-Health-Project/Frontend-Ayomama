@@ -24,7 +24,7 @@ export default function HomeScreen() {
     clinic: false,
   });
   return (
-    <View className="flex-1 bg-[#FCFCFC]">
+    <View className="flex-1 bg-[#FCFCFC] ">
       {/* Header */}
       <View
         className={`flex flex-row justify-between items-center px-6 ${topMargin} pt-16`}
@@ -203,7 +203,7 @@ export default function HomeScreen() {
           {/* Clinic Visit Reminder */}
           <View
             style={{ height: 388, borderRadius: 30, borderColor: "#FF7F5080" }}
-            className="bg-[#FFE8E8] rounded-2xl px-[25px] py-[28px] border flex flex-col gap-4 border-[#FFD1D1]"
+            className="rounded-2xl px-[25px] py-[28px] border flex flex-col gap-4 border-[#FFD1D1]"
           >
             <View className="flex flex-row items-center gap-3">
               <Icon name="calendar-month" size={24} />
@@ -262,41 +262,137 @@ export default function HomeScreen() {
           {/* Emergency Contact */}
           <View
             style={{ height: 354, borderRadius: 30, borderColor: "#00D2B3" }}
-            className="bg-[#FCFCFC] rounded-2xl px-[25px] py-[28px] border flex flex-col gap-6 "
+            className="bg-[#FCFCFC] rounded-2xl px-[15px] py-[28px] border flex flex-col gap-6 "
           >
             <View className="flex flex-row items-center gap-2">
-              <View className="bg-black rounded-full p-2 h-7 w-7 flex ">
+              <View className="bg-black rounded-full">
                 <Icon name="phone" size={22} color="#ffff" />
               </View>
-              <Text className="text-[#293231] text-[24px] leading-[100%] font-bold mb-2">
+              <Text className="text-[#293231] text-[24px] leading-[100%] font-bold">
                 Emergency Contact
               </Text>
             </View>
 
-            <LinearGradient
-              colors={["#FBE9E2", "#A5DFD7"]}
-              style={{
-                borderRadius: 28,
-                height: 132,
-                width: 208,
-                padding: 15,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <View className="text-center gap-3">
-                <Text className="text-[#293231] text-[19px] leading-[100%] font-semibold">
-                  Need Urgent Help?
-                </Text>
+            <View className="flex flex-row justify-center">
+              <LinearGradient
+                colors={["#FBE9E2", "#A5DFD7"]}
+                style={{
+                  borderRadius: 28,
+                  height: 132,
+                  width: 208,
+                  padding: 15,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <View className="text-center gap-3">
+                  <Text className="text-[#293231] text-[19px] leading-[100%] font-semibold">
+                    Need Urgent Help?
+                  </Text>
+                </View>
+                <Image
+                  source={require("../../assets/images/emergency.png")}
+                  style={{ width: 108, height: 74 }}
+                  className="self-center mt-4"
+                  resizeMode="contain"
+                />
+              </LinearGradient>
+            </View>
+
+            <View className="flex flex-col gap-2">
+              <View className="flex flex-row justify-center">
+                <View className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]">
+                  <Image
+                    source={require("../../assets/images/hospital.png")}
+                    style={{ height: 26, width: 26 }}
+                  />
+                  <Text className="font-semibold text-[14px]">
+                    Call Hospital
+                  </Text>
+                </View>
               </View>
+
+              <View className="flex flex-row gap-3 ">
+                <View className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]">
+                  <Image
+                    source={require("../../assets/images/hospital.png")}
+                    style={{ height: 26, width: 26 }}
+                  />
+                  <Text className="font-semibold text-[14px]">Call Family</Text>
+                </View>
+
+                <View className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]">
+                  <Image
+                    source={require("../../assets/images/hospital.png")}
+                    style={{ height: 26, width: 26 }}
+                  />
+                  <Text className="font-semibold text-[14px]">Call Friend</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/**Wellness Activities */}
+          <View
+            style={{ height: 420, borderRadius: 30, borderColor: "#FF7F50" }}
+            className="bg-[#FCFCFC] rounded-2xl px-[15px] py-[28px] border flex flex-col gap-6 "
+          >
+            <View className="flex flex-row items-center gap-2">
               <Image
-                source={require("../../assets/images/emergency.png")}
-                style={{ width: 108, height: 74 }}
-                className="self-center mt-4"
-                resizeMode="contain"
+                source={require("../../assets/images/wellness.png")}
+                className="w-[26px] h-[26px]"
               />
-            </LinearGradient>
+              <Text className="text-[#293231] text-[24px] leading-[100%] font-bold">
+                Wellness Activites
+              </Text>
+            </View>
+
+            <View>
+              <LinearGradient
+                colors={["#FBE9E2", "#A5DFD7"]}
+                style={{
+                  borderRadius: 30,
+                  height: 154,
+                  width: 137,
+                  // paddingHorizontal: 15,
+                  // paddingVertical: 10,
+                  padding: 15,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  // gap: ,
+                }}
+              >
+                <Image
+                  source={require("../../assets/images/yoga.png")}
+                  style={{ width: 50, height: 50 }}
+                  className="self-center"
+                  resizeMode="contain"
+                />
+                <View>
+                  <View className="text-center gap-3">
+                    <Text className="text-[#293231] text-[14px] leading-[100%] font-semibold">
+                      Presental Yoga
+                    </Text>
+                  </View>
+                  <View className="text-center gap-3">
+                    <Text className="text-[#293231] text-[12px] leading-[100%]">
+                      15 mins session
+                    </Text>
+                  </View>
+
+                </View>
+                <TouchableOpacity
+                  style={{ width: 107, height: 25 }}
+                  className="border-[#FF7F50] border rounded-[5px] bg-[#FCFCFC] justify-center items-center"
+                >
+                  <Text className="text-[#293231] font-semibold text-[14px]">
+                    Start
+                  </Text>
+                </TouchableOpacity>
+              </LinearGradient>
+            </View>
           </View>
         </View>
       </ScrollView>

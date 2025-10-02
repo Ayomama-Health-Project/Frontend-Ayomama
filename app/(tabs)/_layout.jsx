@@ -21,8 +21,8 @@ export default function TabLayout() {
           fontSize: 12,
           fontWeight: "500",
         },
-        tabBarActiveBackgroundColor: "#B4EFE680",
-        tabBarInactiveBackgroundColor: "transparent",
+        // tabBarActiveBackgroundColor: "#B4EFE680",
+        // tabBarInactiveBackgroundColor: "transparent",
       }}
     >
       <Tabs.Screen
