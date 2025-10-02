@@ -96,6 +96,7 @@ export default function HomeScreen() {
               // width: 355,
               padding: 20,
             }}
+            className="shadow-lg shadow-black/25"
           >
             <Text className="text-xl font-bold text-gray-900 mb-4">
               ✔️Daily Checklist
@@ -198,39 +199,104 @@ export default function HomeScreen() {
               </View>
             </View>
           </LinearGradient>
+
           {/* Clinic Visit Reminder */}
           <View
-            style={{ minHeight: height * 0.1 }}
-            className="bg-[#FFE8E8] rounded-2xl p-5 border border-[#FFD1D1] mb-4"
+            style={{ height: 388, borderRadius: 30, borderColor: "#FF7F5080" }}
+            className="bg-[#FFE8E8] rounded-2xl px-[25px] py-[28px] border flex flex-col gap-4 border-[#FFD1D1]"
           >
-            <Text className="text-[#D93C3C] text-lg font-semibold mb-2">
-              ⚠️ Clinic visit tomorrow
-            </Text>
-            <Text className="text-[#D93C3C] text-sm">
-              Don&apos;t forget your scheduled appointment
-            </Text>
+            <View className="flex flex-row items-center gap-3">
+              <Icon name="calendar-month" size={24} />
+              <Text className="text-[#293231] text-[24px] leading-[100%] font-bold mb-2">
+                Upcoming Visit
+              </Text>
+            </View>
+
+            <LinearGradient
+              colors={["#FBE9E2", "#A5DFD7"]}
+              style={{
+                borderRadius: 28,
+                height: 221,
+                padding: 15,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View className="text-center gap-3">
+                <Text className="text-[#293231] text-[19px] leading-[100%] font-semibold">
+                  Tomorrow Antenatal CheckUp!
+                </Text>
+                <Text className="text-center text-[#293231] font-medium text-[16px]">
+                  10:30 am July 20th
+                </Text>
+              </View>
+              <Image
+                source={require("../../assets/images/clinicVisit.png")}
+                style={{ width: 202, height: 142 }}
+                className="self-center mt-4"
+                resizeMode="contain"
+              />
+            </LinearGradient>
+
+            <View style={{}} className="flex-row justify-between mt-4 mb-4">
+              <TouchableOpacity
+                style={{ width: 130, height: 37 }}
+                className="bg-[#006D5B] rounded-[10px] justify-center items-center"
+              >
+                <Text className="text-white font-semibold text-base">
+                  View Details
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ width: 130, height: 37 }}
+                className="border border-[#026B5E] rounded-[10px] justify-center items-center"
+              >
+                <Text className="text-[#293231] font-semibold text-base">
+                  Add to Calendar
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          {/* Quick Actions */}
+
+          {/* Emergency Contact */}
           <View
-            style={{ height: height * 0.08 }}
-            className="flex-row justify-between mt-4 mb-4"
+            style={{ height: 354, borderRadius: 30, borderColor: "#00D2B3" }}
+            className="bg-[#FCFCFC] rounded-2xl px-[25px] py-[28px] border flex flex-col gap-6 "
           >
-            <TouchableOpacity
-              style={{ width: width * 0.43 }}
-              className="bg-[#8A4FFF] rounded-2xl justify-center items-center"
-            >
-              <Text className="text-white font-semibold text-base">
-                Track Symptoms
+            <View className="flex flex-row items-center gap-2">
+              <View className="bg-black rounded-full p-2 h-7 w-7 flex ">
+                <Icon name="phone" size={22} color="#ffff" />
+              </View>
+              <Text className="text-[#293231] text-[24px] leading-[100%] font-bold mb-2">
+                Emergency Contact
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ width: width * 0.43 }}
-              className="bg-[#E8E0FF] rounded-2xl justify-center items-center"
+            </View>
+
+            <LinearGradient
+              colors={["#FBE9E2", "#A5DFD7"]}
+              style={{
+                borderRadius: 28,
+                height: 132,
+                width: 208,
+                padding: 15,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <Text className="text-[#8A4FFF] font-semibold text-base">
-                Ask Doctor
-              </Text>
-            </TouchableOpacity>
+              <View className="text-center gap-3">
+                <Text className="text-[#293231] text-[19px] leading-[100%] font-semibold">
+                  Need Urgent Help?
+                </Text>
+              </View>
+              <Image
+                source={require("../../assets/images/emergency.png")}
+                style={{ width: 108, height: 74 }}
+                className="self-center mt-4"
+                resizeMode="contain"
+              />
+            </LinearGradient>
           </View>
         </View>
       </ScrollView>

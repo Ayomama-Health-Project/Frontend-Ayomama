@@ -101,8 +101,8 @@ const Onboarding = () => {
         </TouchableOpacity>
         <TouchableOpacity
           className="border-2 border-black py-3 px-8 rounded-full"
-          // onPress={() => router.push("/auth/login")}
-          onPress={() => router.push("/(tabs)")}
+          onPress={() => router.push("/auth/login")}
+          // onPress={() => router.push("/(tabs)")}
         >
           <Text className="text-black text-base font-bold">Log In</Text>
         </TouchableOpacity>
