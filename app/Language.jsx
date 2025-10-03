@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -22,7 +23,14 @@ const Language = () => {
   };
 
   return (
-    <View className="flex-1 bg-white px-6 justify-center">
+    <View className="flex-1 px-6 justify-center">
+
+      <LinearGradient
+        colors={['#FFDEE9', '#B5FFFC']}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: "100%" }}
+      />
+
+      {/* Title */}
       <Text className="text-2xl font-bold text-left mb-20">
         Which language do you prefer?
       </Text>
@@ -30,7 +38,7 @@ const Language = () => {
       {/* English */}
       <TouchableOpacity
         className={`py-3 rounded-xl mb-4 ${
-          selectedLanguage === "English" ? "bg-black" : "bg-gray-300"
+          selectedLanguage === "English" ? "bg-black" : "bg-[#FCFCFC]"
         }`}
         onPress={() => handleLanguageSelect("English")}
       >
@@ -46,7 +54,7 @@ const Language = () => {
       {/* Hausa */}
       <TouchableOpacity
         className={`py-3 rounded-xl mb-4 ${
-          selectedLanguage === "Hausa" ? "bg-black" : "bg-gray-300"
+          selectedLanguage === "Hausa" ? "bg-black" : "bg-[#FCFCFC]"
         }`}
         onPress={() => handleLanguageSelect("Hausa")}
       >
@@ -62,7 +70,7 @@ const Language = () => {
       {/* Yoruba */}
       <TouchableOpacity
         className={`py-3 rounded-xl mb-4 ${
-          selectedLanguage === "Yoruba" ? "bg-black" : "bg-gray-300"
+          selectedLanguage === "Yoruba" ? "bg-black" : "bg-[#FCFCFC]"
         }`}
         onPress={() => handleLanguageSelect("Yoruba")}
       >
@@ -78,7 +86,7 @@ const Language = () => {
       {/* Igbo */}
       <TouchableOpacity
         className={`py-3 rounded-xl ${
-          selectedLanguage === "Igbo" ? "bg-black" : "bg-gray-300"
+          selectedLanguage === "Igbo" ? "bg-black" : "bg-[#FCFCFC]"
         }`}
         onPress={() => handleLanguageSelect("Igbo")}
       >
@@ -98,7 +106,7 @@ const Language = () => {
 
       {/* Proceed Button */}
       <TouchableOpacity
-        className="bg-black py-3 rounded-xl mt-20"
+        className="bg-[#006D5B] py-3 rounded-xl mt-20"
         onPress={handleProceed}
       >
         <Text className="text-white text-center font-bold text-base">

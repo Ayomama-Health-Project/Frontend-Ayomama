@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, Image, Text, TouchableOpacity, View, } from "react-native";
@@ -17,6 +18,8 @@ const slides = [
     image: require("../assets/images/Husbandandwife.png"),
   },
 ];
+
+
 
 const Onboarding = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -56,6 +59,11 @@ const Onboarding = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+
+      <LinearGradient
+        colors={[ "#B5FFFC", "#FFDEE9"]}
+        style={{ height: "100%" , width: "100%", position: 'absolute', top: 0, left: 0 }}
+      />
       {/* Logo */}
       <View className="mt-5 ml-5 items-start">
         <Image
@@ -101,7 +109,7 @@ const Onboarding = () => {
         </TouchableOpacity>
         <TouchableOpacity
           className="border-2 border-black py-3 px-8 rounded-full"
-          onPress={() => router.push("/(tabs)")}
+          onPress={() => router.push("/auth/login")}
         >
           <Text className="text-black text-base font-bold">Log In</Text>
         </TouchableOpacity>

@@ -14,7 +14,7 @@ export default function SplashScreen() {
   }, [router]);
 
   return (
-    <View className="flex-1 justify-center items-center bg-white">
+    <View className="flex-1 justify-center items-center bg-[#FCFCFC]">
       <Image
         source={require("../assets/images/AyomamaLogo.png")}
         className="w-48 h-48"

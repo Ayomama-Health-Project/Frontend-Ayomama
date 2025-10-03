@@ -11,6 +11,7 @@ export default function RootLayout() {
         <Stack.Screen name="Onboarding" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(tabs)/visit" />
       </Stack>
     </>
   );

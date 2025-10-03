@@ -23,12 +23,12 @@ const SignUp = () => {
     //if valid clear error
     setError(""); 
 
-    // Navigate to login after signup
     router.push("/auth/login");
+
   };
 
   return (
-    <View className="flex-1 bg-white px-6">
+    <View className="flex-1 bg-[#FCFCFC] px-6">
       {/* Logo */}
       <View className="mt-5 items-start">
         <Image
@@ -39,7 +39,7 @@ const SignUp = () => {
       </View>
 
       {/* Title */}
-      <Text className="text-2xl font-bold text-left mt-6 mb-4">
+      <Text className="text-5xl font-bold text-left mt-6 mb-4">
         Create an Account
       </Text>
 
@@ -77,7 +77,7 @@ const SignUp = () => {
 
       {/* Sign Up Button */}
       <TouchableOpacity
-        className="bg-black py-3 rounded-full mt-6"
+        className="bg-[#006D5B] py-5 rounded-xl mt-6"
         onPress={handleSignUp}
       >
         <Text className="text-white text-center font-bold text-base">
@@ -89,7 +89,7 @@ const SignUp = () => {
       <View className="flex-row justify-center mt-4">
         <Text className="text-gray-600">Already have an account? </Text>
         <TouchableOpacity onPress={() => router.push("/auth/login")}>
-          <Text className="text-blue-600 font-semibold">Log In</Text>
+          <Text className="text-[#006D5B] font-semibold">Log In</Text>
         </TouchableOpacity>
       </View>
     </View>
