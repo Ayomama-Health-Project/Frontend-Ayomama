@@ -8,10 +8,10 @@ export default function NotificationSetup() {
         Notification
       </Text>
 
-      {/* Mockup Image / Illustration */}
+      {/* Mockup Illustration */}
       <View className="flex-1 items-center justify-center">
         <Image
-          source={{ uri: "https://via.placeholder.com/200x400" }} 
+          source={{ uri: "" }} 
           className="w-52 h-96 rounded-xl"
         />
       </View>
