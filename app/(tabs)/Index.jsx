@@ -8,6 +8,7 @@ import {
 } from "@gluestack-ui/themed";
 import { Checkbox } from "expo-checkbox";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   Dimensions,
@@ -258,6 +259,7 @@ export default function HomeScreen() {
               <TouchableOpacity
                 style={{ width: 130, height: 37 }}
                 className="border border-[#026B5E] rounded-[10px] justify-center items-center"
+                onPress={()=>router.push("/visitInput")}
               >
                 <Text className="text-[#293231] font-semibold text-base">
                   Add to Calendar

@@ -1,185 +1,251 @@
 import { Ionicons } from "@expo/vector-icons";
+import Checkbox from "expo-checkbox";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import {
+  Dimensions,
   Image,
-  Keyboard,
-  KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
+
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Visit = () => {
-  const [visitDate, setVisitDate] = useState("");
-  const [time, setTime] = useState("");
-  const [duration, setDuration] = useState("");
-  const [serviceType, setServiceType] = useState("Antenatal visit");
-  const [hospitalName, setHospitalName] = useState("");
-  const [healthcareProvider, setHealthcareProvider] = useState("");
+const { width, height } = Dimensions.get("window");
+const ios = Platform.OS === "ios";
+const topMargin = ios ? "" : "mt-3";
 
-  const dismissKeyboard = () => {
-    Keyboard.dismiss();
-  };
+export default function Visit() {
+  const [isChecked, setChecked] = useState({
+    antenatal: false,
+    supplement: false,
+    water: false,
+  });
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
+    <View className="flex-1 ">
+      {/* Header */}
+      <View
+        className={`flex flex-row justify-between items-center px-4 ${topMargin}  bg-[#FBE9E2] pt-16 pb-4`}
       >
-        <TouchableWithoutFeedback onPress={dismissKeyboard}>
-          <ScrollView
-            className="flex-1"
-            contentContainerStyle={{ flexGrow: 1 }}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View className="flex-1 bg-white px-6 pt-4 pb-8">
-              <View className="items-center flex flex-row justify-between mb-10 mt-4">
-                <Ionicons name="arrow-back" size={25} />
-                <Text className="text-2xl font-bold text-[#333333]">
-                  Set Reminder
-                </Text>
-                <Icon name="notifications" size={25} color="#000" />
-              </View>
+        <View className="w-[54px] h-[42px] flex flex-row items-center justify-center rounded-md shadow-md">
+          <Ionicons name="arrow-back" size={25} />
+        </View>
+        <View className="flex flex-col items-center">
+          <Text className="text-[#8F8D8D] text-[16px]">Hello,</Text>
+          <Text className="text-[#293231] text-[20px] font-bold">
+            Mama Grace
+          </Text>
+        </View>
+        <Icon name="notifications" size={25} color="#000" />
+      </View>
 
-              <View className="flex flex-row justify-center items-center h-[166px] mb-8">
-                <LinearGradient
-                  colors={["#FBE9E2", "#A5DFD7"]}
-                  style={{
-                    borderRadius: 20,
-                    padding: 5,
-                    width: 256,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 166,
-                    borderColor: "#00D2B3",
-                    borderWidth: 1
-                  }}
-                  className="flex flex-row items-center border border-[#00D2B3]"
-                >
-                  <Image
-                    source={require("../../assets/images/clinicVisit.png")}
-                    style={{ height: 133, width: 195 }}
-                  />
-                </LinearGradient>
-              </View>
-
-              {/* Visit Date */}
-              <View className="mb-8">
-                <Text className="text-[16px] font-medium text-[#333333] mb-4">
-                  Visit date
-                </Text>
-                <TextInput
-                  className="border border-[#E5E5E5] rounded-xl px-4 py-5 bg-white text-[16px]"
-                  placeholder="dd/mm/yyyy"
-                  placeholderTextColor="#999999"
-                  value={visitDate}
-                  onChangeText={setVisitDate}
-                  returnKeyType="next"
-                />
-              </View>
-
-              {/* Time and Duration Row */}
-              <View className="flex-row justify-between mb-8">
-                {/* Time */}
-                <View className="flex-1 mr-3">
-                  <Text className="text-[16px] font-medium text-[#333333] mb-4">
-                    Time
-                  </Text>
-                  <TextInput
-                    className="border border-[#E5E5E5] rounded-xl px-4 py-5 bg-white text-[16px]"
-                    placeholder="00:00am"
-                    placeholderTextColor="#999999"
-                    value={time}
-                    onChangeText={setTime}
-                    returnKeyType="next"
-                  />
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <LinearGradient
+          colors={["#FBE9E2", "#A5DFD7"]}
+          style={{
+            borderBottomEndRadius: 50,
+            borderBottomStartRadius: 50,
+            padding: 20,
+            display: "flex",
+            flexDirection: "column",
+            gap: 20,
+          }}
+          className="shadow-lg shadow-black/25 "
+        >
+          {/* Calendar Section */}
+          <View className="">
+            <Text className="text-[#293231] text-[20px] font-bold mb-4">
+              Next Appointment
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="mb-4"
+            >
+              <View className="flex-row space-x-4 gap-3">
+                {/* Day 19 */}
+                <View className="items-center w-14 h-[86px] bg-[#FCFCFC] rounded-full items-center justify-center">
+                  <View>
+                    <Text className="text-[#293231] text-[16px] font-bold">
+                      19
+                    </Text>
+                  </View>
+                  <Text className="text-[#8F8D8D] text-[12px] mt-1">Sept</Text>
                 </View>
 
-                {/* Duration */}
-                <View className="flex-1 ml-3">
-                  <Text className="text-[16px] font-medium text-[#333333] mb-4">
-                    Duration
+                {/* Day 20 */}
+                <View className="items-center w-14 h-[86px] bg-[#00D2B3] rounded-full items-center justify-center">
+                  <View>
+                    <Text className="text-white text-[19px] font-bold">20</Text>
+                  </View>
+                  <Text className="text-[#FCFCFC] text-[12px] mt-1">Sept</Text>
+                </View>
+
+                {/* Day 21 */}
+                <View className="items-center w-14 h-[86px] bg-[#FCFCFC] rounded-full items-center justify-center">
+                  <View>
+                    <Text className="text-[#293231] text-[16px] font-bold">
+                      21
+                    </Text>
+                  </View>
+                  <Text className="text-[#8F8D8D] text-[12px] mt-1">Sept</Text>
+                </View>
+
+                {/* Day 22 */}
+                <View className="items-center w-14 h-[86px] bg-[#FCFCFC] rounded-full items-center justify-center">
+                  <View>
+                    <Text className="text-[#293231] text-[16px] font-bold">
+                      22
+                    </Text>
+                  </View>
+                  <Text className="text-[#8F8D8D] text-[12px] mt-1">Sept</Text>
+                </View>
+
+                {/* Day 23 */}
+                <View className="items-center w-14 h-[86px] bg-[#00D2B3] rounded-full items-center justify-center">
+                  <View>
+                    <Text className="text-white text-[19px] font-bold">20</Text>
+                  </View>
+                  <Text className="text-[#FCFCFC] text-[12px] mt-1">Sept</Text>
+                </View>
+
+                {/* Day 24 */}
+                <View className="items-center w-14 h-[86px] bg-[#FCFCFC] rounded-full items-center justify-center">
+                  <View>
+                    <Text className="text-[#293231] text-[16px] font-bold">
+                      24
+                    </Text>
+                  </View>
+                  <Text className="text-[#8F8D8D] text-[12px] mt-1">Sept</Text>
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+
+          {/* Upcoming Appointment Card */}
+          <View className="flex flex-col gap-2">
+            <Text className="text-[#293231] text-[22px] font-bold leading-wide">
+              Antenatal Checkup
+            </Text>
+            <View className="rounded-2xl p-5 shadow-lg shadow-black/25 flex flex-col h-[140px] justify-between border border-[#FF7F50]">
+              <View className="flex-row justify-between items-start">
+                <View className="flex-1 flex-col gap-3">
+                  <Text className="text-[#293231] text-center text-[25px] font-medium">
+                    Tomorrow, Sept 20 -{" "}
+                    <Text className="text-[#D78722]"> 10:00am</Text>
                   </Text>
-                  <TextInput
-                    className="border border-[#E5E5E5] rounded-xl px-4 py-5 bg-white text-[16px]"
-                    placeholder="30 mins"
-                    placeholderTextColor="#999999"
-                    value={duration}
-                    onChangeText={setDuration}
-                    returnKeyType="next"
-                  />
+                  <Text className="text-[#8F8D8D] text-[17px] text-center">
+                    Yaba Government hospital. Yaba Lagos
+                  </Text>
                 </View>
               </View>
 
-              {/* Service Type */}
-              <View className="mb-8">
-                <Text className="text-[16px] font-medium text-[#333333] mb-4">
-                  Service Type
-                </Text>
-                <TextInput
-                  className="border border-[#E5E5E5] rounded-xl px-4 py-5 bg-white text-[16px] text-[#333333]"
-                  value={serviceType}
-                  onChangeText={setServiceType}
-                  returnKeyType="next"
-                />
+              {/* Action Buttons */}
+              <View className="flex-row space-x-3 gap-3 justify-center">
+                <TouchableOpacity className="flex bg-[#FCFCFC] h-[37px] rounded-xl py-3 w-[120px] items-center">
+                  <Text className="text-[#293231] text-[14px] font-semibold">
+                    Set Reminder
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="flex bg-[#FCFCFC] h-[37px] w-[120px]  rounded-xl py-3 items-center">
+                  <Text className="text-[#293231] text-[14px] font-semibold">
+                    See Directions
+                  </Text>
+                </TouchableOpacity>
               </View>
-
-              {/* Hospital Name */}
-              <View className="mb-8">
-                <Text className="text-[16px] font-medium text-[#333333] mb-4">
-                  Hospital Name
-                </Text>
-                <TextInput
-                  className="border border-[#E5E5E5] rounded-xl px-4 py-5 bg-white text-[16px]"
-                  placeholder="Write hospital name"
-                  placeholderTextColor="#999999"
-                  value={hospitalName}
-                  onChangeText={setHospitalName}
-                  returnKeyType="next"
-                />
-              </View>
-
-              {/* Healthcare Provider */}
-              <View className="mb-10">
-                <Text className="text-[16px] font-medium text-[#333333] mb-4">
-                  Healthcare provider
-                </Text>
-                <TextInput
-                  className="border border-[#E5E5E5] rounded-xl px-4 py-5 bg-white text-[16px]"
-                  placeholder="Write doctor/nurse name below"
-                  placeholderTextColor="#999999"
-                  value={healthcareProvider}
-                  onChangeText={setHealthcareProvider}
-                  returnKeyType="done"
-                  onSubmitEditing={dismissKeyboard}
-                />
-              </View>
-
-              <TouchableOpacity
-                className="bg-[#00D2B3] rounded-xl py-5 items-center mt-4 mb-4"
-                onPress={dismissKeyboard}
-              >
-                <Text className="text-white text-[18px] font-semibold">
-                  Save Visit
-                </Text>
-              </TouchableOpacity>
-
-              {Platform.OS === "ios" && <View className="h-4" />}
             </View>
-          </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
-};
+          </View>
 
-export default Visit;
+          <View className="flex flex-col gap-2">
+            <Text className="text-[#293231] text-[22px] font-bold">
+              ✔️Preparation Checklist
+            </Text>
+            <View className="flex flex-col gap-4">
+              {/* Checklist Item 1 */}
+              <View
+                style={{ height: 60, borderRadius: 28 }}
+                className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-4 py-2 border-[#FCFCFC]"
+              >
+                <View className="flex flex-row gap-3 items-center">
+                  <Image
+                    source={require("../../assets/images/infant.png")}
+                    style={{ width: 45, height: 50 }}
+                  />
+                  <Text className="text-[#293231] text-base flex-1">
+                    Bring antenatal card
+                  </Text>
+                </View>
+                <Checkbox
+                  value={isChecked.antenatal}
+                  onValueChange={() =>
+                    setChecked({
+                      ...isChecked,
+                      antenatal: !isChecked.atenatal,
+                    })
+                  }
+                  style={{ width: 17, height: 17, marginLeft: -20 }}
+                />
+              </View>
+
+              {/* Checklist Item 2 */}
+              <View
+                style={{ height: 60, borderRadius: 28 }}
+                className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-4 py-2 border-[#FCFCFC]"
+              >
+                <View className="flex flex-row gap-3 items-center">
+                  <Image
+                    source={require("../../assets/images/ironSupplement.png")}
+                    style={{ width: 45, height: 50 }}
+                  />
+                  <Text className="text-[#293231] text-base flex-1">
+                    Take iron supplement
+                  </Text>
+                </View>
+                <Checkbox
+                  value={isChecked.supplement}
+                  onValueChange={() =>
+                    setChecked({
+                      ...isChecked,
+                      supplement: !isChecked.supplement,
+                    })
+                  }
+                  style={{ width: 17, height: 17, marginLeft: -20 }}
+                />
+              </View>
+
+              {/* Checklist Item 3 */}
+              <View
+                style={{ height: 60, borderRadius: 28 }}
+                className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-4 py-2 border-[#FCFCFC]"
+              >
+                <View className="flex flex-row gap-3 items-center">
+                  <Image
+                    source={require("../../assets/images/water.png")}
+                    style={{ width: 45, height: 50 }}
+                  />
+                  <Text className="text-[#293231] text-base flex-1">
+                    Drink enough water
+                  </Text>
+                </View>
+                <Checkbox
+                  value={isChecked.water}
+                  onValueChange={() =>
+                    setChecked({
+                      ...isChecked,
+                      water: !isChecked.water,
+                    })
+                  }
+                  style={{ width: 17, height: 17, marginLeft: -20 }}
+                />
+              </View>
+            </View>
+          </View>
+        </LinearGradient>
+      </ScrollView>
+    </View>
+  );
+}
