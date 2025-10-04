@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Dimensions, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, FlatList, View } from "react-native";
 
 import PersonalInfo from "./Information";
 import Language from "./Language";
@@ -64,7 +64,7 @@ const Carousel = () => {
       />
 
       {/* Prev / Next buttons at bottom */}
-      <View className="flex-row justify-between p-5 bg-['#B5FFFC'] bg-cover">
+      {/* <View className="flex-row justify-between p-5 bg-['#B5FFFC'] bg-cover">
         <TouchableOpacity
           onPress={handlePrev}
           disabled={currentIndex === 0}
@@ -86,7 +86,7 @@ const Carousel = () => {
             {currentIndex === screens.length - 1 ? "Done" : "Next"}
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };

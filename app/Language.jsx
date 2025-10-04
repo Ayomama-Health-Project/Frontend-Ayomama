@@ -1,4 +1,4 @@
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -24,10 +24,15 @@ const Language = () => {
 
   return (
     <View className="flex-1 px-6 justify-center">
-
       <LinearGradient
-        colors={['#FFDEE9', '#B5FFFC']}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, height: "100%" }}
+        colors={["#B5FFFC", "#FFDEE9"]}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "100%",
+        }}
       />
 
       {/* Title */}

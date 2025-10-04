@@ -604,24 +604,36 @@ export default function HomeScreen() {
                         <View className="flex flex-row gap-4 items-center">
                           <Image
                             source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
+                            style={{ width: 16, height: 16 }}
                           />
                           <Text>100g</Text>
                         </View>
                       </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
+                      <View className="flex flex-row gap-4 text-[12px]">
                         <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
                           </View>
-                          <Text>40g Vitamin</Text>
+                          <Text className="text-[12px]">40g Vitamin</Text>
                         </View>
                         <View className="flex flex-row gap-2 items-center">
+                          <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                          </View>
+                          <Text className="text-[12px]">40g Carb</Text>
+                        </View>
+                        <View className="flex flex-row gap-2 items-center">
+                          <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                          </View>
+                          <Text className="text-[12px]">40g Fibre</Text>
+                        </View>
+                        {/* <View className="flex flex-row gap-2 items-center">
                           <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
                             <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
                           </View>
                           <Text>15g Fibres</Text>
-                        </View>
+                        </View> */}
                         {/* <View className="flex flex-row gap-2 items-center">
                           <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
                             <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>

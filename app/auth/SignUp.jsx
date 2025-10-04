@@ -39,7 +39,7 @@ const SignUp = () => {
       </View>
 
       {/* Title */}
-      <Text className="text-5xl font-bold text-left mt-6 mb-4">
+      <Text className="text-3xl font-bold text-left mt-6 mb-4">
         Create an Account
       </Text>
 

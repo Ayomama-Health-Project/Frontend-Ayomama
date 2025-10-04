@@ -62,7 +62,7 @@ const Onboarding = () => {
 
       <LinearGradient
         colors={[ "#B5FFFC", "#FFDEE9"]}
-        style={{ height: "100%" , width: "100%", position: 'absolute', top: 0, left: 0 }}
+        style={{ height: "120%" , width: "100%", position: 'absolute', top: 0, left: 0 }}
       />
       {/* Logo */}
       <View className="mt-5 ml-5 items-start">
@@ -110,6 +110,7 @@ const Onboarding = () => {
         
         <TouchableOpacity
           className="border-2 border-black py-3 px-8 rounded-full"
+          // onPress={() => router.push("/(tabs)")}
           onPress={() => router.push("/auth/login")}
         >
           <Text className="text-black text-base font-bold">Log In</Text>
