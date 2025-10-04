@@ -17,20 +17,6 @@ const Carousel = () => {
   const flatListRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handleNext = () => {
-    if (currentIndex < screens.length - 1) {
-      flatListRef.current.scrollToIndex({ index: currentIndex + 1 });
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentIndex > 0) {
-      flatListRef.current.scrollToIndex({ index: currentIndex - 1 });
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
   return (
     <View className="flex-1 bg-['#FFDEE9'] bg-cover">
       {/* Pagination Dots at Top */}
