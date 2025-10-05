@@ -6,7 +6,7 @@ const useVisitStore = create((set, get) => ({
   loading: false,
   error: null,
 
-  // ✅ Create new visit schedule
+  //  Create new visit schedule
   createSchedule: async (visitData) => {
     try {
       set({ loading: true, error: null });
@@ -33,7 +33,7 @@ const useVisitStore = create((set, get) => ({
     }
   },
 
-  // ✅ Fetch all visits
+  // Fetch all visits
   fetchVisits: async () => {
     try {
       set({ loading: true, error: null });
