@@ -135,8 +135,8 @@ export default function Learn() {
                 minHeight: 160,
               }}
             >
-              <View className="w-12 h-12 bg-black rounded-full items-center justify-center mb-3">
-                <Ionicons name="people" size={24} color="white" />
+              <View className="w-12 h-12  items-center justify-center mb-3">
+                <Ionicons name="people" size={24} color="black" />
               </View>
               <Text className="text-xl font-bold text-[#293231] mb-2">
                 Community
@@ -159,8 +159,8 @@ export default function Learn() {
                 minHeight: 160,
               }}
             >
-              <View className="w-12 h-12 bg-black rounded-full items-center justify-center mb-3">
-                <Ionicons name="medical" size={24} color="white" />
+              <View className="w-12 h-12  items-center justify-center mb-3">
+                <Ionicons name="medical" size={24} color="black" />
               </View>
               <Text className="text-xl font-bold text-[#293231] mb-2">
                 Health workers
@@ -186,8 +186,8 @@ export default function Learn() {
                 minHeight: 160,
               }}
             >
-              <View className="w-12 h-12 bg-black rounded-full items-center justify-center mb-3">
-                <Ionicons name="headset" size={24} color="white" />
+              <View className="w-12 h-12  items-center justify-center mb-3">
+                <Ionicons name="headset" size={24} color="black" />
               </View>
               <Text className="text-xl font-bold text-[#293231] mb-2">
                 Listen
@@ -210,8 +210,8 @@ export default function Learn() {
                 minHeight: 160,
               }}
             >
-              <View className="w-12 h-12 bg-black rounded-full items-center justify-center mb-3">
-                <Ionicons name="happy" size={24} color="white" />
+              <View className="w-12 h-12  items-center justify-center mb-3">
+                <Ionicons name="happy" size={24} color="black" />
               </View>
               <Text className="text-xl font-bold text-[#293231] mb-2">
                 Baby Development

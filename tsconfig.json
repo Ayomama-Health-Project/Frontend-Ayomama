@@ -18,5 +18,5 @@
     "app/(tabs)/Login.jsx",
     "app/(tabs)/index.jsx",
     "nativewind-env.d.ts"
-  ]
+, "components/ui/tabs.jsx"  ]
 }

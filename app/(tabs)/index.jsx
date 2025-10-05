@@ -11,44 +11,167 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Dimensions,
   Image,
+  Linking,
   Platform,
   ScrollView,
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import useAuthStore from "../../store/useAuthStore";
 
 const { width, height } = Dimensions.get("window");
 const ios = Platform.OS === "ios";
 const topMargin = ios ? "" : "mt-3";
 
 export default function HomeScreen() {
+  const { user } = useAuthStore();
   const [isChecked, setChecked] = useState({
     supplement: false,
     water: false,
     walk: false,
     clinic: false,
   });
+
+  // Handle checklist completion
+  const handleChecklistComplete = (item) => {
+    setChecked((prev) => ({
+      ...prev,
+      [item]: !prev[item],
+    }));
+
+    // Show success toast when checked
+    if (!isChecked[item]) {
+      Toast.show({
+        type: "success",
+        text1: "Task Completed! ✅",
+        text2: `Great job completing your ${getTaskName(item)}!`,
+        position: "top",
+      });
+    }
+  };
+
+  const getTaskName = (item) => {
+    const taskNames = {
+      supplement: "iron supplement",
+      water: "water intake",
+      walk: "walking exercise",
+      clinic: "clinic visit reminder",
+    };
+    return taskNames[item] || "task";
+  };
+
+  // Handle wellness activity start
+  const handleWellnessStart = (activity) => {
+    Toast.show({
+      type: "info",
+      text1: `${activity} Started 🎯`,
+      text2: "Enjoy your wellness session!",
+      position: "top",
+    });
+
+    // Navigate to activity screen or start timer
+    // router.push(`/wellness/${activity}`);
+  };
+
+  // Handle emergency calls
+  const handleEmergencyCall = (type) => {
+    const phoneNumbers = {
+      hospital: "+2348145760560",
+      family: "+2348145760560",
+      friend: "+2348145760560",
+    };
+
+    Alert.alert(
+      `Call ${type.charAt(0).toUpperCase() + type.slice(1)}?`,
+      `Are you sure you want to call ${type}?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Call",
+          onPress: () => {
+            Linking.openURL(`tel:${phoneNumbers[type]}`).catch(() => {
+              Toast.show({
+                type: "error",
+                text1: "Call Failed 📞",
+                text2: "Unable to make call. Please try again.",
+                position: "top",
+              });
+            });
+          },
+        },
+      ]
+    );
+  };
+
+  // Handle view details navigation
+  const handleViewDetails = () => {
+    router.push("/(tabs)/visit");
+  };
+
+  // Handle add to calendar
+  const handleAddToCalendar = () => {
+    router.push("/visit");
+  };
+
+  // Handle learn more about baby development
+  const handleLearnMore = () => {
+    router.push("/babyDevelopment");
+    Toast.show({
+      type: "info",
+      text1: "Baby Development 🍼",
+      text2: "Learning about week 18 milestones",
+      position: "top",
+    });
+  };
+
+  // Handle nutrition tab change
+  const handleNutritionTabChange = (meal) => {
+    Toast.show({
+      type: "info",
+      text1: `${meal.charAt(0).toUpperCase() + meal.slice(1)} Menu`,
+      text2: `Viewing ${meal} nutrition options`,
+      position: "top",
+    });
+  };
+
   return (
-    <View className="flex-1 bg-[#FCFCFC] ">
+    <View className="flex-1 bg-[#FCFCFC]">
       {/* Header */}
       <View
         className={`flex flex-row justify-between items-center px-6 ${topMargin} pt-16`}
       >
-        <Image
-          source={require("../../assets/images/Husbandandwife.png")}
-          style={{ width: 40, height: 40 }}
-          className="rounded-full"
-        />
+        <TouchableOpacity
+          onPress={() => router.push("/profile")}
+          activeOpacity={0.7}
+        >
+          <Image
+            source={require("../../assets/images/Husbandandwife.png")}
+            style={{ width: 40, height: 40 }}
+            className="rounded-full"
+          />
+        </TouchableOpacity>
+
         <View className="flex flex-col items-center">
           <Text className="text-[#8F8D8D] text-[16px]">Hello,</Text>
           <Text className="text-[#293231] text-[20px] font-bold">
-            Mama Grace
+             {user.name}
           </Text>
         </View>
-        <Icon name="notifications" size={25} color="#000" />
+
+        <TouchableOpacity
+          onPress={() => router.push("/notifications")}
+          activeOpacity={0.7}
+        >
+          <Icon name="notifications" size={25} color="#000" />
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -61,39 +184,43 @@ export default function HomeScreen() {
           className="flex flex-col gap-10"
         >
           {/* Baby Development Info */}
-          <LinearGradient
-            colors={["#FBE9E2", "#A5DFD7"]}
-            style={{
-              borderRadius: 28,
-              height: 233,
-              // width: 355,
-              padding: 15,
-            }}
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => router.push("/babyProgress")}
           >
-            <View className="border-[0.9px] border-[#FF7F50] h-[203px] rounded-2xl py-[10px] px-[8px]">
-              <View className="bg-[#FCFCFC] w-[108px] rounded-2xl flex  px-[13px] py-[10px] mb-3 ">
-                <Text className="text-[#293231] text-[20px] text-center leading-[100%] font-semibold">
-                  Week 18
-                </Text>
-              </View>
-              <View className="flex-row items-center">
-                <View className="flex-1">
-                  <Text className="text-[#293231] text-base text-[14px] leading-6">
-                    Your baby is now about the size of a lime 🍋‍🟩{"\n"}
-                    {"\n"}
-                    Tiny fingers and toes are forming. Remember to rest and eat
-                    well mama.
+            <LinearGradient
+              colors={["#FBE9E2", "#A5DFD7"]}
+              style={{
+                borderRadius: 28,
+                height: 233,
+                padding: 15,
+              }}
+            >
+              <View className="border-[0.9px] border-[#FF7F50] h-[203px] rounded-2xl py-[10px] px-[8px]">
+                <View className="bg-[#FCFCFC] w-[108px] rounded-2xl flex  px-[13px] py-[10px] mb-3 ">
+                  <Text className="text-[#293231] text-[20px] text-center leading-[100%] font-semibold">
+                    Week 18
                   </Text>
                 </View>
-                <Image
-                  source={require("../../assets/images/infant.png")}
-                  style={{ width: 100, height: 134 }}
-                  className="ml-4"
-                  resizeMode="contain"
-                />
+                <View className="flex-row items-center">
+                  <View className="flex-1">
+                    <Text className="text-[#293231] text-base text-[14px] leading-6">
+                      Your baby is now about the size of a lime 🍋‍🟩{"\n"}
+                      {"\n"}
+                      Tiny fingers and toes are forming. Remember to rest and
+                      eat well mama.
+                    </Text>
+                  </View>
+                  <Image
+                    source={require("../../assets/images/infant.png")}
+                    style={{ width: 100, height: 134 }}
+                    className="ml-4"
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
-            </View>
-          </LinearGradient>
+            </LinearGradient>
+          </TouchableOpacity>
 
           {/* Daily Checklist */}
           <LinearGradient
@@ -101,7 +228,6 @@ export default function HomeScreen() {
             style={{
               borderRadius: 20,
               height: 384,
-              // width: 355,
               padding: 20,
             }}
             className="shadow-lg shadow-black/25"
@@ -112,9 +238,11 @@ export default function HomeScreen() {
 
             <View className="flex flex-col gap-6">
               {/* Checklist Item 1 */}
-              <View
+              <TouchableOpacity
                 style={{ height: 60, borderRadius: 28 }}
                 className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-[10px] py-[5px] border-[#FCFCFC]"
+                onPress={() => handleChecklistComplete("supplement")}
+                activeOpacity={0.7}
               >
                 <View className="flex flex-row gap-3 items-center">
                   <Image
@@ -127,20 +255,17 @@ export default function HomeScreen() {
                 </View>
                 <Checkbox
                   value={isChecked.supplement}
-                  onValueChange={() =>
-                    setChecked({
-                      ...isChecked,
-                      supplement: !isChecked.supplement,
-                    })
-                  }
+                  onValueChange={() => handleChecklistComplete("supplement")}
                   style={{ width: 17, height: 17, marginLeft: -20 }}
                 />
-              </View>
+              </TouchableOpacity>
 
               {/* Checklist Item 2 */}
-              <View
+              <TouchableOpacity
                 style={{ height: 60, borderRadius: 28 }}
                 className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-[10px] py-[5px] border-[#FCFCFC]"
+                onPress={() => handleChecklistComplete("water")}
+                activeOpacity={0.7}
               >
                 <View className="flex flex-row gap-3 items-center">
                   <Image
@@ -153,17 +278,17 @@ export default function HomeScreen() {
                 </View>
                 <Checkbox
                   value={isChecked.water}
-                  onValueChange={() =>
-                    setChecked({ ...isChecked, water: !isChecked.water })
-                  }
+                  onValueChange={() => handleChecklistComplete("water")}
                   style={{ width: 17, height: 17, marginLeft: -20 }}
                 />
-              </View>
+              </TouchableOpacity>
 
               {/* Checklist Item 3 */}
-              <View
+              <TouchableOpacity
                 style={{ height: 60, borderRadius: 28 }}
                 className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-[10px] py-[5px] border-[#FCFCFC]"
+                onPress={() => handleChecklistComplete("walk")}
+                activeOpacity={0.7}
               >
                 <View className="flex flex-row gap-3 items-center">
                   <Image
@@ -176,17 +301,17 @@ export default function HomeScreen() {
                 </View>
                 <Checkbox
                   value={isChecked.walk}
-                  onValueChange={() =>
-                    setChecked({ ...isChecked, walk: !isChecked.walk })
-                  }
+                  onValueChange={() => handleChecklistComplete("walk")}
                   style={{ width: 17, height: 17, marginLeft: -20 }}
                 />
-              </View>
+              </TouchableOpacity>
 
               {/* Checklist Item 4 */}
-              <View
+              <TouchableOpacity
                 style={{ height: 60, borderRadius: 28 }}
                 className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-[10px] py-[5px] border-[#FCFCFC]"
+                onPress={() => handleChecklistComplete("clinic")}
+                activeOpacity={0.7}
               >
                 <View className="flex flex-row gap-3 items-center">
                   <Image
@@ -199,12 +324,10 @@ export default function HomeScreen() {
                 </View>
                 <Checkbox
                   value={isChecked.clinic}
-                  onValueChange={() =>
-                    setChecked({ ...isChecked, clinic: !isChecked.clinic })
-                  }
+                  onValueChange={() => handleChecklistComplete("clinic")}
                   style={{ width: 17, height: 17, marginLeft: -20 }}
                 />
-              </View>
+              </TouchableOpacity>
             </View>
           </LinearGradient>
 
@@ -251,6 +374,8 @@ export default function HomeScreen() {
               <TouchableOpacity
                 style={{ width: 130, height: 37 }}
                 className="bg-[#006D5B] rounded-[10px] justify-center items-center"
+                onPress={handleViewDetails}
+                activeOpacity={0.7}
               >
                 <Text className="text-white font-semibold text-base">
                   View Details
@@ -259,7 +384,8 @@ export default function HomeScreen() {
               <TouchableOpacity
                 style={{ width: 130, height: 37 }}
                 className="border border-[#026B5E] rounded-[10px] justify-center items-center"
-                onPress={()=>router.push("/visitInput")}
+                onPress={handleAddToCalendar}
+                activeOpacity={0.7}
               >
                 <Text className="text-[#293231] font-semibold text-base">
                   Add to Calendar
@@ -310,8 +436,13 @@ export default function HomeScreen() {
             </View>
 
             <View className="flex flex-col gap-2">
+              {/* Call Hospital Button */}
               <View className="flex flex-row justify-center">
-                <View className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]">
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]"
+                  onPress={() => handleEmergencyCall("hospital")}
+                >
                   <Image
                     source={require("../../assets/images/hospital.png")}
                     style={{ height: 26, width: 26 }}
@@ -319,25 +450,34 @@ export default function HomeScreen() {
                   <Text className="font-semibold text-[14px]">
                     Call Hospital
                   </Text>
-                </View>
+                </TouchableOpacity>
               </View>
 
-              <View className="flex flex-row gap-3 ">
-                <View className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]">
+              {/* Call Family + Call Friend */}
+              <View className="flex flex-row gap-3">
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]"
+                  onPress={() => handleEmergencyCall("family")}
+                >
                   <Image
                     source={require("../../assets/images/hospital.png")}
                     style={{ height: 26, width: 26 }}
                   />
                   <Text className="font-semibold text-[14px]">Call Family</Text>
-                </View>
+                </TouchableOpacity>
 
-                <View className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]">
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]"
+                  onPress={() => handleEmergencyCall("friend")}
+                >
                   <Image
                     source={require("../../assets/images/hospital.png")}
                     style={{ height: 26, width: 26 }}
                   />
                   <Text className="font-semibold text-[14px]">Call Friend</Text>
-                </View>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -358,176 +498,191 @@ export default function HomeScreen() {
             </View>
 
             <View className="flex flex-row justify-between">
-              <LinearGradient
-                colors={["#FBE9E2", "#A5DFD7"]}
-                style={{
-                  borderRadius: 30,
-                  height: 154,
-                  width: 137,
-                  // paddingHorizontal: 15,
-                  // paddingVertical: 10,
-                  padding: 15,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  // gap: ,
-                }}
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => handleWellnessStart("Prenatal Yoga")}
               >
-                <Image
-                  source={require("../../assets/images/yoga.png")}
-                  style={{ width: 50, height: 50 }}
-                  className="self-center"
-                  resizeMode="contain"
-                />
-                <View>
-                  <View className="text-center gap-3">
-                    <Text className="text-[#293231] text-center  text-[14px] leading-[100%] font-semibold">
-                      Presental Yoga
-                    </Text>
-                  </View>
-                  <View className="text-center gap-3">
-                    <Text className="text-[#293231] text-center text-[12px] leading-[100%]">
-                      15 mins session
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  style={{ width: 107, height: 25 }}
-                  className="border-[#FF7F50] border rounded-[5px] bg-[#FCFCFC] justify-center items-center"
+                <LinearGradient
+                  colors={["#FBE9E2", "#A5DFD7"]}
+                  style={{
+                    borderRadius: 30,
+                    height: 154,
+                    width: 137,
+                    padding: 15,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  <Text className="text-[#293231] font-semibold text-[14px]">
-                    Start
-                  </Text>
-                </TouchableOpacity>
-              </LinearGradient>
-              <LinearGradient
-                colors={["#FBE9E2", "#A5DFD7"]}
-                style={{
-                  borderRadius: 30,
-                  height: 154,
-                  width: 137,
-                  // paddingHorizontal: 15,
-                  // paddingVertical: 10,
-                  padding: 15,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  // gap: ,
-                }}
+                  <Image
+                    source={require("../../assets/images/yoga.png")}
+                    style={{ width: 50, height: 50 }}
+                    className="self-center"
+                    resizeMode="contain"
+                  />
+                  <View>
+                    <View className="text-center gap-3">
+                      <Text className="text-[#293231] text-center  text-[14px] leading-[100%] font-semibold">
+                        Prenatal Yoga
+                      </Text>
+                    </View>
+                    <View className="text-center gap-3">
+                      <Text className="text-[#293231] text-center text-[12px] leading-[100%]">
+                        15 mins session
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    style={{ width: 107, height: 25 }}
+                    className="border-[#FF7F50] border rounded-[5px] bg-[#FCFCFC] justify-center items-center"
+                    onPress={() => handleWellnessStart("Prenatal Yoga")}
+                  >
+                    <Text className="text-[#293231] font-semibold text-[14px]">
+                      Start
+                    </Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => handleWellnessStart("Breathing Exercises")}
               >
-                <Image
-                  source={require("../../assets/images/breathing.png")}
-                  style={{ width: 50, height: 50 }}
-                  className="self-center"
-                  resizeMode="contain"
-                />
-                <View>
-                  <View className="text-center gap-3">
-                    <Text className="text-[#293231] text-center text-[14px] leading-[100%] font-semibold">
-                      Breathing
-                    </Text>
-                  </View>
-                  <View className="text-center gap-3">
-                    <Text className="text-[#293231] text-[12px] leading-[100%]">
-                      5 mins exercise
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  style={{ width: 107, height: 25 }}
-                  className="border-[#FF7F50] border rounded-[5px] bg-[#FCFCFC] justify-center items-center"
+                <LinearGradient
+                  colors={["#FBE9E2", "#A5DFD7"]}
+                  style={{
+                    borderRadius: 30,
+                    height: 154,
+                    width: 137,
+                    padding: 15,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  <Text className="text-[#293231] font-semibold text-[14px]">
-                    Start
-                  </Text>
-                </TouchableOpacity>
-              </LinearGradient>
+                  <Image
+                    source={require("../../assets/images/breathing.png")}
+                    style={{ width: 50, height: 50 }}
+                    className="self-center"
+                    resizeMode="contain"
+                  />
+                  <View>
+                    <View className="text-center gap-3">
+                      <Text className="text-[#293231] text-center text-[14px] leading-[100%] font-semibold">
+                        Breathing
+                      </Text>
+                    </View>
+                    <View className="text-center gap-3">
+                      <Text className="text-[#293231] text-[12px] leading-[100%]">
+                        5 mins exercise
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    style={{ width: 107, height: 25 }}
+                    className="border-[#FF7F50] border rounded-[5px] bg-[#FCFCFC] justify-center items-center"
+                    onPress={() => handleWellnessStart("Breathing Exercises")}
+                  >
+                    <Text className="text-[#293231] font-semibold text-[14px]">
+                      Start
+                    </Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
+
             <View className="flex flex-row justify-between">
-              <LinearGradient
-                colors={["#FBE9E2", "#A5DFD7"]}
-                style={{
-                  borderRadius: 30,
-                  height: 154,
-                  width: 137,
-                  // paddingHorizontal: 15,
-                  // paddingVertical: 10,
-                  padding: 15,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  // gap: ,
-                }}
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => handleWellnessStart("Meditation")}
               >
-                <Image
-                  source={require("../../assets/images/meditation.png")}
-                  style={{ width: 50, height: 50 }}
-                  className="self-center"
-                  resizeMode="contain"
-                />
-                <View>
-                  <View className="text-center gap-3">
-                    <Text className="text-[#293231] text-[14px] text-center leading-[100%] font-semibold">
-                      Meditation
-                    </Text>
-                  </View>
-                  <View className="text-center gap-3">
-                    <Text className="text-[#293231] text-[12px] text-center leading-[100%]">
-                      10 mins session
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  style={{ width: 107, height: 25 }}
-                  className="border-[#FF7F50] border rounded-[5px] bg-[#FCFCFC] justify-center items-center"
+                <LinearGradient
+                  colors={["#FBE9E2", "#A5DFD7"]}
+                  style={{
+                    borderRadius: 30,
+                    height: 154,
+                    width: 137,
+                    padding: 15,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  <Text className="text-[#293231] font-semibold text-[14px]">
-                    Start
-                  </Text>
-                </TouchableOpacity>
-              </LinearGradient>
-              <LinearGradient
-                colors={["#FBE9E2", "#A5DFD7"]}
-                style={{
-                  borderRadius: 30,
-                  height: 154,
-                  width: 137,
-                  // paddingHorizontal: 15,
-                  // paddingVertical: 10,
-                  padding: 15,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  // gap: ,
-                }}
+                  <Image
+                    source={require("../../assets/images/meditation.png")}
+                    style={{ width: 50, height: 50 }}
+                    className="self-center"
+                    resizeMode="contain"
+                  />
+                  <View>
+                    <View className="text-center gap-3">
+                      <Text className="text-[#293231] text-[14px] text-center leading-[100%] font-semibold">
+                        Meditation
+                      </Text>
+                    </View>
+                    <View className="text-center gap-3">
+                      <Text className="text-[#293231] text-[12px] text-center leading-[100%]">
+                        10 mins session
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    style={{ width: 107, height: 25 }}
+                    className="border-[#FF7F50] border rounded-[5px] bg-[#FCFCFC] justify-center items-center"
+                    onPress={() => handleWellnessStart("Meditation")}
+                  >
+                    <Text className="text-[#293231] font-semibold text-[14px]">
+                      Start
+                    </Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => handleWellnessStart("Sleep Stories")}
               >
-                <Image
-                  source={require("../../assets/images/sleep.png")}
-                  style={{ width: 50, height: 50 }}
-                  className="self-center"
-                  resizeMode="contain"
-                />
-                <View>
-                  <View className="text-center gap-3">
-                    <Text className="text-[#293231] text-[14px] text-center leading-[100%] font-semibold">
-                      Sleep Stories
-                    </Text>
-                  </View>
-                  <View className="text-center gap-3">
-                    <Text className="text-[#293231] tesxt-center text-[12px] leading-[100%]">
-                      15 mins session
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  style={{ width: 107, height: 25 }}
-                  className="border-[#FF7F50] border rounded-[5px] bg-[#FCFCFC] justify-center items-center"
+                <LinearGradient
+                  colors={["#FBE9E2", "#A5DFD7"]}
+                  style={{
+                    borderRadius: 30,
+                    height: 154,
+                    width: 137,
+                    padding: 15,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  <Text className="text-[#293231] font-semibold text-[14px]">
-                    Start
-                  </Text>
-                </TouchableOpacity>
-              </LinearGradient>
+                  <Image
+                    source={require("../../assets/images/sleep.png")}
+                    style={{ width: 50, height: 50 }}
+                    className="self-center"
+                    resizeMode="contain"
+                  />
+                  <View>
+                    <View className="text-center gap-3">
+                      <Text className="text-[#293231] text-[14px] text-center leading-[100%] font-semibold">
+                        Sleep Stories
+                      </Text>
+                    </View>
+                    <View className="text-center gap-3">
+                      <Text className="text-[#293231] tesxt-center text-[12px] leading-[100%]">
+                        15 mins session
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    style={{ width: 107, height: 25 }}
+                    className="border-[#FF7F50] border rounded-[5px] bg-[#FCFCFC] justify-center items-center"
+                    onPress={() => handleWellnessStart("Sleep Stories")}
+                  >
+                    <Text className="text-[#293231] font-semibold text-[14px]">
+                      Start
+                    </Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -546,7 +701,10 @@ export default function HomeScreen() {
               </Text>
             </View>
 
-            <Tabs value="breakfast">
+            <Tabs
+              value="breakfast"
+              onChange={(value) => handleNutritionTabChange(value)}
+            >
               <TabsTabList className="flex flex-row justify-between mb-6">
                 <TabsTab
                   value="breakfast"
@@ -586,579 +744,638 @@ export default function HomeScreen() {
               <TabsTabPanels>
                 {/* Breakfast Tab */}
                 <TabsTabPanel value="breakfast" className="flex flex-col gap-6">
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Pap, milk and eggs{" "}
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-4 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
                           </View>
-                          <Text className="text-[12px]">40g Vitamin</Text>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
+                          </View>
                         </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
                           </View>
-                          <Text className="text-[12px]">40g Carb</Text>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
+                          </View>
                         </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
-                          </View>
-                          <Text className="text-[12px]">40g Fibre</Text>
-                        </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
-                          </View>
-                          <Text>15g Fibres</Text>
-                        </View> */}
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
-                          </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
                       </View>
                     </View>
-                  </View>
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Fruit Salad and Milk
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
                           </View>
-                          <Text>40g Protien</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FFF9C4] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
                           </View>
-                          <Text>15g Carbs</Text>
                         </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
-                      </View>
-                    </View>
-                  </View>
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Pap, milk and eggs{" "}
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
                           </View>
-                          <Text>15g Fibres</Text>
                         </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
-                          </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
                       </View>
                     </View>
-                  </View>
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Pap, milk and eggs{" "}
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
                           </View>
-                          <Text>15g Fibres</Text>
                         </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
+                          </View>
+                        </View>
                       </View>
                     </View>
-                  </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
+                          </View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
+                          </View>
+                        </View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
                 </TabsTabPanel>
 
                 {/* Lunch Tab */}
                 <TabsTabPanel value="lunch" className="flex flex-col gap-6">
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Fruit Salad and Milk
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
                           </View>
-                          <Text>40g Protien</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FFF9C4] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
                           </View>
-                          <Text>15g Carbs</Text>
                         </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
-                      </View>
-                    </View>
-                  </View>
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Pap, milk and eggs{" "}
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
                           </View>
-                          <Text>15g Fibres</Text>
                         </View>
                       </View>
                     </View>
-                  </View>
-
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Pap, milk and eggs{" "}
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
                           </View>
-                          <Text>15g Fibres</Text>
                         </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
-                      </View>
-                    </View>
-                  </View>
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Pap, milk and eggs{" "}
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
                           </View>
-                          <Text>15g Fibres</Text>
                         </View>
                       </View>
                     </View>
-                  </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
+                          </View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
+                          </View>
+                        </View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
+                          </View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
+                          </View>
+                        </View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
                 </TabsTabPanel>
 
                 {/* Dinner Tab */}
                 <TabsTabPanel value="dinner" className="flex flex-col gap-6">
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Pap, milk and eggs{" "}
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Milk, Pap and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
                           </View>
-                          <Text>15g Fibres</Text>
                         </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
-                      </View>
-                    </View>
-                  </View>
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Fruit Salad and Milk
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
                           </View>
-                          <Text>40g Protien</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FFF9C4] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
                           </View>
-                          <Text>15g Carbs</Text>
                         </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
-                          </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
                       </View>
                     </View>
-                  </View>
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Pap, milk and eggs{" "}
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
                           </View>
-                          <Text>15g Fibres</Text>
                         </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
-                      </View>
-                    </View>
-                  </View>
-                  <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
-                    <Image
-                      source={require("../../assets/images/pap.png")}
-                      style={{ width: 56, height: 60 }}
-                    />
-                    <View className="flex flex-col h-[121px] py-4 justify-between">
-                      <Text className="font-semibold text-[18px]">
-                        Pap, milk and eggs{" "}
-                      </Text>
-                      <View className="flex flex-row gap-14">
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/fire.png")}
-                            style={{ width: 16, height: 16 }}
-                          />
-                          <Text>294 Kcal</Text>
-                        </View>
-                        <View className="flex flex-row gap-4 items-center">
-                          <Image
-                            source={require("../../assets/images/scale.png")}
-                            style={{ width: 24, height: 24 }}
-                          />
-                          <Text>100g</Text>
-                        </View>
-                      </View>
-                      <View className="flex flex-row gap-6 text-[12px]">
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
                           </View>
-                          <Text>40g Vitamin</Text>
-                        </View>
-                        <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-2 bg-[#FF7F50] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-2 rounded-t-md rounded-b-md"></View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
                           </View>
-                          <Text>15g Fibres</Text>
                         </View>
-                        {/* <View className="flex flex-row gap-2 items-center">
-                          <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
-                            <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
-                          </View>
-                          <Text>40g Vitamin</Text>
-                        </View> */}
                       </View>
                     </View>
-                  </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
+                          </View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
+                          </View>
+                        </View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => console.log("pressed")}
+                  >
+                    <View className="bg-white rounded-[30px] h-[121px] p-1 shadow-sm border flex flex-row gap-4 items-center border-[#00D2B3]">
+                      <Image
+                        source={require("../../assets/images/pap.png")}
+                        style={{ width: 56, height: 60 }}
+                      />
+                      <View className="flex flex-col h-[121px] py-4 justify-between">
+                        <Text className="font-semibold text-[18px]">
+                          Pap, milk and eggs{" "}
+                        </Text>
+                        <View className="flex flex-row gap-14">
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/fire.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>294 Kcal</Text>
+                          </View>
+                          <View className="flex flex-row gap-4 items-center">
+                            <Image
+                              source={require("../../assets/images/scale.png")}
+                              style={{ width: 16, height: 16 }}
+                            />
+                            <Text>100g</Text>
+                          </View>
+                        </View>
+                        <View className="flex flex-row gap-4 text-[12px]">
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#00D2B3] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Vitamin</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FFF9C4] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Carb</Text>
+                          </View>
+                          <View className="flex flex-row gap-2 items-center">
+                            <View className="h-[30px] w-1 bg-[#FF7F50] rounded-t-md rounded-b-md">
+                              <View className="h-[15px] bg-gray-200 w-1 rounded-t-md rounded-b-md"></View>
+                            </View>
+                            <Text className="text-[12px]">40g Fibre</Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
                 </TabsTabPanel>
               </TabsTabPanels>
             </Tabs>
@@ -1214,7 +1431,7 @@ export default function HomeScreen() {
                 <View className="flex flex-row gap-3">
                   <Text className="text-[14px]">&middot;</Text>
                   <Text className="text-[14px]">
-                    Your baby’s finger and toes are growing.🎉
+                    Your baby&#39;s finger and toes are growing.🎉
                   </Text>
                 </View>
                 <View className="flex flex-row gap-3">
@@ -1229,6 +1446,9 @@ export default function HomeScreen() {
             <TouchableOpacity
               style={{ height: 37, borderRadius: 15 }}
               className="bg-[#006D5B] rounded-[10px] justify-center items-center"
+              // onPress={handleLearnMore}
+              onPress={() => console.log("clicked")}
+              activeOpacity={0.7}
             >
               <Text className="text-white text-center font-semibold text-[16px]">
                 Learn more about week 18
@@ -1237,6 +1457,9 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Toast Component */}
+      <Toast />
     </View>
   );
 }
