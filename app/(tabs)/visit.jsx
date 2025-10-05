@@ -18,6 +18,30 @@ const { width, height } = Dimensions.get("window");
 const ios = Platform.OS === "ios";
 const topMargin = ios ? "" : "mt-3";
 
+const appointments = [
+  {
+    id: 1,
+    date: "Sept 24",
+    time: "10:00am",
+    type: "Blood test",
+    hospital: "Yaba Government hospital, Yaba Lagos",
+  },
+  {
+    id: 2,
+    date: "Sept 28",
+    time: "10:00am",
+    type: "Blood test",
+    hospital: "Yaba Government hospital, Yaba Lagos",
+  },
+  {
+    id: 3,
+    date: "Sept 24",
+    time: "10:00am",
+    type: "Blood test",
+    hospital: "Yaba Government hospital, Yaba Lagos",
+  },
+];
+
 export default function Visit() {
   const [isChecked, setChecked] = useState({
     antenatal: false,
@@ -245,6 +269,59 @@ export default function Visit() {
             </View>
           </View>
         </LinearGradient>
+
+        {/* Appointment Cards */}
+        <View className="flex flex-col p-[20px]">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-[#293231] text-[22px] font-bold">
+              Upcoming Appointments
+            </Text>
+            <TouchableOpacity className="flex-row gap-2 border rounded-full px-3 py-2 border-[#006D5B80] items-center space-x-1">
+              <Text className="text-[14px] text-[#333]">Edit</Text>
+              <Icon name="edit" size={14} color="#333" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Appointment Cards */}
+          <View className="px-5">
+            {appointments.map((item) => (
+              <View
+                key={item.id}
+                className="border border-[#FF7E5F] rounded-[20px] h-[112px] justify-between p-4 mb-4"
+              >
+                {/* Date and Time */}
+                <Text className="text-[16px] text-[#333] font-medium mb-1">
+                  {item.date} -{" "}
+                  <Text className="text-[#FF7E5F] font-semibold">
+                    {item.time}
+                  </Text>{" "}
+                  <Text className="font-semibold text-[#333]">
+                    ({item.type})
+                  </Text>
+                </Text>
+
+                {/* Hospital Name */}
+                <Text className="text-[14px] text-[#666] mb-3 leading-5">
+                  {item.hospital}
+                </Text>
+
+                {/* Buttons */}
+                <View className="flex-row gap-4">
+                  <TouchableOpacity className="w-[120px] border border-[#00D2B3] rounded-[10px] py-2 mr-2 items-center">
+                    <Text className="text-[#00D2B3] text-[14px] font-medium">
+                      Set Reminder
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity className="w-[120px] border border-[#00D2B3] rounded-[10px] py-2 ml-2 items-center">
+                    <Text className="text-[#00D2B3] text-[14px] font-medium">
+                      See Directions
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
       </ScrollView>
     </View>
   );
