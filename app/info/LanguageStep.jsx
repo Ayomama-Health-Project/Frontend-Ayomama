@@ -1,21 +1,57 @@
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
+import useAuthStore from "../../store/useAuthStore";
 
 export default function LanguageStep({ onNext }) {
+  const { updateLanguagePreference, isLoading } = useAuthStore();
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [error, setError] = useState("");
+
+  // Map display language to backend enum values
+  const languageMap = {
+    English: "en",
+    Yoruba: "yo",
+    Hausa: "ha",
+    Igbo: "ig",
+  };
 
   const handleLanguageSelect = (language) => {
     setSelectedLanguage(language);
     setError("");
   };
 
-  const handleProceed = () => {
+  const handleProceed = async () => {
     if (!selectedLanguage) {
       setError("Please select a language before proceeding");
       return;
     }
-    onNext();
+
+    // Get the backend language code
+    const languageCode = languageMap[selectedLanguage];
+
+    // Update language preference via API
+    const result = await updateLanguagePreference(languageCode);
+
+    if (result.success) {
+      Toast.show({
+        type: "success",
+        text1: "Language Updated",
+        text2: `Your preferred language is set to ${selectedLanguage}`,
+        position: "top",
+        visibilityTime: 2000,
+      });
+      onNext();
+    } else {
+      setError(result.error || "Failed to update language preference");
+      Toast.show({
+        type: "error",
+        text1: "Update Failed",
+        text2: result.error || "Failed to update language preference",
+        position: "top",
+        visibilityTime: 3000,
+      });
+    }
   };
 
   return (
@@ -98,13 +134,24 @@ export default function LanguageStep({ onNext }) {
           <Text className="text-red-500 text-sm mt-4 text-center">{error}</Text>
         ) : null}
       </View>
-      {/* Next Button */}
+
+      {/* Proceed Button */}
       <TouchableOpacity
-        className="bg-[#006D5B] py-4 rounded-2xl"
+        className="bg-black py-5 rounded-2xl"
         onPress={handleProceed}
+        disabled={isLoading}
       >
-        <Text className="text-white text-center font-bold text-base">Next</Text>
+        {isLoading ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text className="text-white text-center font-bold text-base">
+            Proceed
+          </Text>
+        )}
       </TouchableOpacity>
+
+      {/* Toast component */}
+      <Toast />
     </View>
   );
 }

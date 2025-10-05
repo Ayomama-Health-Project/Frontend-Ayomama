@@ -1,8 +1,17 @@
 import { Stack } from "expo-router";
+import { useEffect } from "react";
 import { StatusBar } from "react-native";
 import "../global.css";
+import useAuthStore from "../store/useAuthStore";
 
 export default function RootLayout() {
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
+
+  useEffect(() => {
+    // Initialize auth state on app load
+    initializeAuth();
+  }, []);
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -16,6 +25,10 @@ export default function RootLayout() {
         <Stack.Screen name="info/LanguageStep" />
         <Stack.Screen name="info/InformationStep" />
         <Stack.Screen name="info/NotificationStep" />
+        <Stack.Screen name="profile/EditProfile" />
+        <Stack.Screen name="profile/ChangeLanguage" />
+        <Stack.Screen name="profile/Security" />
+        <Stack.Screen name="chat/SmartChat" />
         <Stack.Screen name="(tabs)" />
       </Stack>
     </>
