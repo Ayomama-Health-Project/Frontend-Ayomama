@@ -23,6 +23,7 @@ export default function InformationStep({ onNext, onBack }) {
 
   const [fullName, setFullName] = useState(user?.name || "");
   const [address, setAddress] = useState(user?.address || "");
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone || "");
   const [lastPeriodMonth, setLastPeriodMonth] = useState("");
   const [lastPeriodDay, setLastPeriodDay] = useState("");
   const [lastPeriodYear, setLastPeriodYear] = useState("");
@@ -125,6 +126,18 @@ export default function InformationStep({ onNext, onBack }) {
       return;
     }
 
+    if (!phoneNumber.trim()) {
+      setError("Phone number is required");
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please enter your phone number",
+        position: "top",
+        visibilityTime: 2000,
+      });
+      return;
+    }
+
     if (!lastPeriodMonth || !lastPeriodDay || !lastPeriodYear) {
       setError("Last period date is required");
       Toast.show({
@@ -173,6 +186,7 @@ export default function InformationStep({ onNext, onBack }) {
     const profileData = {
       name: fullName.trim(),
       address: address.trim(),
+      contact: phoneNumber.trim(),
       lastPeriodDate,
       emergencyContact,
     };
@@ -225,6 +239,22 @@ export default function InformationStep({ onNext, onBack }) {
             value={address}
             onChangeText={setAddress}
           />
+          {/* Phone Number */}
+          <Text className="text-gray-700 mb-2">Your Phone Number</Text>
+          <View className="flex-row items-center mb-4">
+            <View className="w-24 border-y border-l border-gray-300 bg-[#D9D9D9] rounded-l-2xl h-12 justify-center items-center">
+              <Text className="text-gray-800 font-medium">+234</Text>
+            </View>
+            <TextInput
+              className="flex-1 border border-gray-300 bg-[#FCFCFC] rounded-r-2xl px-4 h-12"
+              placeholder="8012345678"
+              placeholderTextColor="#9CA3AF"
+              keyboardType="phone-pad"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              maxLength={10}
+            />
+          </View>
           {/* Last Period */}
           <Text className="text-gray-700 mb-2">
             When last did you see your period?
