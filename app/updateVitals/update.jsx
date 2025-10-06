@@ -10,10 +10,29 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTranslation } from "../../utils/translator";
 
 export default function UpdateVitalsStep() {
   const router = useRouter();
   const isIOS = Platform.OS === "ios";
+
+  // Translate all text
+  const antenatalUpdateText = useTranslation("Antenatal Update");
+  const bloodPressureText = useTranslation("Blood pressure");
+  const bloodPressurePlaceholder = useTranslation(
+    "Enter blood pressure (e.g., 120/80)"
+  );
+  const temperatureText = useTranslation("Temperature");
+  const temperaturePlaceholder = useTranslation(
+    "Enter temperature (e.g., 36.8°C)"
+  );
+  const weightText = useTranslation("Weight");
+  const weightPlaceholder = useTranslation("Enter weight (e.g., 65kg)");
+  const bloodLevelText = useTranslation("Blood level");
+  const bloodLevelPlaceholder = useTranslation(
+    "Enter blood level (e.g., 12.5g/dl)"
+  );
+  const proceedText = useTranslation("Proceed");
 
   const handleProceed = () => {
     // Navigate to home or wherever needed after updating vitals
@@ -50,7 +69,7 @@ export default function UpdateVitalsStep() {
             <Ionicons name="arrow-back" size={24} color="#293231" />
           </TouchableOpacity>
           <Text className="text-[#293231] text-xl font-bold">
-            Antenatal Update
+            {antenatalUpdateText}
           </Text>
         </View>
       </View>
@@ -63,9 +82,9 @@ export default function UpdateVitalsStep() {
         <View className="justify-start pt-6">
           {/* Blood Pressure Input */}
           <View className="mb-4">
-            <Text className="text-sm mb-2">Blood pressure</Text>
+            <Text className="text-sm mb-2">{bloodPressureText}</Text>
             <TextInput
-              placeholder="Enter blood pressure (e.g., 120/80)"
+              placeholder={bloodPressurePlaceholder}
               placeholderTextColor="#D1D5DB"
               className="bg-white rounded-2xl px-4 py-4 text-[#293231] text-base"
               style={{
@@ -80,9 +99,9 @@ export default function UpdateVitalsStep() {
 
           {/* Temperature Input */}
           <View className="mb-4">
-            <Text className="text-sm mb-2">Temperature</Text>
+            <Text className="text-sm mb-2">{temperatureText}</Text>
             <TextInput
-              placeholder="Enter temperature (e.g., 36.8°C)"
+              placeholder={temperaturePlaceholder}
               placeholderTextColor="#D1D5DB"
               className="bg-white rounded-2xl px-4 py-4 text-[#293231] text-base"
               style={{
@@ -97,9 +116,9 @@ export default function UpdateVitalsStep() {
 
           {/* Weight Input */}
           <View className="mb-4">
-            <Text className="text-sm mb-2">Weight</Text>
+            <Text className="text-sm mb-2">{weightText}</Text>
             <TextInput
-              placeholder="Enter weight (e.g., 65kg)"
+              placeholder={weightPlaceholder}
               placeholderTextColor="#D1D5DB"
               className="bg-white rounded-2xl px-4 py-4 text-[#293231] text-base"
               style={{
@@ -114,9 +133,9 @@ export default function UpdateVitalsStep() {
 
           {/* Blood Level Input */}
           <View className="mb-8">
-            <Text className="text-sm mb-2">Blood level</Text>
+            <Text className="text-sm mb-2">{bloodLevelText}</Text>
             <TextInput
-              placeholder="Enter blood level (e.g., 12.5g/dl)"
+              placeholder={bloodLevelPlaceholder}
               placeholderTextColor="#D1D5DB"
               className="bg-white rounded-2xl px-4 py-4 text-[#293231] text-base"
               style={{
@@ -145,7 +164,9 @@ export default function UpdateVitalsStep() {
             elevation: 3,
           }}
         >
-          <Text className="text-white font-semibold text-base">Proceed</Text>
+          <Text className="text-white font-semibold text-base">
+            {proceedText}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

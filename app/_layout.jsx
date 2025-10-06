@@ -3,13 +3,18 @@ import { useEffect } from "react";
 import { StatusBar } from "react-native";
 import "../global.css";
 import useAuthStore from "../store/useAuthStore";
+import useTranslatorStore from "../store/useTranslatorStore";
 
 export default function RootLayout() {
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
+  const initializeTranslator = useTranslatorStore((state) => state.initialize);
 
   useEffect(() => {
     // Initialize auth state on app load
     initializeAuth();
+
+    // Initialize translator (load cached translations and language preference)
+    initializeTranslator();
   }, []);
 
   return (

@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "../../../utils/translator";
 
 const HealthcareLogIn = () => {
   const router = useRouter();
@@ -23,25 +24,45 @@ const HealthcareLogIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Translate all text
+  const titleText = useTranslation("Healthcare Worker Login");
+  const subtitleText = useTranslation("Log in to manage your patients");
+  const emailPlaceholder = useTranslation("Email");
+  const passwordPlaceholder = useTranslation("Password");
+  const loginButtonText = useTranslation("Log In");
+  const noAccountText = useTranslation("Don't have an account?");
+  const signUpText = useTranslation("Sign up");
+  const emailRequiredText = useTranslation("Email is required");
+  const passwordRequiredText = useTranslation("Password is required");
+  const validEmailText = useTranslation("Please enter a valid email");
+  const passwordLengthText = useTranslation(
+    "Password must be at least 6 characters"
+  );
+  const loginSuccessText = useTranslation("Login Successful!");
+  const welcomeBackText = useTranslation("Welcome back");
+  const loginFailedText = useTranslation("Login Failed");
+  const invalidCredentialsText = useTranslation("Invalid credentials");
+  const failedToLoginText = useTranslation("Failed to login");
+
   const handleLogIn = async () => {
     // Validation
     if (!email) {
-      setError("Email is required");
+      setError(emailRequiredText);
       return;
     }
 
     if (!password) {
-      setError("Password is required");
+      setError(passwordRequiredText);
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Please enter a valid email");
+      setError(validEmailText);
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError(passwordLengthText);
       return;
     }
 
@@ -53,8 +74,8 @@ const HealthcareLogIn = () => {
       // For now, just show success message
       Toast.show({
         type: "success",
-        text1: "Login Successful!",
-        text2: "Welcome back",
+        text1: loginSuccessText,
+        text2: welcomeBackText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -65,11 +86,11 @@ const HealthcareLogIn = () => {
         router.replace("/healthinfo/info");
       }, 2000);
     } catch (err) {
-      setError("Failed to login");
+      setError(failedToLoginText);
       Toast.show({
         type: "error",
-        text1: "Login Failed",
-        text2: "Invalid credentials",
+        text1: loginFailedText,
+        text2: invalidCredentialsText,
         position: "top",
         visibilityTime: 3000,
       });
@@ -93,17 +114,15 @@ const HealthcareLogIn = () => {
 
           {/* Title */}
           <Text className="text-2xl font-bold text-left mt-6 mb-4">
-            Healthcare Worker Login
+            {titleText}
           </Text>
 
           {/* Subtitle */}
-          <Text className="text-gray-600 mb-10">
-            Log in to manage your patients
-          </Text>
+          <Text className="text-gray-600 mb-10">{subtitleText}</Text>
 
           {/* Email Input */}
           <TextInput
-            placeholder="Email"
+            placeholder={emailPlaceholder}
             placeholderTextColor="#9CA3AF"
             value={email}
             onChangeText={setEmail}
@@ -115,7 +134,7 @@ const HealthcareLogIn = () => {
           {/* Password Input */}
           <View className="relative mb-4">
             <TextInput
-              placeholder="Password"
+              placeholder={passwordPlaceholder}
               placeholderTextColor="#9CA3AF"
               value={password}
               onChangeText={setPassword}
@@ -151,7 +170,7 @@ const HealthcareLogIn = () => {
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text className="text-white text-center font-bold text-base">
-                Log In
+                {loginButtonText}
               </Text>
             )}
           </TouchableOpacity>
@@ -159,12 +178,12 @@ const HealthcareLogIn = () => {
 
         {/* Footer pinned */}
         <View className="flex-row justify-center items-center mb-16">
-          <Text className="text-gray-600">Don&apos;t have an account? </Text>
+          <Text className="text-gray-600">{noAccountText} </Text>
           <TouchableOpacity
             onPress={() => router.push("/auth/healthcare/signup")}
             disabled={isLoading}
           >
-            <Text className="text-[#006D5B] font-semibold">Sign up</Text>
+            <Text className="text-[#006D5B] font-semibold">{signUpText}</Text>
           </TouchableOpacity>
         </View>
 

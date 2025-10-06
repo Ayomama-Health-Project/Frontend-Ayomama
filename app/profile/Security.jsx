@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useTranslation } from "../../utils/translator";
 
 const ios = Platform.OS === "ios";
 
@@ -22,6 +23,13 @@ export default function Security() {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Translate all text
+  const changePasswordText = useTranslation("Change Password");
+  const oldPasswordText = useTranslation("Old Password");
+  const newPasswordText = useTranslation("New Password");
+  const confirmPasswordText = useTranslation("Confirm Password");
+  const saveText = useTranslation("Save");
 
   const handleBack = () => {
     router.back();
@@ -73,7 +81,7 @@ export default function Security() {
             </TouchableOpacity>
 
             <Text className="text-xl font-bold text-[#293231] ml-[65px]">
-              Change Password
+              {changePasswordText}
             </Text>
           </View>
 
@@ -81,7 +89,7 @@ export default function Security() {
           <View className="px-6 mt-16">
             {/* Old Password */}
             <Text className="text-[15px] font-semibold text-[#293231] mb-3">
-              Old Password
+              {oldPasswordText}
             </Text>
             <View className="bg-white rounded-2xl mb-6 px-4 py-[14px] flex-row items-center justify-between border border-[#E5E5E5]">
               <TextInput
@@ -105,7 +113,7 @@ export default function Security() {
 
             {/* New Password */}
             <Text className="text-[15px] font-semibold text-[#293231] mb-3">
-              New Password
+              {newPasswordText}
             </Text>
             <View className="bg-white rounded-2xl mb-6 px-4 py-[14px] flex-row items-center justify-between border border-[#E5E5E5]">
               <TextInput
@@ -129,7 +137,7 @@ export default function Security() {
 
             {/* Confirm Password */}
             <Text className="text-[15px] font-semibold text-[#293231] mb-3">
-              Confirm Password
+              {confirmPasswordText}
             </Text>
             <View className="bg-white rounded-2xl mb-8 px-4 py-[14px] flex-row items-center justify-between border border-[#E5E5E5]">
               <TextInput
@@ -164,7 +172,7 @@ export default function Security() {
               }}
             >
               <Text className="text-[#293231] font-semibold text-[16px]">
-                Save
+                {saveText}
               </Text>
             </TouchableOpacity>
           </View>

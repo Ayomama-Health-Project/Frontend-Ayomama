@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "../../utils/translator";
 
 export default function HealthInfoStep() {
   const router = useRouter();
@@ -22,6 +23,26 @@ export default function HealthInfoStep() {
   const [facilityCode, setFacilityCode] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Translate all text
+  const personalInfoText = useTranslation("Personal information");
+  const fullNameText = useTranslation("Full Name");
+  const fullNamePlaceholder = useTranslation("Enter full name");
+  const stateText = useTranslation("State");
+  const statePlaceholder = useTranslation("Enter state");
+  const lgaText = useTranslation("LGA");
+  const lgaPlaceholder = useTranslation("Enter LGA");
+  const facilityNameText = useTranslation("Facility Name");
+  const facilityNamePlaceholder = useTranslation("Enter facility name");
+  const facilityCodeText = useTranslation("Facility Code / ID");
+  const facilityCodePlaceholder = useTranslation("Enter facility code or ID");
+  const proceedText = useTranslation("Proceed");
+  const profileCompleteText = useTranslation("Profile Complete!");
+  const infoSavedText = useTranslation(
+    "Your information has been saved successfully"
+  );
+  const updateFailedText = useTranslation("Update Failed");
+  const failedToSaveText = useTranslation("Failed to save your information");
 
   const handleProceed = async () => {
     // // Validation
@@ -105,8 +126,8 @@ export default function HealthInfoStep() {
 
       Toast.show({
         type: "success",
-        text1: "Profile Complete!",
-        text2: "Your information has been saved successfully",
+        text1: profileCompleteText,
+        text2: infoSavedText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -116,11 +137,11 @@ export default function HealthInfoStep() {
         router.replace("/healthworker/dashboard");
       }, 2000);
     } catch (err) {
-      setError("Failed to save information");
+      setError(failedToSaveText);
       Toast.show({
         type: "error",
-        text1: "Update Failed",
-        text2: "Failed to save your information",
+        text1: updateFailedText,
+        text2: failedToSaveText,
         position: "top",
         visibilityTime: 3000,
       });
@@ -134,14 +155,16 @@ export default function HealthInfoStep() {
       <View className="flex-1">
         <ScrollView className="flex-1 px-6 pt-6">
           <Text className="text-2xl font-bold text-[#293231] mb-6">
-            Personal information
+            {personalInfoText}
           </Text>
 
           {/* Full Name */}
-          <Text className="text-[#293231] mb-2 text-[15px]">Full Name</Text>
+          <Text className="text-[#293231] mb-2 text-[15px]">
+            {fullNameText}
+          </Text>
           <TextInput
             className="border border-gray-300 bg-white rounded-2xl px-4 py-4 mb-5"
-            placeholder="Enter full name"
+            placeholder={fullNamePlaceholder}
             placeholderTextColor="#9CA3AF"
             value={fullName}
             onChangeText={setFullName}
@@ -151,10 +174,12 @@ export default function HealthInfoStep() {
           {/* State and LGA Row */}
           <View className="flex-row mb-5">
             <View className="flex-1 mr-3">
-              <Text className="text-[#293231] mb-2 text-[15px]">State</Text>
+              <Text className="text-[#293231] mb-2 text-[15px]">
+                {stateText}
+              </Text>
               <TextInput
                 className="border border-gray-300 bg-white rounded-2xl px-4 py-4"
-                placeholder="Enter state"
+                placeholder={statePlaceholder}
                 placeholderTextColor="#9CA3AF"
                 value={state}
                 onChangeText={setState}
@@ -163,10 +188,10 @@ export default function HealthInfoStep() {
             </View>
 
             <View className="flex-1">
-              <Text className="text-[#293231] mb-2 text-[15px]">LGA</Text>
+              <Text className="text-[#293231] mb-2 text-[15px]">{lgaText}</Text>
               <TextInput
                 className="border border-gray-300 bg-white rounded-2xl px-4 py-4"
-                placeholder="Enter LGA"
+                placeholder={lgaPlaceholder}
                 placeholderTextColor="#9CA3AF"
                 value={lga}
                 onChangeText={setLga}
@@ -176,10 +201,12 @@ export default function HealthInfoStep() {
           </View>
 
           {/* Facility Name */}
-          <Text className="text-[#293231] mb-2 text-[15px]">Facility Name</Text>
+          <Text className="text-[#293231] mb-2 text-[15px]">
+            {facilityNameText}
+          </Text>
           <TextInput
             className="border border-gray-300 bg-white rounded-2xl px-4 py-4 mb-5"
-            placeholder="Enter facility name"
+            placeholder={facilityNamePlaceholder}
             placeholderTextColor="#9CA3AF"
             value={facilityName}
             onChangeText={setFacilityName}
@@ -188,11 +215,11 @@ export default function HealthInfoStep() {
 
           {/* Facility Code / ID */}
           <Text className="text-[#293231] mb-2 text-[15px]">
-            Facility Code / ID
+            {facilityCodeText}
           </Text>
           <TextInput
             className="border border-gray-300 bg-white rounded-2xl px-4 py-4 mb-8"
-            placeholder="Enter facility code or ID"
+            placeholder={facilityCodePlaceholder}
             placeholderTextColor="#9CA3AF"
             value={facilityCode}
             onChangeText={setFacilityCode}
@@ -227,7 +254,7 @@ export default function HealthInfoStep() {
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text className="text-white text-center font-bold text-[17px]">
-                Proceed
+                {proceedText}
               </Text>
             )}
           </TouchableOpacity>

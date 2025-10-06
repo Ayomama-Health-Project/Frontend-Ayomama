@@ -1,8 +1,16 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "../../utils/translator";
 
 export default function TabLayout() {
+  // Translate all tab labels
+  const homeText = useTranslation("Home");
+  const visitText = useTranslation("Visit");
+  const emergencyText = useTranslation("Emergency");
+  const learnText = useTranslation("Learn");
+  const profileText = useTranslation("Profile");
+
   return (
     <>
       <Tabs
@@ -33,7 +41,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Home",
+            title: homeText,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "home" : "home"}
@@ -46,7 +54,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="visit"
           options={{
-            title: "Visit",
+            title: visitText,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "calendar" : "calendar"}
@@ -59,7 +67,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="emergency"
           options={{
-            title: "Emergency",
+            title: emergencyText,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "medkit" : "medkit"}
@@ -72,7 +80,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="learn"
           options={{
-            title: "Learn",
+            title: learnText,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "headset" : "headset"}
@@ -85,7 +93,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="profile"
           options={{
-            title: "Profile",
+            title: profileText,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "person" : "person"}

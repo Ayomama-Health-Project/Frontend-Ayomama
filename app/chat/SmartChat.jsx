@@ -21,6 +21,7 @@ import StreamedMessage from "../../components/chat/StreamedMessage";
 import TypingIndicator from "../../components/chat/TypingIndicator";
 import useAiStore from "../../store/useAiStore";
 import useAuthStore from "../../store/useAuthStore";
+import { useTranslation } from "../../utils/translator";
 
 const ios = Platform.OS === "ios";
 
@@ -43,6 +44,48 @@ export default function SmartChat() {
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const scrollIntervalRef = useRef(null);
 
+  // Translate all text
+  const smartChatText = useTranslation("Smart Chat");
+  const storageAlmostFullText = useTranslation("Storage Almost Full");
+  const clearOldMessagesText = useTranslation(
+    "Consider clearing old messages to free up space"
+  );
+  const storageFullText = useTranslation("Storage Full");
+  const storageFullMessageText = useTranslation(
+    "Your chat history has reached the maximum storage limit. Please clear some messages to continue chatting."
+  );
+  const cancelText = useTranslation("Cancel");
+  const clearChatText = useTranslation("Clear Chat");
+  const chatClearedText = useTranslation("Chat Cleared");
+  const storageFreedText = useTranslation("Storage space has been freed");
+  const noChatHistoryText = useTranslation("No Chat History");
+  const noMessagesText = useTranslation("There are no messages to clear");
+  const clearChatHistoryText = useTranslation("Clear Chat History");
+  const clearConfirmText = useTranslation(
+    "Are you sure you want to clear all chat messages? This action cannot be undone."
+  );
+  const clearText = useTranslation("Clear");
+  const chatDeletedText = useTranslation("Your chat history has been deleted");
+  const connectionErrorText = useTranslation("Connection Error");
+  const failedToSendText = useTranslation(
+    "Failed to send message. Please try again."
+  );
+  const comingSoonText = useTranslation("Coming Soon");
+  const attachmentSoonText = useTranslation(
+    "Attachment feature will be available soon"
+  );
+  const voiceSoonText = useTranslation(
+    "Voice input feature will be available soon"
+  );
+  const justNowText = useTranslation("Just now");
+  const aiGreetingText = useTranslation("Hi! I'm Favour, your AI assistant");
+  const aiDescriptionText = useTranslation(
+    "Ask me anything about pregnancy, health tips, or your daily routine"
+  );
+  const inputPlaceholderText = useTranslation(
+    "Ask anything about your pregnancy..."
+  );
+
   useEffect(() => {
     initializeSession();
   }, []);
@@ -52,8 +95,8 @@ export default function SmartChat() {
     if (storageWarning) {
       Toast.show({
         type: "warning",
-        text1: "Storage Almost Full",
-        text2: "Consider clearing old messages to free up space",
+        text1: storageAlmostFullText,
+        text2: clearOldMessagesText,
         position: "top",
         visibilityTime: 4000,
       });
@@ -63,27 +106,23 @@ export default function SmartChat() {
   // Show storage full error
   useEffect(() => {
     if (error === "storage_full") {
-      Alert.alert(
-        "Storage Full",
-        "Your chat history has reached the maximum storage limit. Please clear some messages to continue chatting.",
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Clear Chat",
-            style: "destructive",
-            onPress: () => {
-              clearSession();
-              Toast.show({
-                type: "success",
-                text1: "Chat Cleared",
-                text2: "Storage space has been freed",
-                position: "top",
-                visibilityTime: 2000,
-              });
-            },
+      Alert.alert(storageFullText, storageFullMessageText, [
+        { text: cancelText, style: "cancel" },
+        {
+          text: clearChatText,
+          style: "destructive",
+          onPress: () => {
+            clearSession();
+            Toast.show({
+              type: "success",
+              text1: chatClearedText,
+              text2: storageFreedText,
+              position: "top",
+              visibilityTime: 2000,
+            });
           },
-        ]
-      );
+        },
+      ]);
     }
   }, [error]);
 
@@ -152,8 +191,8 @@ export default function SmartChat() {
     if (messages.length === 0) {
       Toast.show({
         type: "info",
-        text1: "No Chat History",
-        text2: "There are no messages to clear",
+        text1: noChatHistoryText,
+        text2: noMessagesText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -161,22 +200,22 @@ export default function SmartChat() {
     }
 
     Alert.alert(
-      "Clear Chat History",
-      "Are you sure you want to clear all chat messages? This action cannot be undone.",
+      clearChatHistoryText,
+      clearConfirmText,
       [
         {
-          text: "Cancel",
+          text: cancelText,
           style: "cancel",
         },
         {
-          text: "Clear",
+          text: clearText,
           style: "destructive",
           onPress: () => {
             clearSession();
             Toast.show({
               type: "success",
-              text1: "Chat Cleared",
-              text2: "Your chat history has been deleted",
+              text1: chatClearedText,
+              text2: chatDeletedText,
               position: "top",
               visibilityTime: 2000,
             });
@@ -200,8 +239,8 @@ export default function SmartChat() {
       if (!result.success) {
         Toast.show({
           type: "error",
-          text1: "Connection Error",
-          text2: result.error || "Failed to send message. Please try again.",
+          text1: connectionErrorText,
+          text2: result.error || failedToSendText,
           position: "top",
           visibilityTime: 3000,
         });
@@ -212,8 +251,8 @@ export default function SmartChat() {
   const handleAttachment = () => {
     Toast.show({
       type: "info",
-      text1: "Coming Soon",
-      text2: "Attachment feature will be available soon",
+      text1: comingSoonText,
+      text2: attachmentSoonText,
       position: "top",
       visibilityTime: 2000,
     });
@@ -222,8 +261,8 @@ export default function SmartChat() {
   const handleVoiceInput = () => {
     Toast.show({
       type: "info",
-      text1: "Coming Soon",
-      text2: "Voice input feature will be available soon",
+      text1: comingSoonText,
+      text2: voiceSoonText,
       position: "top",
       visibilityTime: 2000,
     });
@@ -238,7 +277,7 @@ export default function SmartChat() {
     const now = new Date();
     const diffInMinutes = Math.floor((now - date) / 60000);
 
-    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 1) return justNowText;
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
 
     const diffInHours = Math.floor(diffInMinutes / 60);
@@ -387,7 +426,9 @@ export default function SmartChat() {
               <Ionicons name="arrow-back" size={24} color="#293231" />
             </TouchableOpacity>
 
-            <Text className="text-xl font-bold text-[#FF7F50]">Smart Chat</Text>
+            <Text className="text-xl font-bold text-[#FF7F50]">
+              {smartChatText}
+            </Text>
 
             <TouchableOpacity
               onPress={handleClearChat}
@@ -425,11 +466,10 @@ export default function SmartChat() {
                   }}
                 />
                 <Text className="text-[#293231] text-lg font-semibold text-center mb-2">
-                  Hi! I'm Favour, your AI assistant
+                  {aiGreetingText}
                 </Text>
                 <Text className="text-[#6B7280] text-center px-8">
-                  Ask me anything about pregnancy, health tips, or your daily
-                  routine
+                  {aiDescriptionText}
                 </Text>
               </Animated.View>
             ) : (
@@ -535,7 +575,7 @@ export default function SmartChat() {
                 <TextInput
                   value={inputMessage}
                   onChangeText={setInputMessage}
-                  placeholder="Ask anything about your pregnancy..."
+                  placeholder={inputPlaceholderText}
                   placeholderTextColor="#9CA3AF"
                   className="flex-1 text-[16px] text-[#293231] mr-2"
                   multiline={false}

@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useTranslation } from "../../utils/translator";
 
 export default function ReplyModal({
   visible,
@@ -20,6 +21,12 @@ export default function ReplyModal({
   onClose,
   onSubmit,
 }) {
+  // Translate all text
+  const replyToText = useTranslation("Reply to");
+  const writeReplyText = useTranslation("Write your reply...");
+  const cancelText = useTranslation("Cancel");
+  const sendReplyText = useTranslation("Send Reply");
+
   return (
     <Modal
       animationType="slide"
@@ -48,7 +55,7 @@ export default function ReplyModal({
                 {/* Modal Header */}
                 <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200">
                   <Text className="text-[#293231] text-lg font-bold">
-                    Reply to {selectedPost?.author}
+                    {replyToText} {selectedPost?.author}
                   </Text>
                   <TouchableOpacity
                     onPress={onClose}
@@ -94,7 +101,7 @@ export default function ReplyModal({
                   <View className="bg-[#F3F4F6] rounded-2xl p-4 min-h-[100px]">
                     <TextInput
                       className="text-[#293231] text-base"
-                      placeholder="Write your reply..."
+                      placeholder={writeReplyText}
                       placeholderTextColor="#9CA3AF"
                       value={replyText}
                       onChangeText={setReplyText}
@@ -112,7 +119,7 @@ export default function ReplyModal({
                     className="flex-1 bg-gray-200 rounded-full py-3"
                   >
                     <Text className="text-[#293231] text-center font-semibold">
-                      Cancel
+                      {cancelText}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -124,7 +131,7 @@ export default function ReplyModal({
                     }}
                   >
                     <Text className="text-white text-center font-semibold">
-                      Send Reply
+                      {sendReplyText}
                     </Text>
                   </TouchableOpacity>
                 </View>

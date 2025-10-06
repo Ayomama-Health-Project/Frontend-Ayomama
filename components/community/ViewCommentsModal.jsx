@@ -9,8 +9,14 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useTranslation } from "../../utils/translator";
 
 export default function ViewCommentsModal({ visible, selectedPost, onClose }) {
+  // Translate all text
+  const commentsText = useTranslation("Comments");
+  const noCommentsYetText = useTranslation("No comments yet");
+  const beFirstText = useTranslation("Be the first to share your thoughts!");
+
   return (
     <Modal
       animationType="slide"
@@ -31,7 +37,7 @@ export default function ViewCommentsModal({ visible, selectedPost, onClose }) {
               {/* Modal Header */}
               <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200">
                 <Text className="text-[#293231] text-lg font-bold">
-                  Comments ({selectedPost?.commentsCount || 0})
+                  {commentsText} ({selectedPost?.commentsCount || 0})
                 </Text>
                 <TouchableOpacity
                   onPress={onClose}
@@ -149,10 +155,10 @@ export default function ViewCommentsModal({ visible, selectedPost, onClose }) {
                       />
                     </View>
                     <Text className="text-[#6B7280] text-base font-medium mb-1">
-                      No comments yet
+                      {noCommentsYetText}
                     </Text>
                     <Text className="text-[#9CA3AF] text-sm text-center px-8">
-                      Be the first to share your thoughts!
+                      {beFirstText}
                     </Text>
                   </View>
                 )}

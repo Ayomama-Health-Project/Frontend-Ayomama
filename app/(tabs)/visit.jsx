@@ -17,6 +17,7 @@ import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useAuthStore from "../../store/useAuthStore";
 import useVisitStore from "../../store/useVisitStore";
+import { useTranslation } from "../../utils/translator";
 
 const { width, height } = Dimensions.get("window");
 const ios = Platform.OS === "ios";
@@ -36,6 +37,20 @@ export default function Visit() {
     supplement: false,
     water: false,
   });
+
+  // Translate all text
+  const helloText = useTranslation("Hello,");
+  const nextAppointmentText = useTranslation("Next Appointment");
+  const antenatalCheckupText = useTranslation("Antenatal Checkup");
+  const setReminderText = useTranslation("Set Reminder");
+  const seeDirectionsText = useTranslation("See Directions");
+  const prepChecklistText = useTranslation("✔️ Preparation Checklist");
+  const bringAntenatalText = useTranslation("Bring antenatal card");
+  const takeIronText = useTranslation("Take iron supplement");
+  const drinkWaterText = useTranslation("Drink enough water");
+  const upcomingApptText = useTranslation("Upcoming Appointments");
+  const editText = useTranslation("Edit");
+  const noUpcomingText = useTranslation("No upcoming appointments scheduled.");
 
   // Fetch visits on mount
   useEffect(() => {
@@ -164,7 +179,7 @@ export default function Visit() {
           <Ionicons name="arrow-back" size={25} />
         </TouchableOpacity>
         <View className="flex flex-col items-center">
-          <Text className="text-[#8F8D8D] text-[16px]">Hello,</Text>
+          <Text className="text-[#8F8D8D] text-[16px]">{helloText}</Text>
           <Text className="text-[#293231] text-[20px] font-bold">
             {user.name}
           </Text>
@@ -188,7 +203,7 @@ export default function Visit() {
           {/* Calendar Section */}
           <View>
             <Text className="text-[#293231] text-[20px] font-bold mb-4">
-              Next Appointment
+              {nextAppointmentText}
             </Text>
 
             {loading ? (
@@ -251,7 +266,7 @@ export default function Visit() {
           {nextVisit && (
             <View className="flex flex-col gap-2">
               <Text className="text-[#293231] text-[22px] font-bold leading-wide">
-                Antenatal Checkup
+                {antenatalCheckupText}
               </Text>
               <View className="rounded-2xl p-5 shadow-lg items-center shadow-black/25 flex flex-col h-[140px] justify-between border border-[#FF7F50]">
                 <View className="flex flex-row items-center gap-3">
@@ -275,7 +290,7 @@ export default function Visit() {
                     onPress={() => handleSetReminder(nextVisit)}
                   >
                     <Text className="text-[#293231] text-[14px] font-semibold">
-                      Set Reminder
+                      {setReminderText}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -283,7 +298,7 @@ export default function Visit() {
                     onPress={() => handleSeeDirections(nextVisit.hospitalName)}
                   >
                     <Text className="text-[#293231] text-[14px] font-semibold">
-                      See Directions
+                      {seeDirectionsText}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -294,44 +309,52 @@ export default function Visit() {
           {/* Checklist */}
           <View className="flex flex-col gap-2">
             <Text className="text-[#293231] text-[22px] font-bold">
-              ✔️ Preparation Checklist
+              {prepChecklistText}
             </Text>
             {[
               {
                 key: "antenatal",
-                label: "Bring antenatal card",
+                labelKey: "antenatal",
                 img: "infant",
               },
               {
                 key: "supplement",
-                label: "Take iron supplement",
+                labelKey: "supplement",
                 img: "ironSupplement",
               },
-              { key: "water", label: "Drink enough water", img: "water" },
-            ].map((item) => (
-              <TouchableOpacity
-                key={item.key}
-                style={{ height: 60, borderRadius: 28 }}
-                className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-4 py-2 border-[#FCFCFC]"
-                onPress={() => handleChecklist(item.key)}
-                activeOpacity={0.7}
-              >
-                <View className="flex flex-row gap-3 items-center">
-                  <Image
-                    source={images[item.img]}
-                    style={{ width: 45, height: 50 }}
+              { key: "water", labelKey: "water", img: "water" },
+            ].map((item) => {
+              const label =
+                item.labelKey === "antenatal"
+                  ? bringAntenatalText
+                  : item.labelKey === "supplement"
+                  ? takeIronText
+                  : drinkWaterText;
+              return (
+                <TouchableOpacity
+                  key={item.key}
+                  style={{ height: 60, borderRadius: 28 }}
+                  className="flex-row items-center bg-[#FCFCFC] rounded-2xl shadow-sm border px-4 py-2 border-[#FCFCFC]"
+                  onPress={() => handleChecklist(item.key)}
+                  activeOpacity={0.7}
+                >
+                  <View className="flex flex-row gap-3 items-center">
+                    <Image
+                      source={images[item.img]}
+                      style={{ width: 45, height: 50 }}
+                    />
+                    <Text className="text-[#293231] text-base flex-1">
+                      {label}
+                    </Text>
+                  </View>
+                  <Checkbox
+                    value={isChecked[item.key]}
+                    onValueChange={() => handleChecklist(item.key)}
+                    style={{ width: 17, height: 17, marginLeft: -20 }}
                   />
-                  <Text className="text-[#293231] text-base flex-1">
-                    {item.label}
-                  </Text>
-                </View>
-                <Checkbox
-                  value={isChecked[item.key]}
-                  onValueChange={() => handleChecklist(item.key)}
-                  style={{ width: 17, height: 17, marginLeft: -20 }}
-                />
-              </TouchableOpacity>
-            ))}
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </LinearGradient>
 
@@ -339,13 +362,13 @@ export default function Visit() {
         <View className="flex flex-col p-[20px]">
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-[#293231] text-[22px] font-bold">
-              Upcoming Appointments
+              {upcomingApptText}
             </Text>
             <TouchableOpacity
               className="flex-row gap-2 border rounded-full px-3 py-2 border-[#006D5B80] items-center space-x-1"
               onPress={() => router.push("/visit/visitInput")}
             >
-              <Text className="text-[14px] text-[#333]">Edit</Text>
+              <Text className="text-[14px] text-[#333]">{editText}</Text>
               <Icon name="edit" size={14} color="#333" />
             </TouchableOpacity>
           </View>

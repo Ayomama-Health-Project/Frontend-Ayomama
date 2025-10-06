@@ -2,12 +2,25 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
+import { useTranslation } from "../../utils/translator";
 
 const ios = Platform.OS === "ios";
 const topMargin = ios ? "" : "mt-3";
 
 export default function Learn() {
   const router = useRouter();
+
+  // Translate all text
+  const headerText1 = useTranslation("For every question and every worry,");
+  const headerText2 = useTranslation("i will be your");
+  const headerText3 = useTranslation("gentle AI companion");
+  const smartChatText = useTranslation("Smart Chat");
+  const communityText = useTranslation("Community");
+  const communityDescText = useTranslation("share and learn new things.");
+  const babyDevText = useTranslation("Baby Development");
+  const babyDevDescText = useTranslation(
+    "Learn more about the development of your child"
+  );
 
   const handleSmartChat = () => {
     router.push("/chat/SmartChat");
@@ -25,11 +38,6 @@ export default function Learn() {
 
   const handleCommunity = () => {
     router.push("/community");
-  };
-
-  const handleListen = () => {
-    console.log("Listen clicked");
-    // TODO: Navigate to Listen
   };
 
   const handleBabyDevelopment = () => {
@@ -56,11 +64,10 @@ export default function Learn() {
         >
           {/* Header Text */}
           <Text className="text-2xl font-bold text-[#293231] mb-2">
-            For every question and every worry,
+            {headerText1}
           </Text>
           <Text className="text-2xl font-bold text-[#293231] mb-8">
-            i will be your{" "}
-            <Text className="text-[#FF7F50]">gentle AI companion</Text>
+            {headerText2} <Text className="text-[#FF7F50]">{headerText3}</Text>
           </Text>
 
           {/* Top Action Buttons Row */}
@@ -78,7 +85,7 @@ export default function Learn() {
               }}
             >
               <Text className="text-[#293231] font-semibold text-base text-center">
-                Smart Chat
+                {smartChatText}
               </Text>
             </TouchableOpacity>
 
@@ -132,10 +139,10 @@ export default function Learn() {
                 <Ionicons name="people" size={24} color="black" />
               </View>
               <Text className="text-xl font-bold text-[#293231] mb-2">
-                Community
+                {communityText}
               </Text>
               <Text className="text-sm text-[#6B7280]">
-                share and learn new things.
+                {communityDescText}
               </Text>
             </TouchableOpacity>
 
@@ -156,11 +163,9 @@ export default function Learn() {
                 <Ionicons name="happy" size={24} color="black" />
               </View>
               <Text className="text-xl font-bold text-[#293231] mb-2">
-                Baby Development
+                {babyDevText}
               </Text>
-              <Text className="text-sm text-[#6B7280]">
-                Learn more about the development of your child
-              </Text>
+              <Text className="text-sm text-[#6B7280]">{babyDevDescText}</Text>
             </TouchableOpacity>
           </View>
         </View>

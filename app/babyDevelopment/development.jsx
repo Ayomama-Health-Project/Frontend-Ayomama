@@ -8,11 +8,31 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTranslation } from "../../utils/translator";
 
 const ios = Platform.OS === "ios";
 
 export default function BabyDevelopment() {
   const router = useRouter();
+
+  // Translate all text
+  const titleText = useTranslation("Baby Development");
+  const babySizeText = useTranslation("Your baby is the size of a lime");
+  const weekMilestonesText = useTranslation("Week 18 Milestones");
+  const milestone1Text = useTranslation("Your baby can now hear sounds 🎉");
+  const milestone2Text = useTranslation(
+    "Your baby's finger and toes are growing 🎉"
+  );
+  const milestone3Text = useTranslation("Your baby can move actively 🎉");
+  const babyWeightText = useTranslation(
+    "Your baby now weighs about 900g and is around 36cm long"
+  );
+  const healthTipText = useTranslation(
+    "You might notice more pain this week, try gentle walk and keep hydrated"
+  );
+  const nutritionTipText = useTranslation(
+    "Add fruit like pawpaw and vegetable like spinanach to your meal"
+  );
 
   const handleBack = () => {
     router.back();
@@ -36,9 +56,7 @@ export default function BabyDevelopment() {
           <Ionicons name="arrow-back" size={24} color="#293231" />
         </TouchableOpacity>
 
-        <Text className="text-xl font-bold text-[#293231]">
-          Baby Development
-        </Text>
+        <Text className="text-xl font-bold text-[#293231]">{titleText}</Text>
 
         <View className="w-12" />
       </View>
@@ -70,13 +88,13 @@ export default function BabyDevelopment() {
             <View className="flex-row items-center mb-4">
               <Text className="text-2xl mr-2">🍋</Text>
               <Text className="text-lg font-semibold text-[#293231] flex-1">
-                Your baby is the size of a lime
+                {babySizeText}
               </Text>
             </View>
 
             {/* Week Title */}
             <Text className="text-base font-bold text-[#293231] mb-4">
-              Week 18 Milestones
+              {weekMilestonesText}
             </Text>
 
             {/* Baby Image */}
@@ -113,7 +131,7 @@ export default function BabyDevelopment() {
               <View className="flex-row items-start mb-3">
                 <Text className="text-base mr-2">•</Text>
                 <Text className="text-[#293231] text-base flex-1">
-                  Your baby can now hear sounds 🎉
+                  {milestone1Text}
                 </Text>
               </View>
 
@@ -121,7 +139,7 @@ export default function BabyDevelopment() {
               <View className="flex-row items-start mb-3">
                 <Text className="text-base mr-2">•</Text>
                 <Text className="text-[#293231] text-base flex-1">
-                  Your baby's finger and toes are growing 🎉
+                  {milestone2Text}
                 </Text>
               </View>
 
@@ -129,7 +147,7 @@ export default function BabyDevelopment() {
               <View className="flex-row items-start">
                 <Text className="text-base mr-2">•</Text>
                 <Text className="text-[#293231] text-base flex-1">
-                  Your baby can move actively 🎉
+                  {milestone3Text}
                 </Text>
               </View>
             </View>
@@ -149,7 +167,7 @@ export default function BabyDevelopment() {
           >
             <Text className="text-3xl mr-3">😊</Text>
             <Text className="text-[#293231] text-base flex-1 font-medium">
-              Your baby now weighs about 900g and is around 36cm long
+              {babyWeightText}
             </Text>
           </View>
 
@@ -166,8 +184,7 @@ export default function BabyDevelopment() {
           >
             <Text className="text-3xl mr-3">😊</Text>
             <Text className="text-[#293231] text-base flex-1 font-medium">
-              You might notice more pain this week, try gentle walk and keep
-              hydrated
+              {healthTipText}
             </Text>
           </View>
 
@@ -184,7 +201,7 @@ export default function BabyDevelopment() {
           >
             <Text className="text-3xl mr-3">😊</Text>
             <Text className="text-[#293231] text-base flex-1 font-medium">
-              Add fruit like pawpaw and vegetable like spinanach to your meal
+              {nutritionTipText}
             </Text>
           </View>
         </View>

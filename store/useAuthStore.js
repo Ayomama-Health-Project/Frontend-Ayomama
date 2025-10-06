@@ -23,6 +23,15 @@ const useAuthStore = create((set, get) => ({
         console.log("Initialize auth user fetch response:", response.data);
 
         if (response.data.success) {
+          // Sync language preference with translator
+          const userLanguage = response.data.data?.preferredLanguages || "en";
+          try {
+            const { setLanguage } = await import("./useTranslatorStore");
+            await setLanguage.getState().setLanguage(userLanguage);
+          } catch (err) {
+            console.log("Failed to sync translator language:", err);
+          }
+
           set({
             user: response.data.data,
             token,
@@ -118,6 +127,16 @@ const useAuthStore = create((set, get) => ({
         console.log("User data fetched:", userResponse.data);
 
         if (userResponse.data.success) {
+          // Sync language preference with translator
+          const userLanguage =
+            userResponse.data.data?.preferredLanguages || "en";
+          try {
+            const { setLanguage } = await import("./useTranslatorStore");
+            await setLanguage.getState().setLanguage(userLanguage);
+          } catch (err) {
+            console.log("Failed to sync translator language:", err);
+          }
+
           set({
             user: userResponse.data.data,
             token: response.data.token,

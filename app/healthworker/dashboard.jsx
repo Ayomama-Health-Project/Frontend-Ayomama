@@ -11,12 +11,40 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTranslation } from "../../utils/translator";
 
 const isIOS = Platform.OS === "ios";
 
 export default function HealthcareDashboard() {
   const router = useRouter();
   const [nurseName] = useState("Nurse Becca");
+
+  // Translate all text
+  const monitorText = useTranslation("Monitor");
+  const caringForMothersText = useTranslation(
+    "You are caring for 28 mother this week"
+  );
+  const safeText = useTranslation("Safe");
+  const urgentText = useTranslation("Urgent");
+  const addPatientText = useTranslation("Add Patient");
+  const logVisitText = useTranslation("Log visit");
+  const mothersUnderCareText = useTranslation("Mothers Under Your Care");
+  const viewText = useTranslation("View");
+  const nextVisitText = useTranslation("Next visit:");
+  const lastVisitText = useTranslation("Last visit:");
+  const viewAllText = useTranslation("View all");
+  const riskyDistributionText = useTranslation("Risky distribution");
+  const currentStatusText = useTranslation(
+    "Current status of all registered mothers"
+  );
+  const totalText = useTranslation("Total");
+  const mothersNeedingAttentionText = useTranslation(
+    "Mothers Needing Attention"
+  );
+  const weeklyVisitProgressText = useTranslation("Weekly Visit Progress");
+  const visitsCompletedText = useTranslation("Visits Completed");
+  const newRegistrationText = useTranslation("New Registration");
+  const ofWeeklyTargetText = useTranslation("% of weekly target");
 
   // Mock data
   const stats = {
@@ -136,7 +164,7 @@ export default function HealthcareDashboard() {
             />
           </TouchableOpacity>
           <View className="flex-1 items-center mx-4">
-            <Text className="text-gray-500 text-sm">Monitor</Text>
+            <Text className="text-gray-500 text-sm">{monitorText}</Text>
             <Text className="text-[#293231] text-lg font-bold">
               {nurseName}
             </Text>
@@ -159,13 +187,13 @@ export default function HealthcareDashboard() {
           >
             <View className="border-[0.9px] border-[#FF7F50] rounded-2xl p-4">
               <Text className="text-center text-[#293231] text-sm mb-4">
-                You are caring for 28 mother this week
+                {caringForMothersText}
               </Text>
               <View className="flex-row justify-between">
                 {/* Safe */}
                 <View className="bg-[#00D2B3] rounded-2xl px-6 py-4 flex-1 mr-2">
                   <View className="flex-row items-center justify-between mb-1 gap-2">
-                    <Text className=" font-semibold text-sm">Safe</Text>
+                    <Text className=" font-semibold text-sm">{safeText}</Text>
                     <MaterialIcons name="health-and-safety" size={16} />
                   </View>
                   <Text className=" text-2xl font-bold">{stats.safe}</Text>
@@ -174,7 +202,9 @@ export default function HealthcareDashboard() {
                 {/* Monitor */}
                 <View className="bg-[#FFC107] rounded-2xl px-6 py-4 flex-1 mx-1">
                   <View className="flex-row items-center justify-between mb-1 gap-2">
-                    <Text className=" font-semibold text-sm">Monitor</Text>
+                    <Text className=" font-semibold text-sm">
+                      {monitorText}
+                    </Text>
                     <Ionicons name="eye-outline" size={16} />
                   </View>
                   <Text className=" text-2xl font-bold">{stats.monitor}</Text>
@@ -183,7 +213,7 @@ export default function HealthcareDashboard() {
                 {/* Urgent */}
                 <View className="bg-[#F05246] rounded-2xl px-6 py-4 flex-1 ml-2">
                   <View className="flex-row items-center justify-between mb-1 gap-2">
-                    <Text className=" font-semibold text-sm">Urgent</Text>
+                    <Text className=" font-semibold text-sm">{urgentText}</Text>
                     <AntDesign name="alert" size={16} />
                   </View>
                   <Text className=" text-2xl font-bold">{stats.urgent}</Text>
@@ -193,10 +223,49 @@ export default function HealthcareDashboard() {
           </LinearGradient>
         </View>
 
+        {/* Action Buttons */}
+        <View className="mb-6 items-center">
+          <View className="flex-row items-center justify-between w-[80%] gap-2">
+            <TouchableOpacity
+              className="bg-[#00D2B3] rounded-2xl py-3 px-6 flex-row items-center justify-center flex-1 gap-1"
+              style={{
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+              onPress={() => router.push("/healthworker/addPatient")}
+            >
+              <Text className="text-[#293231] font-semibold text-base ml-2">
+                {addPatientText}
+              </Text>
+              <Ionicons name="person-add" size={20} color="#293231" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-[#00D2B3] rounded-2xl py-3 px-6 flex-row items-center justify-center flex-1 gap-1"
+              style={{
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+              onPress={() => router.push("/healthworker/logVisit")}
+            >
+              <Text className="text-[#293231] font-semibold text-base ml-2">
+                {logVisitText}
+              </Text>
+              <Ionicons name="clipboard" size={20} color="#293231" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* Mothers Under Your Care */}
         <View className="px-6 mb-6">
           <Text className="text-[#293231] text-lg font-bold mb-4">
-            Mothers Under Your Care
+            {mothersUnderCareText}
           </Text>
           {mothersUnderCare.map((mother) => (
             <View
@@ -245,18 +314,20 @@ export default function HealthcareDashboard() {
                   className="border border-[#06D6A0] rounded-xl px-4 py-2"
                   onPress={() => router.push("/healthworker/motherInfo")}
                 >
-                  <Text className="text-[#06D6A0] font-semibold">View</Text>
+                  <Text className="text-[#06D6A0] font-semibold">
+                    {viewText}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View className="flex-row justify-between">
                 <View>
-                  <Text className="text-gray-400 text-xs">Next visit:</Text>
+                  <Text className="text-gray-400 text-xs">{nextVisitText}</Text>
                   <Text className="text-[#293231] text-sm">
                     {mother.nextVisit}
                   </Text>
                 </View>
                 <View>
-                  <Text className="text-gray-400 text-xs">Last visit:</Text>
+                  <Text className="text-gray-400 text-xs">{lastVisitText}</Text>
                   <Text className="text-[#293231] text-sm">
                     {mother.lastVisit}
                   </Text>
@@ -266,7 +337,7 @@ export default function HealthcareDashboard() {
           ))}
           <TouchableOpacity className="border border-gray-300 rounded-xl py-3 mt-2">
             <Text className="text-center text-[#293231] font-semibold">
-              View all
+              {viewAllText}
             </Text>
           </TouchableOpacity>
         </View>
@@ -274,10 +345,10 @@ export default function HealthcareDashboard() {
         {/* Risky Distribution */}
         <View className="px-6 mb-6">
           <Text className="text-[#293231] text-lg font-bold mb-2">
-            Risky distribution
+            {riskyDistributionText}
           </Text>
           <Text className="text-gray-500 text-sm mb-4">
-            Current status of all registered mothers
+            {currentStatusText}
           </Text>
           <View className="bg-white rounded-2xl p-6 items-center">
             {/* Donut Chart Placeholder */}
@@ -289,26 +360,30 @@ export default function HealthcareDashboard() {
               <View className="flex-row items-center justify-between mb-3">
                 <View className="flex-row items-center">
                   <View className="w-4 h-4 rounded bg-[#06D6A0] mr-3" />
-                  <Text className="text-[#293231] text-sm">Safe: 20</Text>
+                  <Text className="text-[#293231] text-sm">{safeText}: 20</Text>
                 </View>
               </View>
               <View className="flex-row items-center justify-between mb-3">
                 <View className="flex-row items-center">
                   <View className="w-4 h-4 rounded bg-[#FFD166] mr-3" />
-                  <Text className="text-[#293231] text-sm">Monitor: 8</Text>
+                  <Text className="text-[#293231] text-sm">
+                    {monitorText}: 8
+                  </Text>
                 </View>
               </View>
               <View className="flex-row items-center justify-between mb-3">
                 <View className="flex-row items-center">
                   <View className="w-4 h-4 rounded bg-[#EF476F] mr-3" />
-                  <Text className="text-[#293231] text-sm">Urgent: 2</Text>
+                  <Text className="text-[#293231] text-sm">
+                    {urgentText}: 2
+                  </Text>
                 </View>
               </View>
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center">
                   <View className="w-4 h-4 rounded bg-[#293231] mr-3" />
                   <Text className="text-[#293231] text-sm font-bold">
-                    Total: 30
+                    {totalText}: 30
                   </Text>
                 </View>
               </View>
@@ -320,7 +395,7 @@ export default function HealthcareDashboard() {
         <View className="px-6 mb-6">
           <View className="flex-row items-center mb-4">
             <Text className="text-[#293231] text-lg font-bold mr-2">
-              Mothers Needing Attention
+              {mothersNeedingAttentionText}
             </Text>
             <Ionicons name="warning" size={20} color="#EF476F" />
           </View>
@@ -349,16 +424,18 @@ export default function HealthcareDashboard() {
                   className="bg-white rounded-xl px-4 py-2"
                   onPress={() => router.push("/healthworker/motherInfo")}
                 >
-                  <Text className="text-[#EF476F] font-semibold">View</Text>
+                  <Text className="text-[#EF476F] font-semibold">
+                    {viewText}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View className="flex-row justify-between">
                 <View>
-                  <Text className="text-white/70 text-xs">Next visit:</Text>
+                  <Text className="text-white/70 text-xs">{nextVisitText}</Text>
                   <Text className="text-white text-sm">{mother.nextVisit}</Text>
                 </View>
                 <View>
-                  <Text className="text-white/70 text-xs">Last visit:</Text>
+                  <Text className="text-white/70 text-xs">{lastVisitText}</Text>
                   <Text className="text-white text-sm">{mother.lastVisit}</Text>
                 </View>
               </View>
@@ -366,7 +443,7 @@ export default function HealthcareDashboard() {
           ))}
           <TouchableOpacity className="border border-gray-300 rounded-xl py-3 mt-2 bg-white">
             <Text className="text-center text-[#293231] font-semibold">
-              View all
+              {viewAllText}
             </Text>
           </TouchableOpacity>
         </View>
@@ -375,7 +452,7 @@ export default function HealthcareDashboard() {
         <View className="px-6 mb-8">
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-[#293231] text-lg font-bold">
-              Weekly Visit Progress
+              {weeklyVisitProgressText}
             </Text>
             <Text className="text-gray-500 text-sm">Oct 1st-8th</Text>
           </View>
@@ -389,7 +466,7 @@ export default function HealthcareDashboard() {
                 <Ionicons name="checkmark-circle" size={24} color="#06D6A0" />
               </View>
               <Text className="text-[#293231] font-semibold mb-3">
-                Visits Completed
+                {visitsCompletedText}
               </Text>
               <View className="bg-gray-200 rounded-full h-2 mb-2">
                 <View
@@ -409,7 +486,7 @@ export default function HealthcareDashboard() {
                     weeklyProgress.visitsTarget) *
                     100
                 )}
-                % of weekly target
+                {ofWeeklyTargetText}
               </Text>
             </View>
 
@@ -422,7 +499,7 @@ export default function HealthcareDashboard() {
                 <Ionicons name="person-add" size={24} color="#06D6A0" />
               </View>
               <Text className="text-[#293231] font-semibold mb-3">
-                New Registration
+                {newRegistrationText}
               </Text>
               <View className="bg-gray-200 rounded-full h-2 mb-2">
                 <View
@@ -442,7 +519,7 @@ export default function HealthcareDashboard() {
                     weeklyProgress.registrationTarget) *
                     100
                 )}
-                % of weekly target
+                {ofWeeklyTargetText}
               </Text>
             </View>
           </View>

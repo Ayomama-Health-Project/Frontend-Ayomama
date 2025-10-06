@@ -2,11 +2,31 @@ import { useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import useAuthStore from "../../store/useAuthStore";
+import useTranslatorStore from "../../store/useTranslatorStore";
+import { useTranslation } from "../../utils/translator";
 
 export default function LanguageStep({ onNext }) {
   const { updateLanguagePreference, isLoading } = useAuthStore();
+  const { setLanguage } = useTranslatorStore();
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [error, setError] = useState("");
+
+  // Translate all text
+  const languageQuestionText = useTranslation("Which language do you prefer?");
+  const englishText = useTranslation("English");
+  const hausaText = useTranslation("Hausa");
+  const yorubaText = useTranslation("Yoruba");
+  const igboText = useTranslation("Igbo");
+  const proceedText = useTranslation("Proceed");
+  const selectLanguageErrorText = useTranslation(
+    "Please select a language before proceeding"
+  );
+  const languageUpdatedText = useTranslation("Language Updated");
+  const languageSetText = useTranslation("Your preferred language is set to");
+  const updateFailedText = useTranslation("Update Failed");
+  const failedToUpdateText = useTranslation(
+    "Failed to update language preference"
+  );
 
   // Map display language to backend enum values
   const languageMap = {
@@ -16,19 +36,28 @@ export default function LanguageStep({ onNext }) {
     Igbo: "ig",
   };
 
-  const handleLanguageSelect = (language) => {
+  const handleLanguageSelect = async (language) => {
     setSelectedLanguage(language);
     setError("");
+
+    // Update language immediately for live preview
+    const languageCode = languageMap[language];
+    if (languageCode) {
+      await setLanguage(languageCode);
+    }
   };
 
   const handleProceed = async () => {
     if (!selectedLanguage) {
-      setError("Please select a language before proceeding");
+      setError(selectLanguageErrorText);
       return;
     }
 
     // Get the backend language code
     const languageCode = languageMap[selectedLanguage];
+
+    // Update language preference in translator store
+    await setLanguage(languageCode);
 
     // Update language preference via API
     const result = await updateLanguagePreference(languageCode);
@@ -36,18 +65,18 @@ export default function LanguageStep({ onNext }) {
     if (result.success) {
       Toast.show({
         type: "success",
-        text1: "Language Updated",
-        text2: `Your preferred language is set to ${selectedLanguage}`,
+        text1: languageUpdatedText,
+        text2: `${languageSetText} ${selectedLanguage}`,
         position: "top",
         visibilityTime: 2000,
       });
       onNext();
     } else {
-      setError(result.error || "Failed to update language preference");
+      setError(result.error || failedToUpdateText);
       Toast.show({
         type: "error",
-        text1: "Update Failed",
-        text2: result.error || "Failed to update language preference",
+        text1: updateFailedText,
+        text2: result.error || failedToUpdateText,
         position: "top",
         visibilityTime: 3000,
       });
@@ -59,7 +88,7 @@ export default function LanguageStep({ onNext }) {
       <View>
         {/* Title */}
         <Text className="text-2xl font-bold text-left mb-10">
-          Which language do you prefer?
+          {languageQuestionText}
         </Text>
         {/* English */}
         <TouchableOpacity
@@ -75,7 +104,7 @@ export default function LanguageStep({ onNext }) {
               selectedLanguage === "English" ? "text-white" : "text-black"
             }`}
           >
-            English
+            {englishText}
           </Text>
         </TouchableOpacity>
         {/* Hausa */}
@@ -92,7 +121,7 @@ export default function LanguageStep({ onNext }) {
               selectedLanguage === "Hausa" ? "text-white" : "text-black"
             }`}
           >
-            Hausa
+            {hausaText}
           </Text>
         </TouchableOpacity>
         {/* Yoruba */}
@@ -109,7 +138,7 @@ export default function LanguageStep({ onNext }) {
               selectedLanguage === "Yoruba" ? "text-white" : "text-black"
             }`}
           >
-            Yoruba
+            {yorubaText}
           </Text>
         </TouchableOpacity>
         {/* Igbo */}
@@ -126,7 +155,7 @@ export default function LanguageStep({ onNext }) {
               selectedLanguage === "Igbo" ? "text-white" : "text-black"
             }`}
           >
-            Igbo
+            {igboText}
           </Text>
         </TouchableOpacity>
         {/* Error message */}
@@ -145,7 +174,7 @@ export default function LanguageStep({ onNext }) {
           <ActivityIndicator color="#FFFFFF" />
         ) : (
           <Text className="text-white text-center font-bold text-base">
-            Proceed
+            {proceedText}
           </Text>
         )}
       </TouchableOpacity>

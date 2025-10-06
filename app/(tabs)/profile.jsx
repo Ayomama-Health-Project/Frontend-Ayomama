@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import useAuthStore from "../../store/useAuthStore";
+import { useTranslation } from "../../utils/translator";
 
 const ios = Platform.OS === "ios";
 const topMargin = ios ? "" : "mt-3";
@@ -23,6 +24,27 @@ export default function Profile() {
   const { user: authUser, logout } = useAuthStore();
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Translate UI text
+  const editText = useTranslation("Edit");
+  const settingPreferenceText = useTranslation("Setting & preference");
+  const notificationText = useTranslation("Notification");
+  const languageText = useTranslation("Language");
+  const securityText = useTranslation("Security");
+  const supportText = useTranslation("Support");
+  const helpCenterText = useTranslation("Help center");
+  const reportBugText = useTranslation("Report bug");
+  const logoutText = useTranslation("Log out");
+  const logoutTitleText = useTranslation("Logout");
+  const logoutMessageText = useTranslation("Are you sure you want to logout?");
+  const cancelText = useTranslation("Cancel");
+  const logoutConfirmText = useTranslation("Logout");
+  const loggedOutText = useTranslation("Logged Out");
+  const loggedOutSuccessText = useTranslation(
+    "You have been logged out successfully"
+  );
+  const errorText = useTranslation("Error");
+  const failedLogoutText = useTranslation("Failed to logout");
 
   // Use authenticated user data or fallback to default
   const user = authUser || {
@@ -118,15 +140,15 @@ export default function Profile() {
 
   const handleLogout = async () => {
     Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
+      logoutTitleText,
+      logoutMessageText,
       [
         {
-          text: "Cancel",
+          text: cancelText,
           style: "cancel",
         },
         {
-          text: "Logout",
+          text: logoutConfirmText,
           style: "destructive",
           onPress: async () => {
             const result = await logout();
@@ -138,8 +160,8 @@ export default function Profile() {
               setTimeout(() => {
                 Toast.show({
                   type: "success",
-                  text1: "Logged Out",
-                  text2: "You have been logged out successfully",
+                  text1: loggedOutText,
+                  text2: loggedOutSuccessText,
                   position: "top",
                   visibilityTime: 2000,
                 });
@@ -147,8 +169,8 @@ export default function Profile() {
             } else {
               Toast.show({
                 type: "error",
-                text1: "Error",
-                text2: result.error || "Failed to logout",
+                text1: errorText,
+                text2: result.error || failedLogoutText,
                 position: "top",
                 visibilityTime: 2000,
               });
@@ -200,7 +222,9 @@ export default function Profile() {
               onPress={handleEditProfile}
               className="bg-[#006D5B] px-6 py-3 rounded-xl"
             >
-              <Text className="text-white font-semibold text-[15px]">Edit</Text>
+              <Text className="text-white font-semibold text-[15px]">
+                {editText}
+              </Text>
             </TouchableOpacity>
           </View>
         </LinearGradient>
@@ -211,7 +235,7 @@ export default function Profile() {
         {/* Setting & preference Section */}
         <View className="px-6 pt-6">
           <Text className="text-[16px] text-[#6B7280] mb-4 font-medium">
-            Setting & preference
+            {settingPreferenceText}
           </Text>
 
           {/* Notification Toggle */}
@@ -220,7 +244,7 @@ export default function Profile() {
               <View className="flex-row items-center flex-1">
                 <Ionicons name="notifications" size={20} color="#293231" />
                 <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  Notification
+                  {notificationText}
                 </Text>
               </View>
               <Switch
@@ -243,7 +267,7 @@ export default function Profile() {
               <View className="flex-row items-center flex-1">
                 <Ionicons name="language" size={20} color="#293231" />
                 <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  Language
+                  {languageText}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#293231" />
@@ -259,7 +283,7 @@ export default function Profile() {
               <View className="flex-row items-center flex-1">
                 <Ionicons name="shield-checkmark" size={20} color="#293231" />
                 <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  Security
+                  {securityText}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#293231" />
@@ -273,7 +297,7 @@ export default function Profile() {
         {/* Support Section */}
         <View className="px-6 pb-6">
           <Text className="text-[16px] text-[#6B7280] mb-4 font-medium">
-            Support
+            {supportText}
           </Text>
 
           {/* Help center */}
@@ -285,7 +309,7 @@ export default function Profile() {
               <View className="flex-row items-center flex-1">
                 <Ionicons name="help-circle" size={20} color="#293231" />
                 <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  Help center
+                  {helpCenterText}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#293231" />
@@ -301,7 +325,7 @@ export default function Profile() {
               <View className="flex-row items-center flex-1">
                 <Ionicons name="flag" size={20} color="#293231" />
                 <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  Report bug
+                  {reportBugText}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#293231" />
@@ -317,7 +341,7 @@ export default function Profile() {
               <View className="flex-row items-center flex-1">
                 <Ionicons name="log-out-outline" size={20} color="#293231" />
                 <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  Log out
+                  {logoutText}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#293231" />

@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import useAuthStore from "../../store/useAuthStore";
+import { useTranslation } from "../../utils/translator";
 
 const LogIn = () => {
   const router = useRouter();
@@ -24,25 +25,44 @@ const LogIn = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  // Translate all text
+  const titleText = useTranslation("Log In to Your Account");
+  const subtitleText = useTranslation("Log in to continue your experience");
+  const emailPlaceholder = useTranslation("Email");
+  const passwordPlaceholder = useTranslation("Password");
+  const loginButtonText = useTranslation("Log In");
+  const noAccountText = useTranslation("Don't have an account?");
+  const signUpText = useTranslation("Sign up");
+  const emailRequiredText = useTranslation("Email is required");
+  const passwordRequiredText = useTranslation("Password is required");
+  const validEmailText = useTranslation("Please enter a valid email");
+  const passwordLengthText = useTranslation(
+    "Password must be at least 6 characters"
+  );
+  const loginSuccessText = useTranslation("Login Successful!");
+  const welcomeBackText = useTranslation("Welcome back");
+  const loginFailedText = useTranslation("Login Failed");
+  const invalidCredentialsText = useTranslation("Invalid credentials");
+
   const handleLogIn = async () => {
     // Validation
     if (!email) {
-      setError("Email is required");
+      setError(emailRequiredText);
       return;
     }
 
     if (!password) {
-      setError("Password is required");
+      setError(passwordRequiredText);
       return;
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Please enter a valid email");
+      setError(validEmailText);
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError(passwordLengthText);
       return;
     }
 
@@ -54,8 +74,8 @@ const LogIn = () => {
     if (result.success) {
       Toast.show({
         type: "success",
-        text1: "Login Successful!",
-        text2: result.message || "Welcome back",
+        text1: loginSuccessText,
+        text2: result.message || welcomeBackText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -74,8 +94,8 @@ const LogIn = () => {
       setError(result.error || "Failed to login");
       Toast.show({
         type: "error",
-        text1: "Login Failed",
-        text2: result.error || "Invalid credentials",
+        text1: loginFailedText,
+        text2: result.error || invalidCredentialsText,
         position: "top",
         visibilityTime: 3000,
       });
@@ -97,17 +117,15 @@ const LogIn = () => {
 
           {/* Title */}
           <Text className="text-2xl font-bold text-left mt-6 mb-4">
-            Log In to Your Account
+            {titleText}
           </Text>
 
           {/* Subtitle */}
-          <Text className="text-gray-600 mb-10">
-            Log in to continue your experience{" "}
-          </Text>
+          <Text className="text-gray-600 mb-10">{subtitleText} </Text>
 
           {/* Email Input */}
           <TextInput
-            placeholder="Email"
+            placeholder={emailPlaceholder}
             placeholderTextColor="#9CA3AF"
             value={email}
             onChangeText={setEmail}
@@ -118,7 +136,7 @@ const LogIn = () => {
           {/* Password Input */}
           <View className="relative mb-4">
             <TextInput
-              placeholder="Password"
+              placeholder={passwordPlaceholder}
               placeholderTextColor="#9CA3AF"
               value={password}
               onChangeText={setPassword}
@@ -154,7 +172,7 @@ const LogIn = () => {
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text className="text-white text-center font-bold text-base">
-                Log In
+                {loginButtonText}
               </Text>
             )}
           </TouchableOpacity>
@@ -162,12 +180,12 @@ const LogIn = () => {
 
         {/* Footer pinned */}
         <View className="flex-row justify-center items-center mb-16">
-          <Text className="text-gray-600">Don&apos;t have an account? </Text>
+          <Text className="text-gray-600">{noAccountText} </Text>
           <TouchableOpacity
             onPress={() => router.push("/auth/signup")}
             disabled={isLoading}
           >
-            <Text className="text-[#006D5B] font-semibold">Sign up</Text>
+            <Text className="text-[#006D5B] font-semibold">{signUpText}</Text>
           </TouchableOpacity>
         </View>
 

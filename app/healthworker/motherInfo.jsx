@@ -11,12 +11,26 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTranslation } from "../../utils/translator";
 
 const isIOS = Platform.OS === "ios";
 
 export default function MotherInfo() {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState("24/06/2025");
+
+  // Translate all text
+  const motherInfoText = useTranslation("Mother Information");
+  const safeText = useTranslation("Safe");
+  const patientInfoText = useTranslation("Patient Information");
+  const bloodPressureText = useTranslation("Blood Pressure");
+  const weightText = useTranslation("Weight");
+  const temperatureText = useTranslation("Temperature");
+  const bloodLevelText = useTranslation("Blood Level");
+  const medicalHistoryText = useTranslation("Medical History");
+  const visitDateText = useTranslation("Visit date");
+  const medicationListText = useTranslation("Medication List");
+  const updateText = useTranslation("Update");
 
   // Mock mother data
   const motherData = {
@@ -59,7 +73,7 @@ export default function MotherInfo() {
             <Ionicons name="arrow-back" size={24} color="#293231" />
           </TouchableOpacity>
           <Text className="text-[#293231] text-xl font-bold">
-            Mother Information
+            {motherInfoText}
           </Text>
           <View className="w-10" />
         </View>
@@ -102,7 +116,7 @@ export default function MotherInfo() {
               </View>
               <View className="bg-[#00D2B3] rounded-full px-4 py-2">
                 <Text className="text-white font-semibold text-sm">
-                  {motherData.status}
+                  {safeText}
                 </Text>
               </View>
             </View>
@@ -112,7 +126,7 @@ export default function MotherInfo() {
         {/* Patient Information */}
         <View className="px-6 mt-6">
           <Text className="text-[#293231] text-lg font-bold mb-4">
-            Patient Information
+            {patientInfoText}
           </Text>
           <LinearGradient
             colors={["#E8F8F5", "#FFF5F0"]}
@@ -129,7 +143,7 @@ export default function MotherInfo() {
                 <View className="flex-row items-center mb-2">
                   <Ionicons name="water" size={20} color="#EF476F" />
                   <Text className="text-gray-600 text-sm ml-2">
-                    Blood Pressure
+                    {bloodPressureText}
                   </Text>
                 </View>
                 <Text className="text-[#293231] font-bold text-base">
@@ -145,7 +159,9 @@ export default function MotherInfo() {
                     size={20}
                     color="#293231"
                   />
-                  <Text className="text-gray-600 text-sm ml-2">Weight</Text>
+                  <Text className="text-gray-600 text-sm ml-2">
+                    {weightText}
+                  </Text>
                 </View>
                 <Text className="text-[#293231] font-bold text-base">
                   {motherData.weight}
@@ -161,7 +177,7 @@ export default function MotherInfo() {
                     color="#293231"
                   />
                   <Text className="text-gray-600 text-sm ml-2">
-                    Temperature
+                    {temperatureText}
                   </Text>
                 </View>
                 <Text className="text-[#293231] font-bold text-base">
@@ -174,7 +190,7 @@ export default function MotherInfo() {
                 <View className="flex-row items-center mb-2">
                   <Ionicons name="water" size={20} color="#EF476F" />
                   <Text className="text-gray-600 text-sm ml-2">
-                    Blood Level
+                    {bloodLevelText}
                   </Text>
                 </View>
                 <Text className="text-[#293231] font-bold text-base">
@@ -188,7 +204,7 @@ export default function MotherInfo() {
         {/* Medical History */}
         <View className="px-6 mt-6">
           <Text className="text-[#293231] text-lg font-bold mb-4">
-            Medical History
+            {medicalHistoryText}
           </Text>
           <View className="bg-white rounded-2xl p-5 border border-gray-200">
             <Text className="text-gray-700 text-sm leading-6">
@@ -200,7 +216,7 @@ export default function MotherInfo() {
         {/* Visit Date */}
         <View className="px-6 mt-6">
           <Text className="text-[#293231] text-lg font-bold mb-4">
-            Visit date
+            {visitDateText}
           </Text>
           <TouchableOpacity className="bg-white rounded-2xl p-4 border-2 border-[#00D2B3] flex-row items-center justify-between">
             <View className="flex-row items-center">
@@ -216,7 +232,7 @@ export default function MotherInfo() {
         {/* Medication List */}
         <View className="px-6 mt-6 mb-8">
           <Text className="text-[#293231] text-lg font-bold mb-4">
-            Medication List
+            {medicationListText}
           </Text>
           <View className="bg-white rounded-2xl p-5 border border-gray-200">
             {motherData.medications.map((medication, index) => (
@@ -232,7 +248,7 @@ export default function MotherInfo() {
         {/* Update Button */}
         <View className="px-6 mb-8">
           <TouchableOpacity className="bg-[#00695C] rounded-2xl py-4 items-center shadow-lg">
-            <Text className="text-white font-bold text-base">Update</Text>
+            <Text className="text-white font-bold text-base">{updateText}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

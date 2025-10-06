@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTranslation } from "../utils/translator";
 
 export default function PickerModal({
   visible,
@@ -15,6 +16,9 @@ export default function PickerModal({
   title = "Select Option",
   renderItem,
 }) {
+  // Translate all text
+  const closeText = useTranslation("Close");
+
   return (
     <Modal
       visible={visible}
@@ -30,7 +34,7 @@ export default function PickerModal({
           <View className="flex-row justify-between items-center mb-2">
             <Text className="text-lg font-semibold capitalize">{title}</Text>
             <TouchableOpacity onPress={onClose}>
-              <Text className="text-red-500 font-medium">Close</Text>
+              <Text className="text-red-500 font-medium">{closeText}</Text>
             </TouchableOpacity>
           </View>
           <FlatList
