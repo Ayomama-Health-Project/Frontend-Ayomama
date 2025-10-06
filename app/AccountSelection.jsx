@@ -3,12 +3,25 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "../utils/translator";
 
 const AccountSelection = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [authAction, setAuthAction] = useState("signup");
+
+  // Translate all text
+  const chooseAccountText = useTranslation("Choose your Account");
+  const healthcareWorkerText = useTranslation("Health care worker");
+  const healthcareDescText = useTranslation(
+    "Manage your patient effectively, you can check how well they are doing."
+  );
+  const motherText = useTranslation("Mother");
+  const motherDescText = useTranslation(
+    "Track your baby health while still in the womb."
+  );
+  const proceedText = useTranslation("Proceed");
 
   // Get auth action from route params
   useEffect(() => {
@@ -68,7 +81,7 @@ const AccountSelection = () => {
         <View className="flex-1 px-6">
           {/* Title */}
           <Text className="text-2xl font-bold text-[#293231] mb-10">
-            Choose your Account
+            {chooseAccountText}
           </Text>
 
           {/* Healthcare Worker Card */}
@@ -114,11 +127,10 @@ const AccountSelection = () => {
                   {/* Text Content */}
                   <View className="flex-1 pr-2">
                     <Text className="text-[17px] font-bold text-[#293231] mb-2">
-                      Health care worker
+                      {healthcareWorkerText}
                     </Text>
                     <Text className="text-[13px] text-gray-700 leading-5">
-                      Manage your patient effectively, you can check how well
-                      they are doing.
+                      {healthcareDescText}
                     </Text>
                   </View>
 
@@ -182,10 +194,10 @@ const AccountSelection = () => {
                   {/* Text Content */}
                   <View className="flex-1 pr-2">
                     <Text className="text-[17px] font-bold text-[#293231] mb-2">
-                      Mother
+                      {motherText}
                     </Text>
                     <Text className="text-[13px] text-gray-700 leading-5">
-                      Track your baby health while still in the womb.
+                      {motherDescText}
                     </Text>
                   </View>
 
@@ -227,7 +239,7 @@ const AccountSelection = () => {
               activeOpacity={0.85}
             >
               <Text className="text-white text-center font-bold text-[17px]">
-                Proceed
+                {proceedText}
               </Text>
             </TouchableOpacity>
           </View>

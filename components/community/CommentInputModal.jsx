@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useTranslation } from "../../utils/translator";
 
 export default function CommentInputModal({
   visible,
@@ -20,6 +21,12 @@ export default function CommentInputModal({
   onClose,
   onSubmit,
 }) {
+  // Translate all text
+  const addCommentText = useTranslation("Add Comment");
+  const shareThoughtsText = useTranslation("Share your thoughts...");
+  const cancelText = useTranslation("Cancel");
+  const postCommentText = useTranslation("Post Comment");
+
   return (
     <Modal
       animationType="slide"
@@ -34,6 +41,7 @@ export default function CommentInputModal({
         <TouchableWithoutFeedback
           onPress={() => {
             Keyboard.dismiss();
+            onClose();
           }}
         >
           <View className="flex-1 justify-end bg-black/50">
@@ -47,9 +55,19 @@ export default function CommentInputModal({
                 {/* Modal Header */}
                 <View className="flex-row items-center justify-between px-6 py-4 border-b border-gray-200">
                   <Text className="text-[#293231] text-lg font-bold">
-                    Add Comment
+                    {addCommentText}
                   </Text>
-                  <TouchableOpacity onPress={onClose}>
+                  <TouchableOpacity
+                    onPress={onClose}
+                    className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                    style={{
+                      shadowColor: "#000",
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.05,
+                      shadowRadius: 2,
+                      elevation: 2,
+                    }}
+                  >
                     <Ionicons name="close" size={24} color="#293231" />
                   </TouchableOpacity>
                 </View>
@@ -83,7 +101,7 @@ export default function CommentInputModal({
                   <View className="bg-[#F3F4F6] rounded-2xl p-4 min-h-[120px]">
                     <TextInput
                       className="text-[#293231] text-base"
-                      placeholder="Share your thoughts..."
+                      placeholder={shareThoughtsText}
                       placeholderTextColor="#9CA3AF"
                       value={commentText}
                       onChangeText={setCommentText}
@@ -101,7 +119,7 @@ export default function CommentInputModal({
                     className="flex-1 bg-gray-200 rounded-full py-3"
                   >
                     <Text className="text-[#293231] text-center font-semibold">
-                      Cancel
+                      {cancelText}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -113,7 +131,7 @@ export default function CommentInputModal({
                     }}
                   >
                     <Text className="text-white text-center font-semibold">
-                      Post Comment
+                      {postCommentText}
                     </Text>
                   </TouchableOpacity>
                 </View>

@@ -10,26 +10,37 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "../utils/translator";
 
 const { width } = Dimensions.get("window");
-
-const slides = [
-  {
-    key: "1",
-    title: "Your pregnancy journey guided with care and love",
-    image: require("../assets/images/Pregnantblackwoman.png"),
-  },
-  {
-    key: "2",
-    title: "Together with your partner every step of the way",
-    image: require("../assets/images/Husbandandwife.png"),
-  },
-];
 
 const Onboarding = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
   const router = useRouter();
+
+  // Translate all text
+  const slide1Text = useTranslation(
+    "Your pregnancy journey guided with care and love"
+  );
+  const slide2Text = useTranslation(
+    "Together with your partner every step of the way"
+  );
+  const signUpText = useTranslation("Sign Up");
+  const logInText = useTranslation("Log In");
+
+  const slides = [
+    {
+      key: "1",
+      title: slide1Text,
+      image: require("../assets/images/Pregnantblackwoman.png"),
+    },
+    {
+      key: "2",
+      title: slide2Text,
+      image: require("../assets/images/Husbandandwife.png"),
+    },
+  ];
 
   const handleScroll = (event) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / width);
@@ -118,14 +129,14 @@ const Onboarding = () => {
           className="bg-black py-3 px-8 rounded-full"
           onPress={() => router.push("/AccountSelection?action=signup")}
         >
-          <Text className="text-white text-base font-bold">Sign Up</Text>
+          <Text className="text-white text-base font-bold">{signUpText}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="border-2 border-black py-3 px-8 rounded-full"
           onPress={() => router.push("/AccountSelection?action=login")}
         >
-          <Text className="text-black text-base font-bold">Log In</Text>
+          <Text className="text-black text-base font-bold">{logInText}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

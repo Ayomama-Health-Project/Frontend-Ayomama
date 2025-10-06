@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import useAuthStore from "../../store/useAuthStore";
+import { useTranslation } from "../../utils/translator";
 
 const ios = Platform.OS === "ios";
 
@@ -24,6 +25,13 @@ export default function EditProfile() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+
+  // Translate all text
+  const editProfileText = useTranslation("Edit Profile");
+  const enterNameText = useTranslation("Enter your name");
+  const enterEmailText = useTranslation("Enter your email");
+  const enterPhoneText = useTranslation("Enter your phone number");
+  const saveText = useTranslation("Save");
 
   // Get avatar source - use profilepic.png as default
   const getAvatarSource = () => {
@@ -127,7 +135,7 @@ export default function EditProfile() {
           {/* Edit Profile Form */}
           <View className="px-6">
             <Text className="text-lg font-bold text-[#293231] mb-6">
-              Edit Profile
+              {editProfileText}
             </Text>
 
             {/* Name Input */}
@@ -135,7 +143,7 @@ export default function EditProfile() {
               <TextInput
                 value={name}
                 onChangeText={setName}
-                placeholder="Enter your name"
+                placeholder={enterNameText}
                 placeholderTextColor="#9CA3AF"
                 className="flex-1 text-[16px] text-[#293231]"
               />
@@ -147,7 +155,7 @@ export default function EditProfile() {
               <TextInput
                 value={email}
                 onChangeText={setEmail}
-                placeholder="Enter your email"
+                placeholder={enterEmailText}
                 placeholderTextColor="#9CA3AF"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -161,7 +169,7 @@ export default function EditProfile() {
               <TextInput
                 value={phone}
                 onChangeText={setPhone}
-                placeholder="Enter your phone number"
+                placeholder={enterPhoneText}
                 placeholderTextColor="#9CA3AF"
                 keyboardType="phone-pad"
                 className="flex-1 text-[16px] text-[#293231]"
@@ -182,7 +190,7 @@ export default function EditProfile() {
               }}
             >
               <Text className="text-[#293231] font-semibold text-[16px]">
-                Save
+                {saveText}
               </Text>
             </TouchableOpacity>
           </View>

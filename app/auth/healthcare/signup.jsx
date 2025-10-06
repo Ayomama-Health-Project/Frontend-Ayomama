@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "../../../utils/translator";
 
 const HealthcareSignUp = () => {
   const router = useRouter();
@@ -27,22 +28,46 @@ const HealthcareSignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Translate all text
+  const titleText = useTranslation("Create Healthcare Account");
+  const subtitleText = useTranslation(
+    "Join as a healthcare worker to manage patients"
+  );
+  const fullNamePlaceholder = useTranslation("Full Name");
+  const emailPlaceholder = useTranslation("Email");
+  const hospitalPlaceholder = useTranslation("Hospital/Clinic Name");
+  const passwordPlaceholder = useTranslation("Password");
+  const confirmPasswordPlaceholder = useTranslation("Confirm Password");
+  const signUpButtonText = useTranslation("Sign Up");
+  const haveAccountText = useTranslation("Already have an account?");
+  const loginText = useTranslation("Log In");
+  const allFieldsRequiredText = useTranslation("All fields are required");
+  const validEmailText = useTranslation("Please enter a valid email");
+  const passwordLengthText = useTranslation(
+    "Password must be at least 6 characters"
+  );
+  const passwordsMatchText = useTranslation("Passwords do not match");
+  const accountCreatedText = useTranslation("Account Created!");
+  const pleaseLoginText = useTranslation("Please login to continue");
+  const signUpFailedText = useTranslation("Sign Up Failed");
+  const failedToCreateText = useTranslation("Failed to create account");
+
   const handleSignUp = async () => {
     // Validation
     if (!name || !email || !hospitalName || !password || !confirmPassword) {
-      setError("All fields are required");
+      setError(allFieldsRequiredText);
       return;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Please enter a valid email");
+      setError(validEmailText);
       return;
     }
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError(passwordLengthText);
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(passwordsMatchText);
       return;
     }
 
@@ -55,8 +80,8 @@ const HealthcareSignUp = () => {
       // For now, just show success message
       Toast.show({
         type: "success",
-        text1: "Account Created!",
-        text2: "Please login to continue",
+        text1: accountCreatedText,
+        text2: pleaseLoginText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -66,11 +91,11 @@ const HealthcareSignUp = () => {
         router.push("/auth/healthcare/login");
       }, 2000);
     } catch (err) {
-      setError("Failed to create account");
+      setError(failedToCreateText);
       Toast.show({
         type: "error",
-        text1: "Sign Up Failed",
-        text2: "Failed to create account",
+        text1: signUpFailedText,
+        text2: failedToCreateText,
         position: "top",
         visibilityTime: 3000,
       });
@@ -95,16 +120,14 @@ const HealthcareSignUp = () => {
 
           {/* Title */}
           <Text className="text-3xl font-bold text-left mt-6 mb-4">
-            Create Healthcare Account
+            {titleText}
           </Text>
 
-          <Text className="text-gray-600 mb-4">
-            Join as a healthcare worker to manage patients
-          </Text>
+          <Text className="text-gray-600 mb-4">{subtitleText}</Text>
 
           {/* Name Input */}
           <TextInput
-            placeholder="Full Name"
+            placeholder={fullNamePlaceholder}
             value={name}
             onChangeText={setName}
             className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] mb-4"
@@ -114,7 +137,7 @@ const HealthcareSignUp = () => {
 
           {/* Email Input */}
           <TextInput
-            placeholder="Email"
+            placeholder={emailPlaceholder}
             value={email}
             onChangeText={setEmail}
             className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] mb-4"
@@ -125,7 +148,7 @@ const HealthcareSignUp = () => {
 
           {/* Hospital Name Input */}
           <TextInput
-            placeholder="Hospital/Clinic Name"
+            placeholder={hospitalPlaceholder}
             value={hospitalName}
             onChangeText={setHospitalName}
             className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] mb-4"
@@ -136,7 +159,7 @@ const HealthcareSignUp = () => {
           {/* Password Input */}
           <View className="relative mb-4">
             <TextInput
-              placeholder="Password"
+              placeholder={passwordPlaceholder}
               value={password}
               onChangeText={setPassword}
               className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] pr-12"
@@ -160,7 +183,7 @@ const HealthcareSignUp = () => {
           {/* Confirm Password Input */}
           <View className="relative">
             <TextInput
-              placeholder="Confirm Password"
+              placeholder={confirmPasswordPlaceholder}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] pr-12"
@@ -196,7 +219,7 @@ const HealthcareSignUp = () => {
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <Text className="text-white text-center font-bold text-base">
-                Sign Up
+                {signUpButtonText}
               </Text>
             )}
           </TouchableOpacity>
@@ -204,12 +227,12 @@ const HealthcareSignUp = () => {
 
         {/* Footer pinned to bottom */}
         <View className="flex-row justify-center items-center mb-16">
-          <Text className="text-gray-600">Already have an account? </Text>
+          <Text className="text-gray-600">{haveAccountText} </Text>
           <TouchableOpacity
             onPress={() => router.push("/auth/healthcare/login")}
             disabled={isLoading}
           >
-            <Text className="text-[#006D5B] font-semibold">Log In</Text>
+            <Text className="text-[#006D5B] font-semibold">{loginText}</Text>
           </TouchableOpacity>
         </View>
 

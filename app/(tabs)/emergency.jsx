@@ -10,9 +10,31 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useTranslation } from "../../utils/translator";
 
 const Emergency = () => {
   const [tapCount, setTapCount] = useState(0);
+
+  // Translate all text
+  const viewHospitalsText = useTranslation("View hospitals near you");
+  const emergencyTitleText = useTranslation("Emergency Help Needed?");
+  const emergencySubtitleText = useTranslation(
+    "We are here to help with everything"
+  );
+  const tapInstructionText = useTranslation(
+    "Tap 3 times to send message to all your emergency contact."
+  );
+  const callHospitalText = useTranslation("Call Hospital");
+  const callFamilyText = useTranslation("Call Family");
+  const callFriendText = useTranslation("Call Friend");
+  const emergencyAlertText = useTranslation("Emergency Alert");
+  const messageSentText = useTranslation("Message sent to your contacts!");
+  const callText = useTranslation("Call");
+  const cancelText = useTranslation("Cancel");
+  const callFailedText = useTranslation("Call Failed 📞");
+  const unableToCallText = useTranslation(
+    "Unable to make call. Please try again."
+  );
 
   const handleTap = () => {
     const newCount = tapCount + 1;
@@ -21,8 +43,8 @@ const Emergency = () => {
     if (newCount >= 4) {
       Toast.show({
         type: "success",
-        text1: "Emergency Alert",
-        text2: "Message sent to your contacts!",
+        text1: emergencyAlertText,
+        text2: messageSentText,
       });
       setTapCount(0);
     }
@@ -49,8 +71,8 @@ const Emergency = () => {
             Linking.openURL(`tel:${phoneNumbers[type]}`).catch(() => {
               Toast.show({
                 type: "error",
-                text1: "Call Failed 📞",
-                text2: "Unable to make call. Please try again.",
+                text1: callFailedText,
+                text2: unableToCallText,
                 position: "top",
               });
             });
@@ -98,7 +120,7 @@ const Emergency = () => {
         {/* Top Section */}
         <View className="w-full px-5 justify-center flex flex-row">
           <TouchableOpacity className="border border-[#00D2B3] w-[200px] justify-center px-3 py-1.5 rounded-full flex-row items-center space-x-1">
-            <Text className="text-[14px]">View hospitals near you</Text>
+            <Text className="text-[14px]">{viewHospitalsText}</Text>
             <Icon name="directions" size={16} color="#00D2B3" />
           </TouchableOpacity>
         </View>
@@ -107,10 +129,10 @@ const Emergency = () => {
         <View className="items-center w-[300px] flex flex-col justify-between h-[50vh]">
           <View>
             <Text className="text-[32px] font-bold text-[#333] text-center mb-2">
-              Emergency Help Needed?
+              {emergencyTitleText}
             </Text>
             <Text className="text-[15px] text-[#666] mb-8 text-center">
-              We are here to help with everything
+              {emergencySubtitleText}
             </Text>
           </View>
 
@@ -150,7 +172,7 @@ const Emergency = () => {
           </TouchableOpacity>
 
           <Text className="text-[#666] text-center mt-8 px-8">
-            Tap 3 times to send message to all your emergency contact.
+            {tapInstructionText}
           </Text>
         </View>
 
@@ -167,7 +189,9 @@ const Emergency = () => {
                 source={require("../../assets/images/hospital.png")}
                 style={{ height: 26, width: 26 }}
               />
-              <Text className="font-semibold text-[14px]">Call Hospital</Text>
+              <Text className="font-semibold text-[14px]">
+                {callHospitalText}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -182,7 +206,9 @@ const Emergency = () => {
                 source={require("../../assets/images/hospital.png")}
                 style={{ height: 26, width: 26 }}
               />
-              <Text className="font-semibold text-[14px]">Call Family</Text>
+              <Text className="font-semibold text-[14px]">
+                {callFamilyText}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -194,7 +220,9 @@ const Emergency = () => {
                 source={require("../../assets/images/hospital.png")}
                 style={{ height: 26, width: 26 }}
               />
-              <Text className="font-semibold text-[14px]">Call Friend</Text>
+              <Text className="font-semibold text-[14px]">
+                {callFriendText}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

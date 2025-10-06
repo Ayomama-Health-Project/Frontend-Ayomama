@@ -16,6 +16,7 @@ import Toast from "react-native-toast-message";
 import CommentInputModal from "../../components/community/CommentInputModal";
 import ReplyModal from "../../components/community/ReplyModal";
 import ViewCommentsModal from "../../components/community/ViewCommentsModal";
+import { useTranslation } from "../../utils/translator";
 
 const isIOS = Platform.OS === "ios";
 
@@ -23,14 +24,32 @@ export default function Community() {
   const router = useRouter();
   const [messageText, setMessageText] = useState("");
 
+  // Translate all text
+  const communityText = useTranslation("Community");
+  const replySentText = useTranslation("Reply sent! 💬");
+  const replyPostedText = useTranslation("Your reply has been posted");
+  const commentAddedText = useTranslation("Comment added! 💬");
+  const commentPostedText = useTranslation("Your comment has been posted");
+  const messageSentText = useTranslation("Message sent! 📨");
+  const messagePostedText = useTranslation(
+    "Your message has been posted to the community"
+  );
+  const shareThoughtsText = useTranslation(
+    "Share your thoughts with other mothers..."
+  );
+  const repliesText = useTranslation("Replies");
+  const replyText = useTranslation("Reply");
+  const commentText = useTranslation("Comment");
+  const viewCommentsText = useTranslation("View Comments");
+
   // Modal states
   const [replyModalVisible, setReplyModalVisible] = useState(false);
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [viewCommentsModalVisible, setViewCommentsModalVisible] =
     useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [replyText, setReplyText] = useState("");
-  const [commentText, setCommentText] = useState("");
+  const [replyTextInput, setReplyTextInput] = useState("");
+  const [commentTextInput, setCommentTextInput] = useState("");
   const [expandedReplies, setExpandedReplies] = useState({});
 
   // Mock community posts data with replies and comments
@@ -148,12 +167,12 @@ export default function Community() {
   };
 
   const submitReply = () => {
-    if (replyText.trim() && selectedPost) {
+    if (replyTextInput.trim() && selectedPost) {
       const newReply = {
         id: Date.now(),
         author: "You",
         avatar: require("../../assets/images/profilepic.png"),
-        content: replyText,
+        content: replyTextInput,
         timestamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -174,25 +193,25 @@ export default function Community() {
 
       Toast.show({
         type: "success",
-        text1: "Reply sent! 💬",
-        text2: "Your reply has been posted",
+        text1: replySentText,
+        text2: replyPostedText,
         position: "top",
         visibilityTime: 2000,
       });
 
-      setReplyText("");
+      setReplyTextInput("");
       setReplyModalVisible(false);
       setSelectedPost(null);
     }
   };
 
   const submitComment = () => {
-    if (commentText.trim() && selectedPost) {
+    if (commentTextInput.trim() && selectedPost) {
       const newComment = {
         id: Date.now(),
         author: "You",
         avatar: require("../../assets/images/profilepic.png"),
-        content: commentText,
+        content: commentTextInput,
         timestamp: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -213,13 +232,13 @@ export default function Community() {
 
       Toast.show({
         type: "success",
-        text1: "Comment added! 💬",
-        text2: "Your comment has been posted",
+        text1: commentAddedText,
+        text2: commentPostedText,
         position: "top",
         visibilityTime: 2000,
       });
 
-      setCommentText("");
+      setCommentTextInput("");
       setCommentModalVisible(false);
       setSelectedPost(null);
     }
@@ -229,8 +248,8 @@ export default function Community() {
     if (messageText.trim()) {
       Toast.show({
         type: "success",
-        text1: "Message sent! 📨",
-        text2: "Your message has been posted to the community",
+        text1: messageSentText,
+        text2: messagePostedText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -268,7 +287,9 @@ export default function Community() {
             >
               <Ionicons name="arrow-back" size={24} color="#293231" />
             </TouchableOpacity>
-            <Text className="text-[#293231] text-xl font-bold">Community</Text>
+            <Text className="text-[#293231] text-xl font-bold">
+              {communityText}
+            </Text>
           </View>
         </View>
 
@@ -367,7 +388,7 @@ export default function Community() {
                         color="#00695C"
                       />
                       <Text className="text-[#00695C] text-sm ml-1 font-medium">
-                        Reply
+                        {replyText}
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -380,7 +401,7 @@ export default function Community() {
                         color="#00695C"
                       />
                       <Text className="text-[#00695C] text-sm ml-1 font-medium">
-                        Comment
+                        {commentText}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -433,7 +454,7 @@ export default function Community() {
             <View className="flex-1 bg-white rounded-full px-4 py-3 mr-3">
               <TextInput
                 className="text-[#293231]"
-                placeholder=""
+                placeholder={shareThoughtsText}
                 placeholderTextColor="#9CA3AF"
                 value={messageText}
                 onChangeText={setMessageText}
@@ -453,11 +474,11 @@ export default function Community() {
         <ReplyModal
           visible={replyModalVisible}
           selectedPost={selectedPost}
-          replyText={replyText}
-          setReplyText={setReplyText}
+          replyText={replyTextInput}
+          setReplyText={setReplyTextInput}
           onClose={() => {
             setReplyModalVisible(false);
-            setReplyText("");
+            setReplyTextInput("");
             setSelectedPost(null);
           }}
           onSubmit={submitReply}
@@ -467,11 +488,11 @@ export default function Community() {
         <CommentInputModal
           visible={commentModalVisible}
           selectedPost={selectedPost}
-          commentText={commentText}
-          setCommentText={setCommentText}
+          commentText={commentTextInput}
+          setCommentText={setCommentTextInput}
           onClose={() => {
             setCommentModalVisible(false);
-            setCommentText("");
+            setCommentTextInput("");
             setSelectedPost(null);
           }}
           onSubmit={submitComment}

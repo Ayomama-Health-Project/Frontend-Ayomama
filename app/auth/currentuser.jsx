@@ -10,12 +10,38 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import useAuthStore from "../../store/useAuthStore";
+import { useTranslation } from "../../utils/translator";
 
 const CurrentUser = () => {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, refreshUser, logout } =
     useAuthStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Translate all text
+  const welcomeBackText = useTranslation("Welcome Back");
+  const accountReadyText = useTranslation("Your account is ready to continue");
+  const emailText = useTranslation("Email:");
+  const phoneText = useTranslation("Phone:");
+  const languageText = useTranslation("Language:");
+  const refreshButtonText = useTranslation("Refresh User Data");
+  const goToHomeText = useTranslation("Go to Home");
+  const switchAccountText = useTranslation("Want to switch account?");
+  const logoutText = useTranslation("Logout");
+  const refreshedText = useTranslation("Refreshed!");
+  const dataUpdatedText = useTranslation("User data updated successfully");
+  const welcomeText = useTranslation("Welcome!");
+  const redirectingText = useTranslation("Redirecting to home...");
+  const logoutTitleText = useTranslation("Logout");
+  const logoutMessageText = useTranslation(
+    "Are you sure you want to logout? You can login with another account."
+  );
+  const cancelText = useTranslation("Cancel");
+  const loggedOutText = useTranslation("Logged Out");
+  const seeSoonText = useTranslation("See you soon!");
+  const loadingUserText = useTranslation("Loading user...");
+  const noUserText = useTranslation("No user found. Please login.");
+  const goToLoginText = useTranslation("Go to Login");
 
   useEffect(() => {
     // If not authenticated, redirect to login
@@ -31,8 +57,8 @@ const CurrentUser = () => {
     if (result) {
       Toast.show({
         type: "success",
-        text1: "Refreshed!",
-        text2: "User data updated successfully",
+        text1: refreshedText,
+        text2: dataUpdatedText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -42,8 +68,8 @@ const CurrentUser = () => {
   const handleGoToHome = () => {
     Toast.show({
       type: "success",
-      text1: "Welcome!",
-      text2: "Redirecting to home...",
+      text1: welcomeText,
+      text2: redirectingText,
       position: "top",
       visibilityTime: 1500,
     });
@@ -53,40 +79,36 @@ const CurrentUser = () => {
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to logout? You can login with another account.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
+    Alert.alert(logoutTitleText, logoutMessageText, [
+      {
+        text: cancelText,
+        style: "cancel",
+      },
+      {
+        text: logoutText,
+        style: "destructive",
+        onPress: async () => {
+          await logout();
+          Toast.show({
+            type: "info",
+            text1: loggedOutText,
+            text2: seeSoonText,
+            position: "top",
+            visibilityTime: 2000,
+          });
+          setTimeout(() => {
+            router.replace("/auth/login");
+          }, 2000);
         },
-        {
-          text: "Logout",
-          style: "destructive",
-          onPress: async () => {
-            await logout();
-            Toast.show({
-              type: "info",
-              text1: "Logged Out",
-              text2: "See you soon!",
-              position: "top",
-              visibilityTime: 2000,
-            });
-            setTimeout(() => {
-              router.replace("/auth/login");
-            }, 2000);
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-[#FCFCFC]">
         <ActivityIndicator size="large" color="#006D5B" />
-        <Text className="mt-2 text-gray-600">Loading user...</Text>
+        <Text className="mt-2 text-gray-600">{loadingUserText}</Text>
       </View>
     );
   }
@@ -94,14 +116,12 @@ const CurrentUser = () => {
   if (!isAuthenticated || !user) {
     return (
       <View className="flex-1 items-center justify-center bg-[#FCFCFC] p-6">
-        <Text className="text-red-500 text-lg mb-4">
-          No user found. Please login.
-        </Text>
+        <Text className="text-red-500 text-lg mb-4">{noUserText}</Text>
         <TouchableOpacity
           className="bg-[#006D5B] px-6 py-3 rounded-2xl"
           onPress={() => router.push("/auth/login")}
         >
-          <Text className="text-white font-semibold">Go to Login</Text>
+          <Text className="text-white font-semibold">{goToLoginText}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -121,30 +141,28 @@ const CurrentUser = () => {
 
         {/* Title */}
         <Text className="text-2xl font-bold text-left mt-6 mb-2">
-          Welcome Back, {user.name}!
+          {welcomeBackText}, {user.name}!
         </Text>
 
         {/* Subtitle */}
-        <Text className="text-gray-600 mb-10">
-          Your account is ready to continue
-        </Text>
+        <Text className="text-gray-600 mb-10">{accountReadyText}</Text>
 
         {/* User Info Card */}
         <View className="w-full border border-gray-300 rounded-2xl px-4 py-4 mb-4">
           <View className="flex-row items-center mb-2">
-            <Text className="text-gray-500 w-20">Email:</Text>
+            <Text className="text-gray-500 w-20">{emailText}</Text>
             <Text className="text-gray-700 flex-1" numberOfLines={1}>
               {user.email}
             </Text>
           </View>
           {user.phone && (
             <View className="flex-row items-center mb-2">
-              <Text className="text-gray-500 w-20">Phone:</Text>
+              <Text className="text-gray-500 w-20">{phoneText}</Text>
               <Text className="text-gray-700 flex-1">{user.phone}</Text>
             </View>
           )}
           <View className="flex-row items-center">
-            <Text className="text-gray-500 w-20">Language:</Text>
+            <Text className="text-gray-500 w-20">{languageText}</Text>
             <Text className="text-gray-700 flex-1">
               {user.preferredLanguages || "en"}
             </Text>
@@ -161,7 +179,7 @@ const CurrentUser = () => {
             <ActivityIndicator color="#006D5B" />
           ) : (
             <Text className="text-[#006D5B] text-center font-semibold text-base">
-              Refresh User Data
+              {refreshButtonText}
             </Text>
           )}
         </TouchableOpacity>
@@ -172,16 +190,16 @@ const CurrentUser = () => {
           onPress={handleGoToHome}
         >
           <Text className="text-white text-center font-bold text-base">
-            Go to Home
+            {goToHomeText}
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Footer pinned */}
       <View className="flex-row justify-center items-center mb-16">
-        <Text className="text-gray-600">Want to switch account? </Text>
+        <Text className="text-gray-600">{switchAccountText} </Text>
         <TouchableOpacity onPress={handleLogout}>
-          <Text className="text-red-500 font-semibold">Logout</Text>
+          <Text className="text-red-500 font-semibold">{logoutText}</Text>
         </TouchableOpacity>
       </View>
 

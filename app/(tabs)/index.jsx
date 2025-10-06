@@ -25,6 +25,7 @@ import Toast from "react-native-toast-message";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useAuthStore from "../../store/useAuthStore";
+import { useTranslation } from "../../utils/translator";
 
 const { width, height } = Dimensions.get("window");
 const ios = Platform.OS === "ios";
@@ -37,6 +38,64 @@ export default function HomeScreen() {
     walk: false,
     clinic: false,
   });
+
+  // Translate all UI text
+  const helloText = useTranslation("Hello");
+  const weekText = useTranslation("Week 18");
+  const babyDescText = useTranslation(
+    "Your baby is now about the size of a bell pepper"
+  );
+  const babyTipText = useTranslation(
+    "This week, consider talking to your baby. They can hear you now!"
+  );
+  const dailyChecklistText = useTranslation("Daily Checklist");
+  const takeIronText = useTranslation("Take iron supplements");
+  const drinkWaterText = useTranslation("Drink 8 glasses of water");
+  const walkText = useTranslation("30 mins walk");
+  const clinicVisitText = useTranslation("Schedule clinic visit");
+  const vitalsOverviewText = useTranslation("Vitals Overview");
+  const bloodPressureText = useTranslation("Blood Pressure");
+  const weightText = useTranslation("Weight");
+  const temperatureText = useTranslation("Temperature");
+  const bloodLevelText = useTranslation("Blood Level");
+  const updateVitalsText = useTranslation("Update Vitals");
+  const upcomingVisitText = useTranslation("Upcoming Visit");
+  const antenatalCheckupText = useTranslation("Antenatal Check-up");
+  const viewDetailsText = useTranslation("View Details");
+  const addToCalendarText = useTranslation("Add to Calendar");
+  const emergencyContactText = useTranslation("Emergency Contact");
+  const needHelpText = useTranslation("Need Help?");
+  const callHospitalText = useTranslation("Call Hospital");
+  const callFamilyText = useTranslation("Call Family");
+  const callFriendText = useTranslation("Call Friend");
+  const wellnessActivitiesText = useTranslation("Wellness Activities");
+  const prenatalYogaText = useTranslation("Prenatal Yoga");
+  const minsSessionText = useTranslation("15 mins session");
+  const breathingText = useTranslation("Breathing");
+  const minsExerciseText = useTranslation("5 mins exercise");
+  const meditationText = useTranslation("Meditation");
+  const tenMinsSessionText = useTranslation("10 mins session");
+  const sleepStoriesText = useTranslation("Sleep Stories");
+  const fifteenMinsSessionText = useTranslation("15 mins session");
+  const startText = useTranslation("Start");
+  const nutritionTodayText = useTranslation("Nutrition Today");
+  const breakfastText = useTranslation("Breakfast");
+  const lunchText = useTranslation("Lunch");
+  const dinnerText = useTranslation("Dinner");
+  const babyDevelopmentText = useTranslation("Baby's Development");
+  const weekMilestonesText = useTranslation("Week 18 Milestones");
+  const babyCanHearText = useTranslation("Your baby can now hear sounds.🎉");
+  const fingerToesText = useTranslation(
+    "Your baby's finger and toes are growing.🎉"
+  );
+  const babyMoveText = useTranslation("Your baby can move actively.🎉");
+  const learnMoreWeekText = useTranslation("Learn more about week 18");
+  const learnMoreText = useTranslation("Learn more about week 18");
+  const milestone1Text = useTranslation("Your babay can now hear sounds.🎉");
+  const milestone2Text = useTranslation(
+    "Your baby's finger and toes are growing.🎉"
+  );
+  const milestone3Text = useTranslation("Your baby can move actively.🎉");
 
   // Handle checklist completion
   const handleChecklistComplete = (item) => {
@@ -170,7 +229,7 @@ export default function HomeScreen() {
             />
           </TouchableOpacity>
           <View className="flex-1 items-center mx-4">
-            <Text className="text-gray-500 text-sm">Hello,</Text>
+            <Text className="text-gray-500 text-sm">{helloText}</Text>
             <Text className="text-[#293231] text-lg font-bold">
               {user?.name || "Guest"}
             </Text>
@@ -206,16 +265,16 @@ export default function HomeScreen() {
               <View className="border-[0.9px] border-[#FF7F50] h-[203px] rounded-2xl py-[10px] px-[8px]">
                 <View className="bg-[#FCFCFC] w-[108px] rounded-2xl flex  px-[13px] py-[10px] mb-3 ">
                   <Text className="text-[#293231] text-[20px] text-center leading-[100%] font-semibold">
-                    Week 18
+                    {weekText}
                   </Text>
                 </View>
                 <View className="flex-row items-center">
                   <View className="flex-1">
                     <Text className="text-[#293231] text-base text-[14px] leading-6">
-                      Your baby is now about the size of a lime 🍋‍🟩{"\n"}
+                      {babyDescText}
                       {"\n"}
-                      Tiny fingers and toes are forming. Remember to rest and
-                      eat well mama.
+                      {"\n"}
+                      {babyTipText}
                     </Text>
                   </View>
                   <Image
@@ -240,7 +299,7 @@ export default function HomeScreen() {
             className="shadow-lg shadow-black/25"
           >
             <Text className="text-xl font-bold text-gray-900 mb-4">
-              ✔️Daily Checklist
+              {dailyChecklistText}
             </Text>
 
             <View className="flex flex-col gap-6">
@@ -257,7 +316,7 @@ export default function HomeScreen() {
                     style={{ width: 45, height: 50 }}
                   />
                   <Text className="text-[#293231] text-base flex-1">
-                    Take iron supplement
+                    {takeIronText}
                   </Text>
                 </View>
                 <Checkbox
@@ -280,7 +339,7 @@ export default function HomeScreen() {
                     style={{ width: 45, height: 50 }}
                   />
                   <Text className="text-[#293231] text-base flex-1">
-                    Drink 8 glasses of water
+                    {drinkWaterText}
                   </Text>
                 </View>
                 <Checkbox
@@ -303,7 +362,7 @@ export default function HomeScreen() {
                     style={{ width: 45, height: 50 }}
                   />
                   <Text className="text-[#293231] text-base flex-1">
-                    Walk 5 miles
+                    {walkText}
                   </Text>
                 </View>
                 <Checkbox
@@ -326,7 +385,7 @@ export default function HomeScreen() {
                     style={{ width: 45, height: 50 }}
                   />
                   <Text className="text-[#293231] text-base flex-1">
-                    Clinic visit tomorrow
+                    {clinicVisitText}
                   </Text>
                 </View>
                 <Checkbox
@@ -341,7 +400,7 @@ export default function HomeScreen() {
           {/* Your Vitals Overview */}
           <View>
             <Text className="text-xl font-bold text-gray-900 mb-4">
-              Your Vitals Overview
+              {vitalsOverviewText}
             </Text>
 
             {/* Vitals Image */}
@@ -376,7 +435,7 @@ export default function HomeScreen() {
                       <Icon name="favorite" size={14} color="#fff" />
                     </View>
                     <Text className="text-[#293231] text-sm font-semibold">
-                      Blood Pressure
+                      {bloodPressureText}
                     </Text>
                   </View>
                   <Text className="text-[#293231] text-lg font-bold">
@@ -394,7 +453,7 @@ export default function HomeScreen() {
                       <Icon name="monitor-weight" size={14} color="#fff" />
                     </View>
                     <Text className="text-[#293231] text-sm font-semibold">
-                      Weight
+                      {weightText}
                     </Text>
                   </View>
                   <Text className="text-[#293231] text-lg font-bold">
@@ -415,7 +474,7 @@ export default function HomeScreen() {
                       <Icon name="thermostat" size={14} color="#fff" />
                     </View>
                     <Text className="text-[#293231] text-sm font-semibold">
-                      Temperature
+                      {temperatureText}
                     </Text>
                   </View>
                   <Text className="text-[#293231] text-lg font-bold">
@@ -433,7 +492,7 @@ export default function HomeScreen() {
                       <Icon name="bloodtype" size={14} color="#fff" />
                     </View>
                     <Text className="text-[#293231] text-sm font-semibold">
-                      Blood Level
+                      {bloodLevelText}
                     </Text>
                   </View>
                   <Text className="text-[#293231] text-lg font-bold">
@@ -451,7 +510,7 @@ export default function HomeScreen() {
               activeOpacity={0.7}
             >
               <Text className="text-white font-semibold text-base">
-                Update Vitals
+                {updateVitalsText}
               </Text>
             </TouchableOpacity>
           </View>
@@ -464,7 +523,7 @@ export default function HomeScreen() {
             <View className="flex flex-row items-center gap-3">
               <Icon name="calendar-month" size={24} />
               <Text className="text-[#293231] text-[24px] leading-[100%] font-bold mb-2">
-                Upcoming Visit
+                {upcomingVisitText}
               </Text>
             </View>
 
@@ -481,7 +540,7 @@ export default function HomeScreen() {
             >
               <View className="text-center gap-3">
                 <Text className="text-[#293231] text-[19px] leading-[100%] font-semibold">
-                  Tomorrow Antenatal CheckUp!
+                  {antenatalCheckupText}
                 </Text>
                 <Text className="text-center text-[#293231] font-medium text-[16px]">
                   10:30 am July 20th
@@ -503,7 +562,7 @@ export default function HomeScreen() {
                 activeOpacity={0.7}
               >
                 <Text className="text-white font-semibold text-base">
-                  View Details
+                  {viewDetailsText}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -513,7 +572,7 @@ export default function HomeScreen() {
                 activeOpacity={0.7}
               >
                 <Text className="text-[#293231] font-semibold text-base">
-                  Add to Calendar
+                  {addToCalendarText}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -529,7 +588,7 @@ export default function HomeScreen() {
                 <Icon name="phone" size={22} color="#ffff" />
               </View>
               <Text className="text-[#293231] text-[24px] leading-[100%] font-bold">
-                Emergency Contact
+                {emergencyContactText}
               </Text>
             </View>
 
@@ -548,7 +607,7 @@ export default function HomeScreen() {
               >
                 <View className="text-center gap-3">
                   <Text className="text-[#293231] text-[19px] leading-[100%] font-semibold">
-                    Need Urgent Help?
+                    {needHelpText}
                   </Text>
                 </View>
                 <Image
@@ -589,7 +648,9 @@ export default function HomeScreen() {
                     source={require("../../assets/images/hospital.png")}
                     style={{ height: 26, width: 26 }}
                   />
-                  <Text className="font-semibold text-[14px]">Call Family</Text>
+                  <Text className="font-semibold text-[14px]">
+                    {callFamilyText}
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -601,7 +662,9 @@ export default function HomeScreen() {
                     source={require("../../assets/images/hospital.png")}
                     style={{ height: 26, width: 26 }}
                   />
-                  <Text className="font-semibold text-[14px]">Call Friend</Text>
+                  <Text className="font-semibold text-[14px]">
+                    {callFriendText}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -618,7 +681,7 @@ export default function HomeScreen() {
                 className="w-[26px] h-[26px]"
               />
               <Text className="text-[#293231] text-[24px] leading-[100%] font-bold">
-                Wellness Activites
+                {wellnessActivitiesText}
               </Text>
             </View>
 
@@ -648,12 +711,12 @@ export default function HomeScreen() {
                   <View>
                     <View className="text-center gap-3">
                       <Text className="text-[#293231] text-center  text-[14px] leading-[100%] font-semibold">
-                        Prenatal Yoga
+                        {prenatalYogaText}
                       </Text>
                     </View>
                     <View className="text-center gap-3">
                       <Text className="text-[#293231] text-center text-[12px] leading-[100%]">
-                        15 mins session
+                        {minsSessionText}
                       </Text>
                     </View>
                   </View>
@@ -663,7 +726,7 @@ export default function HomeScreen() {
                     onPress={() => handleWellnessStart("Prenatal Yoga")}
                   >
                     <Text className="text-[#293231] font-semibold text-[14px]">
-                      Start
+                      {startText}
                     </Text>
                   </TouchableOpacity>
                 </LinearGradient>
@@ -694,12 +757,12 @@ export default function HomeScreen() {
                   <View>
                     <View className="text-center gap-3">
                       <Text className="text-[#293231] text-center text-[14px] leading-[100%] font-semibold">
-                        Breathing
+                        {breathingText}
                       </Text>
                     </View>
                     <View className="text-center gap-3">
                       <Text className="text-[#293231] text-[12px] leading-[100%]">
-                        5 mins exercise
+                        {minsExerciseText}
                       </Text>
                     </View>
                   </View>
@@ -709,7 +772,7 @@ export default function HomeScreen() {
                     onPress={() => handleWellnessStart("Breathing Exercises")}
                   >
                     <Text className="text-[#293231] font-semibold text-[14px]">
-                      Start
+                      {startText}
                     </Text>
                   </TouchableOpacity>
                 </LinearGradient>
@@ -742,12 +805,12 @@ export default function HomeScreen() {
                   <View>
                     <View className="text-center gap-3">
                       <Text className="text-[#293231] text-[14px] text-center leading-[100%] font-semibold">
-                        Meditation
+                        {meditationText}
                       </Text>
                     </View>
                     <View className="text-center gap-3">
                       <Text className="text-[#293231] text-[12px] text-center leading-[100%]">
-                        10 mins session
+                        {tenMinsSessionText}
                       </Text>
                     </View>
                   </View>
@@ -757,7 +820,7 @@ export default function HomeScreen() {
                     onPress={() => handleWellnessStart("Meditation")}
                   >
                     <Text className="text-[#293231] font-semibold text-[14px]">
-                      Start
+                      {startText}
                     </Text>
                   </TouchableOpacity>
                 </LinearGradient>
@@ -788,12 +851,12 @@ export default function HomeScreen() {
                   <View>
                     <View className="text-center gap-3">
                       <Text className="text-[#293231] text-[14px] text-center leading-[100%] font-semibold">
-                        Sleep Stories
+                        {sleepStoriesText}
                       </Text>
                     </View>
                     <View className="text-center gap-3">
                       <Text className="text-[#293231] tesxt-center text-[12px] leading-[100%]">
-                        15 mins session
+                        {fifteenMinsSessionText}
                       </Text>
                     </View>
                   </View>
@@ -803,7 +866,7 @@ export default function HomeScreen() {
                     onPress={() => handleWellnessStart("Sleep Stories")}
                   >
                     <Text className="text-[#293231] font-semibold text-[14px]">
-                      Start
+                      {startText}
                     </Text>
                   </TouchableOpacity>
                 </LinearGradient>
@@ -822,7 +885,7 @@ export default function HomeScreen() {
                 className="w-[26px] h-[26px]"
               />
               <Text className="text-[#293231] text-[24px] leading-[100%] font-bold">
-                Nutrition Today
+                {nutritionTodayText}
               </Text>
             </View>
 
@@ -837,7 +900,7 @@ export default function HomeScreen() {
                 >
                   <View className="py-2 items-center">
                     <Text className="text-[#293231] font-semibold text-[14px]">
-                      Breakfast
+                      {breakfastText}
                     </Text>
                     <Text className="text-[#6B7280] text-[12px]">
                       12am-12pm
@@ -847,7 +910,7 @@ export default function HomeScreen() {
                 <TabsTab value="lunch" className="flex-1 mx-1">
                   <View className="py-2 items-center">
                     <Text className="text-[#293231] font-semibold text-[14px]">
-                      Lunch
+                      {lunchText}
                     </Text>
                     <Text className="text-[#6B7280] text-[12px]">
                       12pm-05pm
@@ -857,7 +920,7 @@ export default function HomeScreen() {
                 <TabsTab value="dinner" className="flex-1 mx-1">
                   <View className="py-2 items-center">
                     <Text className="text-[#293231] font-semibold text-[14px]">
-                      Dinner
+                      {dinnerText}
                     </Text>
                     <Text className="text-[#6B7280] text-[12px]">
                       05pm-09pm
@@ -1517,13 +1580,13 @@ export default function HomeScreen() {
                 className="w-[26px] h-[26px]"
               />
               <Text className="text-[#293231] text-[24px] leading-[100%] font-bold">
-                Baby&#39;s Development
+                {babyDevelopmentText}
               </Text>
             </View>
 
             <View className="flex flex-col gap-4">
               <Text className="text-[#293231] font-semibold text-[20px] ">
-                Week 18 Milestones
+                {weekMilestonesText}
               </Text>
               <View className="flex flex-row justify-center">
                 <LinearGradient
@@ -1549,21 +1612,15 @@ export default function HomeScreen() {
               >
                 <View className="flex flex-row gap-3">
                   <Text className="text-[14px]">&middot;</Text>
-                  <Text className="text-[14px]">
-                    Your babay can now hear sounds.🎉
-                  </Text>
+                  <Text className="text-[14px]">{babyCanHearText}</Text>
                 </View>
                 <View className="flex flex-row gap-3">
                   <Text className="text-[14px]">&middot;</Text>
-                  <Text className="text-[14px]">
-                    Your baby&#39;s finger and toes are growing.🎉
-                  </Text>
+                  <Text className="text-[14px]">{fingerToesText}</Text>
                 </View>
                 <View className="flex flex-row gap-3">
                   <Text className="text-[14px]">&middot;</Text>
-                  <Text className="text-[14px]">
-                    Your baby can move actively.🎉
-                  </Text>
+                  <Text className="text-[14px]">{babyMoveText}</Text>
                 </View>
               </View>
             </View>
@@ -1576,7 +1633,7 @@ export default function HomeScreen() {
               activeOpacity={0.7}
             >
               <Text className="text-white text-center font-semibold text-[16px]">
-                Learn more about week 18
+                {learnMoreWeekText}
               </Text>
             </TouchableOpacity>
           </View>

@@ -2,22 +2,21 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Platform,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Platform, Text, TouchableOpacity, View } from "react-native";
 import useAuthStore from "../../store/useAuthStore";
+import useTranslatorStore from "../../store/useTranslatorStore";
+import { useTranslation } from "../../utils/translator";
 
 const ios = Platform.OS === "ios";
 
 export default function ChangeLanguage() {
   const router = useRouter();
   const { user, updateLanguagePreference, isLoading } = useAuthStore();
+  const { setLanguage: setTranslatorLanguage } = useTranslatorStore();
   const [selectedLanguage, setSelectedLanguage] = useState("English");
-  const [hasChanges, setHasChanges] = useState(false);
+
+  // Translate UI text
+  const titleText = useTranslation("Change Language");
 
   const languages = [
     { id: 1, name: "English", code: "en" },
@@ -44,36 +43,25 @@ export default function ChangeLanguage() {
     router.back();
   };
 
-  const handleSelectLanguage = (language) => {
+  const handleSelectLanguage = async (language) => {
     setSelectedLanguage(language);
-    setHasChanges(true);
-  };
-
-  const handleSave = async () => {
-    if (!hasChanges) {
-      console.log("No changes detected");
-      return;
-    }
 
     // Get the language code
-    const languageCode = languages.find(
-      (lang) => lang.name === selectedLanguage
-    )?.code;
+    const languageCode = languages.find((lang) => lang.name === language)?.code;
 
     if (!languageCode) {
       console.log("Invalid language selection");
       return;
     }
 
-    // Update language preference via API
+    // Update translator language immediately
+    await setTranslatorLanguage(languageCode);
+
+    // Update language preference via API immediately
     const result = await updateLanguagePreference(languageCode);
 
     if (result.success) {
-      setHasChanges(false);
-      console.log("Language updated successfully");
-
-      // Navigate back immediately
-      router.back();
+      console.log("Language updated successfully to:", language);
     } else {
       console.log("Failed to update language:", result.error);
     }
@@ -114,7 +102,7 @@ export default function ChangeLanguage() {
           </TouchableOpacity>
 
           <Text className="text-xl font-bold text-[#293231] ml-[65px]">
-            Change Language
+            {titleText}
           </Text>
         </View>
 
@@ -152,36 +140,6 @@ export default function ChangeLanguage() {
               </View>
             </TouchableOpacity>
           ))}
-
-          {/* Save Button */}
-          <View className="mt-auto mb-8">
-            <TouchableOpacity
-              onPress={handleSave}
-              className={`rounded-2xl h-[56px] items-center justify-center ${
-                hasChanges && !isLoading ? "bg-[#006D5B]" : "bg-[#D1D5DB]"
-              }`}
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 2,
-              }}
-              disabled={!hasChanges || isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text
-                  className={`font-semibold text-[16px] ${
-                    hasChanges ? "text-white" : "text-[#9CA3AF]"
-                  }`}
-                >
-                  Save Changes
-                </Text>
-              )}
-            </TouchableOpacity>
-          </View>
         </View>
       </View>
     </View>

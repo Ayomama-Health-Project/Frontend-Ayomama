@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "../../utils/translator";
 
 const isIOS = Platform.OS === "ios";
 
@@ -24,6 +25,36 @@ export default function AddPatient() {
   const [antenatalVisits, setAntenatalVisits] = useState([{ date: "" }]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Translate all text
+  const addPatientText = useTranslation("Add Patient");
+  const patientNameText = useTranslation("Patient Name");
+  const patientNamePlaceholder = useTranslation("Grace Adam");
+  const pregnancyStageText = useTranslation("Pregnancy stage");
+  const pregnancyStagePlaceholder = useTranslation("36 weeks");
+  const visitDateText = useTranslation("Visit Date");
+  const timeText = useTranslation("Time");
+  const durationText = useTranslation("Duration");
+  const antenatalVisitText = useTranslation("Antinental visit");
+  const contactInfoText = useTranslation("Contact Info");
+  const phoneNumberPlaceholder = useTranslation("Phone number");
+  const saveText = useTranslation("Save");
+  const savingText = useTranslation("Saving...");
+  const requiredFieldText = useTranslation("Required Field");
+  const enterPatientNameText = useTranslation("Please enter patient name");
+  const enterPregnancyStageText = useTranslation(
+    "Please enter pregnancy stage"
+  );
+  const selectVisitDateText = useTranslation("Please select visit date");
+  const selectVisitTimeText = useTranslation("Please select visit time");
+  const selectDurationText = useTranslation("Please select duration");
+  const enterPhoneNumberText = useTranslation("Please enter phone number");
+  const successText = useTranslation("Success");
+  const patientAddedText = useTranslation("Patient added successfully");
+  const errorText = useTranslation("Error");
+  const failedToAddPatientText = useTranslation(
+    "Failed to add patient. Please try again."
+  );
 
   const addAntenatalVisit = () => {
     setAntenatalVisits([...antenatalVisits, { date: "" }]);
@@ -47,8 +78,8 @@ export default function AddPatient() {
     if (!patientName.trim()) {
       Toast.show({
         type: "error",
-        text1: "Required Field",
-        text2: "Please enter patient name",
+        text1: requiredFieldText,
+        text2: enterPatientNameText,
       });
       return;
     }
@@ -56,8 +87,8 @@ export default function AddPatient() {
     if (!pregnancyStage.trim()) {
       Toast.show({
         type: "error",
-        text1: "Required Field",
-        text2: "Please enter pregnancy stage",
+        text1: requiredFieldText,
+        text2: enterPregnancyStageText,
       });
       return;
     }
@@ -65,8 +96,8 @@ export default function AddPatient() {
     if (!visitDate.trim()) {
       Toast.show({
         type: "error",
-        text1: "Required Field",
-        text2: "Please select visit date",
+        text1: requiredFieldText,
+        text2: selectVisitDateText,
       });
       return;
     }
@@ -74,8 +105,8 @@ export default function AddPatient() {
     if (!visitTime.trim()) {
       Toast.show({
         type: "error",
-        text1: "Required Field",
-        text2: "Please select visit time",
+        text1: requiredFieldText,
+        text2: selectVisitTimeText,
       });
       return;
     }
@@ -83,8 +114,8 @@ export default function AddPatient() {
     if (!duration.trim()) {
       Toast.show({
         type: "error",
-        text1: "Required Field",
-        text2: "Please select duration",
+        text1: requiredFieldText,
+        text2: selectDurationText,
       });
       return;
     }
@@ -92,8 +123,8 @@ export default function AddPatient() {
     if (!phoneNumber.trim()) {
       Toast.show({
         type: "error",
-        text1: "Required Field",
-        text2: "Please enter phone number",
+        text1: requiredFieldText,
+        text2: enterPhoneNumberText,
       });
       return;
     }
@@ -119,8 +150,8 @@ export default function AddPatient() {
 
       Toast.show({
         type: "success",
-        text1: "Success",
-        text2: "Patient added successfully",
+        text1: successText,
+        text2: patientAddedText,
       });
 
       // Navigate back to dashboard
@@ -130,8 +161,8 @@ export default function AddPatient() {
     } catch (error) {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to add patient. Please try again.",
+        text1: errorText,
+        text2: failedToAddPatientText,
       });
     } finally {
       setIsLoading(false);
@@ -163,7 +194,9 @@ export default function AddPatient() {
           >
             <Ionicons name="arrow-back" size={24} color="#293231" />
           </TouchableOpacity>
-          <Text className="text-[#293231] text-xl font-bold">Add Patient</Text>
+          <Text className="text-[#293231] text-xl font-bold">
+            {addPatientText}
+          </Text>
         </View>
       </View>
 
@@ -175,11 +208,11 @@ export default function AddPatient() {
         {/* Patient Name */}
         <View className="mt-6">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Patient Name
+            {patientNameText}
           </Text>
           <TextInput
             className="border border-[#00D2B3] rounded-2xl px-4 py-3 text-[#293231]"
-            placeholder="Grace Adam"
+            placeholder={patientNamePlaceholder}
             placeholderTextColor="#9CA3AF"
             value={patientName}
             onChangeText={setPatientName}
@@ -189,11 +222,11 @@ export default function AddPatient() {
         {/* Pregnancy Stage */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Pregnancy stage
+            {pregnancyStageText}
           </Text>
           <TextInput
             className="border border-[#00D2B3] rounded-2xl px-4 py-3 text-[#293231]"
-            placeholder="36 weeks"
+            placeholder={pregnancyStagePlaceholder}
             placeholderTextColor="#9CA3AF"
             value={pregnancyStage}
             onChangeText={setPregnancyStage}
@@ -203,7 +236,7 @@ export default function AddPatient() {
         {/* Visit Date */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Visit Date
+            {visitDateText}
           </Text>
           <View className="border border-[#00D2B3] rounded-2xl px-4 py-3 flex-row items-center justify-between">
             <View className="flex-row items-center flex-1">
@@ -230,7 +263,7 @@ export default function AddPatient() {
           {/* Time */}
           <View className="flex-1 mr-2">
             <Text className="text-[#293231] text-base font-medium mb-2">
-              Time
+              {timeText}
             </Text>
             <View className="border border-[#00D2B3] rounded-2xl px-4 py-3 flex-row items-center justify-between">
               <View className="flex-row items-center flex-1">
@@ -255,7 +288,7 @@ export default function AddPatient() {
           {/* Duration */}
           <View className="flex-1 ml-2">
             <Text className="text-[#293231] text-base font-medium mb-2">
-              Duration
+              {durationText}
             </Text>
             <View className="border border-[#00D2B3] rounded-2xl px-4 py-3 flex-row items-center justify-between">
               <View className="flex-row items-center flex-1">
@@ -281,7 +314,7 @@ export default function AddPatient() {
         {/* Antenatal Visits */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Antinental visit
+            {antenatalVisitText}
           </Text>
           {antenatalVisits.map((visit, index) => (
             <View key={index} className="mb-3 flex-row items-center">
@@ -326,11 +359,11 @@ export default function AddPatient() {
         {/* Contact Info */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Contact Info
+            {contactInfoText}
           </Text>
           <TextInput
             className="border border-[#00D2B3] rounded-2xl px-4 py-3 text-[#293231]"
-            placeholder="Phone number"
+            placeholder={phoneNumberPlaceholder}
             placeholderTextColor="#9CA3AF"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
@@ -350,7 +383,7 @@ export default function AddPatient() {
           }}
         >
           <Text className="text-white text-center text-base font-semibold">
-            {isLoading ? "Saving..." : "Save"}
+            {isLoading ? savingText : saveText}
           </Text>
         </TouchableOpacity>
       </View>

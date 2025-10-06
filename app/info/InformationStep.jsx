@@ -13,6 +13,7 @@ import {
 import Toast from "react-native-toast-message";
 import PickerModal from "../../components/PickerModal";
 import useAuthStore from "../../store/useAuthStore";
+import { useTranslation } from "../../utils/translator";
 
 export default function InformationStep({ onNext, onBack }) {
   const {
@@ -30,6 +31,57 @@ export default function InformationStep({ onNext, onBack }) {
   const [openPicker, setOpenPicker] = useState(null); // 'month' | 'day' | 'year' | null
   const [openRelationPicker, setOpenRelationPicker] = useState(null); // contact id for relation selection
   const [error, setError] = useState("");
+
+  // Translate all text
+  const personalInfoText = useTranslation("Personal Information");
+  const fullNameText = useTranslation("Full Name");
+  const enterFullNameText = useTranslation("Enter full name");
+  const homeAddressText = useTranslation("Home Address");
+  const enterAddressText = useTranslation("Enter address");
+  const yourPhoneNumberText = useTranslation("Your Phone Number");
+  const lastPeriodText = useTranslation("When last did you see your period?");
+  const monthText = useTranslation("Month");
+  const dayText = useTranslation("Day");
+  const yearText = useTranslation("Year");
+  const selectText = useTranslation("Select");
+  const selectRelationText = useTranslation("Select Relation");
+  const emergencyContactsText = useTranslation("Emergency Contact(s)");
+  const addContactText = useTranslation("Add Contact");
+  const contactText = useTranslation("Contact");
+  const removeText = useTranslation("Remove");
+  const nameText = useTranslation("Name");
+  const enterNameText = useTranslation("Enter name");
+  const phoneNumberText = useTranslation("Phone Number");
+  const relationText = useTranslation("Relation");
+  const selectRelationPlaceholderText = useTranslation("Select relation");
+  const backText = useTranslation("Back");
+  const nextText = useTranslation("Next");
+  const validationErrorText = useTranslation("Validation Error");
+  const enterFullNameErrorText = useTranslation("Please enter your full name");
+  const fullNameRequiredText = useTranslation("Full name is required");
+  const enterAddressErrorText = useTranslation("Please enter your address");
+  const addressRequiredText = useTranslation("Address is required");
+  const enterPhoneNumberErrorText = useTranslation(
+    "Please enter your phone number"
+  );
+  const phoneNumberRequiredText = useTranslation("Phone number is required");
+  const selectLastPeriodErrorText = useTranslation(
+    "Please select your last period date"
+  );
+  const lastPeriodRequiredText = useTranslation("Last period date is required");
+  const addEmergencyContactErrorText = useTranslation(
+    "Please add at least one complete emergency contact"
+  );
+  const emergencyContactRequiredText = useTranslation(
+    "At least one emergency contact is required"
+  );
+  const profileUpdatedText = useTranslation("Profile Updated");
+  const infoSavedText = useTranslation(
+    "Your information has been saved successfully"
+  );
+  const updateFailedText = useTranslation("Update Failed");
+  const failedToSaveText = useTranslation("Failed to save your information");
+  const failedToUpdateProfileText = useTranslation("Failed to update profile");
 
   const months = [
     "January",
@@ -103,11 +155,11 @@ export default function InformationStep({ onNext, onBack }) {
   const handleNext = async () => {
     // Validation
     if (!fullName.trim()) {
-      setError("Full name is required");
+      setError(fullNameRequiredText);
       Toast.show({
         type: "error",
-        text1: "Validation Error",
-        text2: "Please enter your full name",
+        text1: validationErrorText,
+        text2: enterFullNameErrorText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -115,11 +167,11 @@ export default function InformationStep({ onNext, onBack }) {
     }
 
     if (!address.trim()) {
-      setError("Address is required");
+      setError(addressRequiredText);
       Toast.show({
         type: "error",
-        text1: "Validation Error",
-        text2: "Please enter your address",
+        text1: validationErrorText,
+        text2: enterAddressErrorText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -127,11 +179,11 @@ export default function InformationStep({ onNext, onBack }) {
     }
 
     if (!phoneNumber.trim()) {
-      setError("Phone number is required");
+      setError(phoneNumberRequiredText);
       Toast.show({
         type: "error",
-        text1: "Validation Error",
-        text2: "Please enter your phone number",
+        text1: validationErrorText,
+        text2: enterPhoneNumberErrorText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -139,11 +191,11 @@ export default function InformationStep({ onNext, onBack }) {
     }
 
     if (!lastPeriodMonth || !lastPeriodDay || !lastPeriodYear) {
-      setError("Last period date is required");
+      setError(lastPeriodRequiredText);
       Toast.show({
         type: "error",
-        text1: "Validation Error",
-        text2: "Please select your last period date",
+        text1: validationErrorText,
+        text2: selectLastPeriodErrorText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -156,11 +208,11 @@ export default function InformationStep({ onNext, onBack }) {
     );
 
     if (validContacts.length === 0) {
-      setError("At least one emergency contact is required");
+      setError(emergencyContactRequiredText);
       Toast.show({
         type: "error",
-        text1: "Validation Error",
-        text2: "Please add at least one complete emergency contact",
+        text1: validationErrorText,
+        text2: addEmergencyContactErrorText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -197,19 +249,19 @@ export default function InformationStep({ onNext, onBack }) {
     if (result.success) {
       Toast.show({
         type: "success",
-        text1: "Profile Updated",
-        text2: "Your information has been saved successfully",
+        text1: profileUpdatedText,
+        text2: infoSavedText,
         position: "top",
         visibilityTime: 2000,
       });
       setError("");
       onNext();
     } else {
-      setError(result.error || "Failed to update profile");
+      setError(result.error || failedToUpdateProfileText);
       Toast.show({
         type: "error",
-        text1: "Update Failed",
-        text2: result.error || "Failed to save your information",
+        text1: updateFailedText,
+        text2: result.error || failedToSaveText,
         position: "top",
         visibilityTime: 3000,
       });
@@ -220,27 +272,27 @@ export default function InformationStep({ onNext, onBack }) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View className="flex-1">
         <ScrollView className="flex-1 p-5 pt-6">
-          <Text className="text-2xl font-bold mb-6">Personal Information</Text>
+          <Text className="text-2xl font-bold mb-6">{personalInfoText}</Text>
           {/* Full Name */}
-          <Text className="text-gray-700 mb-2">Full Name</Text>
+          <Text className="text-gray-700 mb-2">{fullNameText}</Text>
           <TextInput
             className="border border-gray-300 bg-[#FCFCFC] rounded-2xl px-4 py-[14px] mb-4"
-            placeholder="Enter full name"
+            placeholder={enterFullNameText}
             placeholderTextColor="#9CA3AF"
             value={fullName}
             onChangeText={setFullName}
           />
           {/* Home Address */}
-          <Text className="text-gray-700 mb-2">Home Address</Text>
+          <Text className="text-gray-700 mb-2">{homeAddressText}</Text>
           <TextInput
             className="border border-gray-300 bg-[#FCFCFC] rounded-2xl px-4 py-[14px] mb-4"
-            placeholder="Enter address"
+            placeholder={enterAddressText}
             placeholderTextColor="#9CA3AF"
             value={address}
             onChangeText={setAddress}
           />
           {/* Phone Number */}
-          <Text className="text-gray-700 mb-2">Your Phone Number</Text>
+          <Text className="text-gray-700 mb-2">{yourPhoneNumberText}</Text>
           <View className="flex-row items-center mb-4">
             <View className="w-24 border-y border-l border-gray-300 bg-[#D9D9D9] rounded-l-2xl h-12 justify-center items-center">
               <Text className="text-gray-800 font-medium">+234</Text>
@@ -256,9 +308,7 @@ export default function InformationStep({ onNext, onBack }) {
             />
           </View>
           {/* Last Period */}
-          <Text className="text-gray-700 mb-2">
-            When last did you see your period?
-          </Text>
+          <Text className="text-gray-700 mb-2">{lastPeriodText}</Text>
           <View className="flex-row mb-4">
             <TouchableOpacity
               className="flex-1 mr-2 border border-gray-300 bg-[#FCFCFC] rounded-2xl px-4 flex-row items-center justify-between h-12"
@@ -269,7 +319,7 @@ export default function InformationStep({ onNext, onBack }) {
                   !lastPeriodMonth ? "text-opacity-50" : ""
                 }`}
               >
-                {lastPeriodMonth || "Month"}
+                {lastPeriodMonth || monthText}
               </Text>
               <Ionicons name="chevron-down" size={20} color="#888" />
             </TouchableOpacity>
@@ -282,7 +332,7 @@ export default function InformationStep({ onNext, onBack }) {
                   !lastPeriodDay ? "text-opacity-50" : ""
                 }`}
               >
-                {lastPeriodDay || "Day"}
+                {lastPeriodDay || dayText}
               </Text>
               <Ionicons name="chevron-down" size={20} color="#888" />
             </TouchableOpacity>
@@ -295,7 +345,7 @@ export default function InformationStep({ onNext, onBack }) {
                   !lastPeriodYear ? "text-opacity-50" : ""
                 }`}
               >
-                {lastPeriodYear || "Year"}
+                {lastPeriodYear || yearText}
               </Text>
               <Ionicons name="chevron-down" size={20} color="#888" />
             </TouchableOpacity>
@@ -313,7 +363,7 @@ export default function InformationStep({ onNext, onBack }) {
             }
             onSelect={(item) => handleSelect(openPicker, item)}
             onClose={() => setOpenPicker(null)}
-            title={`Select ${openPicker}`}
+            title={`${selectText} ${openPicker}`}
           />
           <PickerModal
             visible={openRelationPicker !== null}
@@ -323,19 +373,19 @@ export default function InformationStep({ onNext, onBack }) {
               setOpenRelationPicker(null);
             }}
             onClose={() => setOpenRelationPicker(null)}
-            title="Select Relation"
+            title={selectRelationText}
           />
           {/* Emergency Contact */}
           <View className="flex-row items-center justify-between mt-4 mb-3">
             <Text className="text-lg font-semibold text-gray-800">
-              Emergency Contact(s)
+              {emergencyContactsText}
             </Text>
             <TouchableOpacity
               className="flex-row items-center bg-[#006D5B] px-4 py-3 rounded-2xl"
               onPress={addContact}
             >
               <Text className="text-white text-base font-semibold mr-1">+</Text>
-              <Text className="text-white font-medium">Add Contact</Text>
+              <Text className="text-white font-medium">{addContactText}</Text>
             </TouchableOpacity>
           </View>
           {contacts.map((c, idx) => (
@@ -345,7 +395,7 @@ export default function InformationStep({ onNext, onBack }) {
             >
               <View className="flex-row justify-between items-center mb-3">
                 <Text className="text-gray-700 font-medium">
-                  Contact {idx + 1}
+                  {contactText} {idx + 1}
                 </Text>
                 {contacts.length > 1 && (
                   <TouchableOpacity
@@ -353,23 +403,23 @@ export default function InformationStep({ onNext, onBack }) {
                     className="ml-2 px-2 py-1 rounded bg-red-100"
                   >
                     <Text className="text-red-600 text-xs font-semibold">
-                      Remove
+                      {removeText}
                     </Text>
                   </TouchableOpacity>
                 )}
               </View>
 
               {/* Name */}
-              <Text className="text-gray-700 mb-2">Name</Text>
+              <Text className="text-gray-700 mb-2">{nameText}</Text>
               <TextInput
                 className="border border-gray-300 bg-[#FCFCFC] rounded-2xl px-4 py-[14px] mb-4"
-                placeholder="Enter name"
+                placeholder={enterNameText}
                 placeholderTextColor="#9CA3AF"
                 value={c.name}
                 onChangeText={(val) => updateContact(c.id, "name", val)}
               />
               {/* Phone split */}
-              <Text className="text-gray-700 mb-2">Phone Number</Text>
+              <Text className="text-gray-700 mb-2">{phoneNumberText}</Text>
               <View className="flex-row items-center mb-2">
                 <View className="w-24 border-y border-l border-gray-300 bg-[#D9D9D9] rounded-l-2xl h-12 justify-center items-center">
                   <Text className="text-gray-800 font-medium">+234</Text>
@@ -385,7 +435,7 @@ export default function InformationStep({ onNext, onBack }) {
                 />
               </View>
               {/* Relation selector */}
-              <Text className="text-gray-700 mb-2">Relation</Text>
+              <Text className="text-gray-700 mb-2">{relationText}</Text>
               <TouchableOpacity
                 className="border border-gray-300 bg-[#FCFCFC] rounded-2xl px-4 h-12 flex-row items-center justify-between mb-4"
                 onPress={() => setOpenRelationPicker(c.id)}
@@ -395,7 +445,7 @@ export default function InformationStep({ onNext, onBack }) {
                     !c.relation ? "text-opacity-50" : ""
                   }`}
                 >
-                  {c.relation || "Select relation"}
+                  {c.relation || selectRelationPlaceholderText}
                 </Text>
                 <Ionicons name="chevron-down" size={20} color="#888" />
               </TouchableOpacity>
@@ -408,7 +458,7 @@ export default function InformationStep({ onNext, onBack }) {
               onPress={onBack}
               disabled={authLoading}
             >
-              <Text className="text-white font-semibold">Back</Text>
+              <Text className="text-white font-semibold">{backText}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-[#006D5B] rounded-2xl py-4 px-8"
@@ -418,7 +468,7 @@ export default function InformationStep({ onNext, onBack }) {
               {authLoading ? (
                 <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
-                <Text className="text-white font-semibold">Next</Text>
+                <Text className="text-white font-semibold">{nextText}</Text>
               )}
             </TouchableOpacity>
           </View>

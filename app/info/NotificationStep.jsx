@@ -2,8 +2,29 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "../../utils/translator";
 
 export default function NotificationStep() {
+  // Translate all text
+  const drugReminderText = useTranslation(
+    "Don't forget to use your drug it is essential for your well being"
+  );
+  const hydrationTipText = useTranslation(
+    "Studies shows that hydration solves more than 50% to boost immunity"
+  );
+  const neverMissRoutineText = useTranslation(
+    "Never miss out on your daily routine"
+  );
+  const turnOnDescriptionText = useTranslation(
+    "When turn on, we will remind you of all your activities through out day"
+  );
+  const turnOnNotificationText = useTranslation("Turn on notication");
+  const skipText = useTranslation("Skip");
+  const notificationsEnabledText = useTranslation("Notifications Enabled!");
+  const dailyRemindersText = useTranslation(
+    "You'll receive daily reminders for your routine"
+  );
+
   const handleTurnOnNotification = async () => {
     try {
       // Save notification preference to AsyncStorage
@@ -12,8 +33,8 @@ export default function NotificationStep() {
       // Show success toast
       Toast.show({
         type: "success",
-        text1: "Notifications Enabled!",
-        text2: "You'll receive daily reminders for your routine",
+        text1: notificationsEnabledText,
+        text2: dailyRemindersText,
         position: "top",
         visibilityTime: 2000,
       });
@@ -50,14 +71,14 @@ export default function NotificationStep() {
         {/* First card - Drug reminder */}
         <View className="bg-[#FCFCFC] p-4 mb-3 rounded-[15px] shadow-lg">
           <Text className="text-sm text-gray-800 leading-5">
-            Don't forget to use your drug it is essential for your well being
+            {drugReminderText}
           </Text>
         </View>
 
         {/* Second card - Hydration tip */}
         <View className="bg-[#FCFCFC] p-4 rounded-[15px] shadow-lg">
           <Text className="text-sm text-gray-800 leading-5">
-            Studies shows that hydration solves more than 50% to boost immunity
+            {hydrationTipText}
           </Text>
         </View>
       </View>
@@ -65,11 +86,10 @@ export default function NotificationStep() {
       {/* Bottom white sheet with content - no blur, no top radius */}
       <View className="absolute bottom-0 left-0 right-0 bg-[#FCFCFC] px-6 pt-8 pb-6 shadow-2xl">
         <Text className="text-3xl font-semibold text-center text-gray-800 mb-2">
-          Never miss out on your daily routine
+          {neverMissRoutineText}
         </Text>
         <Text className="text-center text-gray-500 mb-6">
-          When turn on, we will remind you of all your activities through out
-          day
+          {turnOnDescriptionText}
         </Text>
 
         {/* Turn on Notification Button */}
@@ -78,7 +98,7 @@ export default function NotificationStep() {
           onPress={handleTurnOnNotification}
         >
           <Text className="text-white text-center font-bold text-base">
-            Turn on notication
+            {turnOnNotificationText}
           </Text>
         </TouchableOpacity>
 
@@ -88,7 +108,7 @@ export default function NotificationStep() {
           onPress={handleSkip}
         >
           <Text className="text-center font-bold text-base text-gray-600">
-            Skip
+            {skipText}
           </Text>
         </TouchableOpacity>
       </View>

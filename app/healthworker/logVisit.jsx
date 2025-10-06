@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { useTranslation } from "../../utils/translator";
 
 const isIOS = Platform.OS === "ios";
 
@@ -25,13 +26,39 @@ export default function LogVisit() {
   const [patientInformation, setPatientInformation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Translate all text
+  const logVisitText = useTranslation("Log Visit");
+  const patientNameText = useTranslation("Patient Name");
+  const patientNamePlaceholder = useTranslation("Grace Adam");
+  const pregnancyStageText = useTranslation("Pregnancy stage");
+  const pregnancyStagePlaceholder = useTranslation("36 weeks");
+  const visitDateText = useTranslation("Visit date");
+  const medicationListText = useTranslation("Medication List");
+  const riskStatusText = useTranslation("Risk Status");
+  const medicalHistoryText = useTranslation("Medical History");
+  const patientInformationText = useTranslation("Patient information");
+  const saveText = useTranslation("Save");
+  const savingText = useTranslation("Saving...");
+  const requiredFieldText = useTranslation("Required Field");
+  const enterPatientNameText = useTranslation("Please enter patient name");
+  const enterPregnancyStageText = useTranslation(
+    "Please enter pregnancy stage"
+  );
+  const selectVisitDateText = useTranslation("Please select visit date");
+  const successText = useTranslation("Success");
+  const visitLoggedText = useTranslation("Visit logged successfully");
+  const errorText = useTranslation("Error");
+  const failedToLogVisitText = useTranslation(
+    "Failed to log visit. Please try again."
+  );
+
   const handleSave = async () => {
     // Validation
     if (!patientName.trim()) {
       Toast.show({
         type: "error",
-        text1: "Required Field",
-        text2: "Please enter patient name",
+        text1: requiredFieldText,
+        text2: enterPatientNameText,
       });
       return;
     }
@@ -39,8 +66,8 @@ export default function LogVisit() {
     if (!pregnancyStage.trim()) {
       Toast.show({
         type: "error",
-        text1: "Required Field",
-        text2: "Please enter pregnancy stage",
+        text1: requiredFieldText,
+        text2: enterPregnancyStageText,
       });
       return;
     }
@@ -48,8 +75,8 @@ export default function LogVisit() {
     if (!visitDate.trim()) {
       Toast.show({
         type: "error",
-        text1: "Required Field",
-        text2: "Please select visit date",
+        text1: requiredFieldText,
+        text2: selectVisitDateText,
       });
       return;
     }
@@ -75,8 +102,8 @@ export default function LogVisit() {
 
       Toast.show({
         type: "success",
-        text1: "Success",
-        text2: "Visit logged successfully",
+        text1: successText,
+        text2: visitLoggedText,
       });
 
       // Navigate back to dashboard
@@ -86,8 +113,8 @@ export default function LogVisit() {
     } catch (error) {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to log visit. Please try again.",
+        text1: errorText,
+        text2: failedToLogVisitText,
       });
     } finally {
       setIsLoading(false);
@@ -119,7 +146,9 @@ export default function LogVisit() {
           >
             <Ionicons name="arrow-back" size={24} color="#293231" />
           </TouchableOpacity>
-          <Text className="text-[#293231] text-xl font-bold">Log Visit</Text>
+          <Text className="text-[#293231] text-xl font-bold">
+            {logVisitText}
+          </Text>
         </View>
       </View>
 
@@ -131,11 +160,11 @@ export default function LogVisit() {
         {/* Patient Name */}
         <View className="mt-6">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Patient Name
+            {patientNameText}
           </Text>
           <TextInput
             className="border border-[#00D2B3] rounded-3xl px-4 py-3 text-[#293231]"
-            placeholder="Grace Adam"
+            placeholder={patientNamePlaceholder}
             placeholderTextColor="#9CA3AF"
             value={patientName}
             onChangeText={setPatientName}
@@ -145,11 +174,11 @@ export default function LogVisit() {
         {/* Pregnancy Stage */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Pregnancy stage
+            {pregnancyStageText}
           </Text>
           <TextInput
             className="border border-[#00D2B3] rounded-3xl px-4 py-3 text-[#293231]"
-            placeholder="36 weeks"
+            placeholder={pregnancyStagePlaceholder}
             placeholderTextColor="#9CA3AF"
             value={pregnancyStage}
             onChangeText={setPregnancyStage}
@@ -159,7 +188,7 @@ export default function LogVisit() {
         {/* Visit Date */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Visit date
+            {visitDateText}
           </Text>
           <View className="border border-[#00D2B3] rounded-3xl px-4 py-3 flex-row items-center justify-between">
             <View className="flex-row items-center flex-1">
@@ -184,7 +213,7 @@ export default function LogVisit() {
         {/* Medication List */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Medication List
+            {medicationListText}
           </Text>
           <View className="border border-[#00D2B3] rounded-3xl px-4 py-3 flex-row items-center">
             <Ionicons
@@ -206,7 +235,7 @@ export default function LogVisit() {
         {/* Risk Status */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Risk Status
+            {riskStatusText}
           </Text>
           <View className="border border-[#00D2B3] rounded-3xl px-4 py-3 flex-row items-center justify-between">
             <View className="flex-row items-center flex-1">
@@ -228,7 +257,7 @@ export default function LogVisit() {
         {/* Medical History */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Medical History
+            {medicalHistoryText}
           </Text>
           <TextInput
             className="border border-[#00D2B3] rounded-3xl px-4 py-3 text-[#293231]"
@@ -246,7 +275,7 @@ export default function LogVisit() {
         {/* Patient Information */}
         <View className="mt-4">
           <Text className="text-[#293231] text-base font-medium mb-2">
-            Patient information
+            {patientInformationText}
           </Text>
           <TextInput
             className="border border-[#00D2B3] rounded-3xl px-4 py-3 text-[#293231]"
@@ -273,7 +302,7 @@ export default function LogVisit() {
           }}
         >
           <Text className="text-white text-center text-base font-semibold">
-            {isLoading ? "Saving..." : "Save"}
+            {isLoading ? savingText : saveText}
           </Text>
         </TouchableOpacity>
       </View>
