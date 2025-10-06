@@ -33,8 +33,7 @@ export default function Learn() {
   };
 
   const handleBabyDevelopment = () => {
-    console.log("Baby Development clicked");
-    // TODO: Navigate to Baby Development
+    router.push("/babyDevelopment/development");
   };
 
   return (
@@ -137,33 +136,6 @@ export default function Learn() {
               </Text>
               <Text className="text-sm text-[#6B7280]">
                 share and learn new things.
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Bottom Cards Row */}
-          <View className="flex-row mb-4">
-            {/* Listen Card */}
-            <TouchableOpacity
-              onPress={handleListen}
-              className="bg-white/80 rounded-3xl p-5 flex-1 mr-2"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-                minHeight: 160,
-              }}
-            >
-              <View className="w-12 h-12  items-center justify-center mb-3">
-                <Ionicons name="headset" size={24} color="black" />
-              </View>
-              <Text className="text-xl font-bold text-[#293231] mb-2">
-                Listen
-              </Text>
-              <Text className="text-sm text-[#6B7280]">
-                Learn more about your baby in your local language
               </Text>
             </TouchableOpacity>
 

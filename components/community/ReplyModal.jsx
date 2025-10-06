@@ -34,6 +34,7 @@ export default function ReplyModal({
         <TouchableWithoutFeedback
           onPress={() => {
             Keyboard.dismiss();
+            onClose();
           }}
         >
           <View className="flex-1 justify-end bg-black/50">
@@ -49,7 +50,17 @@ export default function ReplyModal({
                   <Text className="text-[#293231] text-lg font-bold">
                     Reply to {selectedPost?.author}
                   </Text>
-                  <TouchableOpacity onPress={onClose}>
+                  <TouchableOpacity
+                    onPress={onClose}
+                    className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                    style={{
+                      shadowColor: "#000",
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.05,
+                      shadowRadius: 2,
+                      elevation: 2,
+                    }}
+                  >
                     <Ionicons name="close" size={24} color="#293231" />
                   </TouchableOpacity>
                 </View>

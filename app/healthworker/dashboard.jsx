@@ -193,24 +193,6 @@ export default function HealthcareDashboard() {
           </LinearGradient>
         </View>
 
-        {/* Action Buttons */}
-        <View className="flex-row justify-center mb-6 px-6">
-          <TouchableOpacity
-            onPress={() => router.push("/healthworker/addPatient")}
-            className="bg-[#00D2B3] rounded-2xl px-6 py-3 flex-row items-center mr-3"
-          >
-            <Text className="font-semibold mr-2">Add Patient</Text>
-            <Ionicons name="person-add-sharp" size={20} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push("/healthworker/logVisit")}
-            className="bg-[#00D2B3] rounded-2xl px-6 py-3 flex-row items-center"
-          >
-            <Text className="font-semibold mr-2">Log visit</Text>
-            <Ionicons name="calendar-outline" size={20} color="black" />
-          </TouchableOpacity>
-        </View>
-
         {/* Mothers Under Your Care */}
         <View className="px-6 mb-6">
           <Text className="text-[#293231] text-lg font-bold mb-4">
@@ -259,7 +241,10 @@ export default function HealthcareDashboard() {
                     </Text>
                   </View>
                 </View>
-                <TouchableOpacity className="border border-[#06D6A0] rounded-xl px-4 py-2">
+                <TouchableOpacity
+                  className="border border-[#06D6A0] rounded-xl px-4 py-2"
+                  onPress={() => router.push("/healthworker/motherInfo")}
+                >
                   <Text className="text-[#06D6A0] font-semibold">View</Text>
                 </TouchableOpacity>
               </View>
@@ -360,7 +345,10 @@ export default function HealthcareDashboard() {
                     </Text>
                   </View>
                 </View>
-                <TouchableOpacity className="bg-white rounded-xl px-4 py-2">
+                <TouchableOpacity
+                  className="bg-white rounded-xl px-4 py-2"
+                  onPress={() => router.push("/healthworker/motherInfo")}
+                >
                   <Text className="text-[#EF476F] font-semibold">View</Text>
                 </TouchableOpacity>
               </View>
