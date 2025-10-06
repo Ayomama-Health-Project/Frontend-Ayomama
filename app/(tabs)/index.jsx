@@ -119,7 +119,7 @@ export default function HomeScreen() {
 
   // Handle add to calendar
   const handleAddToCalendar = () => {
-    router.push("/visit");
+    router.push("/(tabs)/atenatal");
   };
 
   // Handle learn more about baby development

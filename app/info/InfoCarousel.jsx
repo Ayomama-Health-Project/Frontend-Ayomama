@@ -1,6 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRef, useState } from "react";
 import { Dimensions, FlatList, View } from "react-native";
+import Antenatal from "./AntenatalStep";
 import Information from "./InformationStep";
 import Language from "./LanguageStep";
 import Notification from "./NotificationStep";
@@ -10,6 +11,7 @@ const { width } = Dimensions.get("window");
 const steps = [
   { key: "language", component: Language },
   { key: "information", component: Information },
+  { key: "antenatal", component: Antenatal },
   { key: "notification", component: Notification },
 ];
 
@@ -48,30 +50,31 @@ export default function InfoCarousel() {
         }}
       />
       {/* Pagination dots at the top inside the bg */}
-        <View className="flex-row justify-center items-center pt-12 pb-4 z-10">
-          {steps.map((_, idx) => (
-            <View
+      <View className="flex-row justify-center items-center pt-12 pb-4 z-10">
+        {steps.map((_, idx) => (
+          <View
             key={idx}
             style={{
-              backgroundColor: currentIndex === idx 
-                ? 'rgba(252, 252, 252, 1)' 
-                : 'rgba(143, 141, 141, 1)',
+              backgroundColor:
+                currentIndex === idx
+                  ? "rgba(252, 252, 252, 1)"
+                  : "rgba(143, 141, 141, 1)",
               width: currentIndex === idx ? 12 : 10,
               height: currentIndex === idx ? 12 : 10,
             }}
             className="mx-1 rounded-full"
-            />
-          ))}
-        </View>
-        <FlatList
-          ref={flatListRef}
-          data={steps}
-          horizontal
-          pagingEnabled
-          scrollEnabled={false}
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item.key}
-          renderItem={({ item }) => {
+          />
+        ))}
+      </View>
+      <FlatList
+        ref={flatListRef}
+        data={steps}
+        horizontal
+        pagingEnabled
+        scrollEnabled={false}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.key}
+        renderItem={({ item }) => {
           const StepComponent = item.component;
           return (
             <View style={{ width }} className="flex-1">

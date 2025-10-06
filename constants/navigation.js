@@ -7,6 +7,7 @@ export const AppRoutes = {
   EMERGENCY: "emergency",
   LEARN: "learn",
   PROFILE: "profile",
+  ANTENATAL: "antenatal",
 };
 
 export const ServiceTypes = [

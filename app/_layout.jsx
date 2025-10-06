@@ -27,6 +27,7 @@ export default function RootLayout() {
         <Stack.Screen name="info/InfoCarousel" />
         <Stack.Screen name="info/LanguageStep" />
         <Stack.Screen name="info/InformationStep" />
+        <Stack.Screen name="info/AntenatalStep" />
         <Stack.Screen name="info/NotificationStep" />
         <Stack.Screen name="healthinfo/info" />
         <Stack.Screen name="healthinfo/HealthInfoStep" />

@@ -18,7 +18,7 @@ const Emergency = () => {
     const newCount = tapCount + 1;
     setTapCount(newCount);
 
-    if (newCount >= 2) {
+    if (newCount >= 4) {
       Toast.show({
         type: "success",
         text1: "Emergency Alert",
@@ -67,7 +67,7 @@ const Emergency = () => {
         return {
           outer: "#FF000020",
           middle: "#FF000040",
-          inner: "#FF0000",
+          inner: "#C70C0C",
         };
       case 2: // 🔵 Blue tones
         return {
@@ -77,15 +77,15 @@ const Emergency = () => {
         };
       case 3: // 🟡 Yellow tones
         return {
-          outer: "#FFD70020", //
-          middle: "#FFD70040",
-          inner: "#FFD700",
+          outer: "#ABC70C40", 
+          middle: "#ABC70C80",
+          inner: "#ABC70C",
         };
       default:
         return {
           outer: "#FF000020",
           middle: "#FF000040",
-          inner: "#FF0000",
+          inner: "#C70C0C",
         };
     }
   };
