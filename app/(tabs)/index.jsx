@@ -17,16 +17,17 @@ import {
   Linking,
   Platform,
   ScrollView,
+  StatusBar,
   TouchableOpacity,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useAuthStore from "../../store/useAuthStore";
 
 const { width, height } = Dimensions.get("window");
 const ios = Platform.OS === "ios";
-const topMargin = ios ? "" : "mt-3";
 
 export default function HomeScreen() {
   const { user } = useAuthStore();
@@ -144,34 +145,40 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-[#FCFCFC]">
-      {/* Header */}
+      <StatusBar barStyle="dark-content" />
+
+      {/* Fixed Header */}
       <View
-        className={`flex flex-row justify-between items-center px-6 ${topMargin} pt-16`}
+        className="bg-white"
+        style={{
+          paddingTop: ios ? 50 : StatusBar.currentHeight || 24,
+          paddingBottom: 16,
+          paddingHorizontal: 24,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 3,
+        }}
       >
-        <TouchableOpacity
-          onPress={() => router.push("/profile")}
-          activeOpacity={0.7}
-        >
-          <Image
-            source={require("../../assets/images/Husbandandwife.png")}
-            style={{ width: 40, height: 40 }}
-            className="rounded-full"
-          />
-        </TouchableOpacity>
-
-        <View className="flex flex-col items-center">
-          <Text className="text-[#8F8D8D] text-[16px]">Hello,</Text>
-          <Text className="text-[#293231] text-[20px] font-bold">
-             {user.name}
-          </Text>
+        <View className="flex-row items-center justify-between">
+          <TouchableOpacity onPress={() => router.push("/(tabs)/profile")}>
+            <Image
+              source={require("../../assets/images/profilepic.png")}
+              style={{ width: 40, height: 40 }}
+              className="rounded-full"
+            />
+          </TouchableOpacity>
+          <View className="flex-1 items-center mx-4">
+            <Text className="text-gray-500 text-sm">Hello,</Text>
+            <Text className="text-[#293231] text-lg font-bold">
+              {user?.name || "Guest"}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => router.push("/notifications")}>
+            <Ionicons name="notifications-outline" size={24} color="#293231" />
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          onPress={() => router.push("/notifications")}
-          activeOpacity={0.7}
-        >
-          <Icon name="notifications" size={25} color="#000" />
-        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -330,6 +337,124 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
           </LinearGradient>
+
+          {/* Your Vitals Overview */}
+          <View>
+            <Text className="text-xl font-bold text-gray-900 mb-4">
+              Your Vitals Overview
+            </Text>
+
+            {/* Vitals Image */}
+            <LinearGradient
+              colors={["#FBE9E2", "#A5DFD7"]}
+              style={{
+                borderRadius: 16,
+                height: 200,
+                marginBottom: 16,
+                overflow: "hidden",
+              }}
+              className="items-center justify-center"
+            >
+              <Image
+                source={require("../../assets/images/vitals.png")}
+                style={{ width: "100%", height: "100%" }}
+                resizeMode="contain"
+              />
+            </LinearGradient>
+
+            {/* Vitals Grid - 2x2 */}
+            <View className="flex flex-col gap-4">
+              {/* First Row */}
+              <View className="flex flex-row gap-4">
+                {/* Blood Pressure */}
+                <View
+                  className="flex-1 bg-[#DCFBF6] rounded-2xl p-4"
+                  style={{ height: 100 }}
+                >
+                  <View className="flex-row items-center mb-2">
+                    <View className="w-6 h-6 bg-[#EF476F] rounded-full items-center justify-center mr-2">
+                      <Icon name="favorite" size={14} color="#fff" />
+                    </View>
+                    <Text className="text-[#293231] text-sm font-semibold">
+                      Blood Pressure
+                    </Text>
+                  </View>
+                  <Text className="text-[#293231] text-lg font-bold">
+                    120/80mmHg
+                  </Text>
+                </View>
+
+                {/* Weight */}
+                <View
+                  className="flex-1 bg-[#DCFBF6] rounded-2xl p-4"
+                  style={{ height: 100 }}
+                >
+                  <View className="flex-row items-center mb-2">
+                    <View className="w-6 h-6 bg-[#293231] rounded-full items-center justify-center mr-2">
+                      <Icon name="monitor-weight" size={14} color="#fff" />
+                    </View>
+                    <Text className="text-[#293231] text-sm font-semibold">
+                      Weight
+                    </Text>
+                  </View>
+                  <Text className="text-[#293231] text-lg font-bold">
+                    65KKg
+                  </Text>
+                </View>
+              </View>
+
+              {/* Second Row */}
+              <View className="flex flex-row gap-4">
+                {/* Temperature */}
+                <View
+                  className="flex-1 bg-[#DCFBF6] rounded-2xl p-4"
+                  style={{ height: 100 }}
+                >
+                  <View className="flex-row items-center mb-2">
+                    <View className="w-6 h-6 bg-[#293231] rounded-full items-center justify-center mr-2">
+                      <Icon name="thermostat" size={14} color="#fff" />
+                    </View>
+                    <Text className="text-[#293231] text-sm font-semibold">
+                      Temperature
+                    </Text>
+                  </View>
+                  <Text className="text-[#293231] text-lg font-bold">
+                    36.8°C
+                  </Text>
+                </View>
+
+                {/* Blood Level */}
+                <View
+                  className="flex-1 bg-[#DCFBF6] rounded-2xl p-4"
+                  style={{ height: 100 }}
+                >
+                  <View className="flex-row items-center mb-2">
+                    <View className="w-6 h-6 bg-[#EF476F] rounded-full items-center justify-center mr-2">
+                      <Icon name="bloodtype" size={14} color="#fff" />
+                    </View>
+                    <Text className="text-[#293231] text-sm font-semibold">
+                      Blood Level
+                    </Text>
+                  </View>
+                  <Text className="text-[#293231] text-lg font-bold">
+                    12.5g/dl
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Update Visit Button */}
+            <TouchableOpacity
+              style={{ height: 50, borderRadius: 15 }}
+              className="bg-[#006D5B] rounded-2xl justify-center items-center mt-4"
+              onPress={() => router.push("/updateVitals/update")}
+              activeOpacity={0.7}
+            >
+              <Text className="text-white font-semibold text-base">
+                Update Vitals
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Clinic Visit Reminder */}
           <View

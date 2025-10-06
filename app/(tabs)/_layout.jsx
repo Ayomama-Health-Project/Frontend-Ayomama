@@ -8,6 +8,8 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarActiveTintColor: "#293231",
+          tabBarInactiveTintColor: "#9CA3AF",
           tabBarItemStyle: {
             borderRadius: 200,
             height: 50,
@@ -26,8 +28,6 @@ export default function TabLayout() {
             fontSize: 12,
             fontWeight: "500",
           },
-          // tabBarActiveBackgroundColor: "#B4EFE680",
-          // tabBarInactiveBackgroundColor: "transparent",
         }}
       >
         <Tabs.Screen

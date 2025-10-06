@@ -24,13 +24,7 @@ export default function Learn() {
   };
 
   const handleCommunity = () => {
-    console.log("Community clicked");
-    // TODO: Navigate to Community
-  };
-
-  const handleHealthWorkers = () => {
-    console.log("Health Workers clicked");
-    // TODO: Navigate to Health Workers
+    router.push("/community");
   };
 
   const handleListen = () => {
@@ -143,30 +137,6 @@ export default function Learn() {
               </Text>
               <Text className="text-sm text-[#6B7280]">
                 share and learn new things.
-              </Text>
-            </TouchableOpacity>
-
-            {/* Health Workers Card */}
-            <TouchableOpacity
-              onPress={handleHealthWorkers}
-              className="bg-white/80 rounded-3xl p-5 flex-1 ml-2"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3,
-                minHeight: 160,
-              }}
-            >
-              <View className="w-12 h-12  items-center justify-center mb-3">
-                <Ionicons name="medical" size={24} color="black" />
-              </View>
-              <Text className="text-xl font-bold text-[#293231] mb-2">
-                Health workers
-              </Text>
-              <Text className="text-sm text-[#6B7280]">
-                Ask and learn new things from professionals
               </Text>
             </TouchableOpacity>
           </View>

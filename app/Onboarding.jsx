@@ -116,14 +116,14 @@ const Onboarding = () => {
       <View className="flex-row justify-center gap-4 mb-8 mt-6">
         <TouchableOpacity
           className="bg-black py-3 px-8 rounded-full"
-          onPress={() => router.push("/auth/signup")}
+          onPress={() => router.push("/AccountSelection?action=signup")}
         >
           <Text className="text-white text-base font-bold">Sign Up</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           className="border-2 border-black py-3 px-8 rounded-full"
-          onPress={() => router.push("/auth/login")}
+          onPress={() => router.push("/AccountSelection?action=login")}
         >
           <Text className="text-black text-base font-bold">Log In</Text>
         </TouchableOpacity>

@@ -137,7 +137,7 @@ export default function LanguageStep({ onNext }) {
 
       {/* Proceed Button */}
       <TouchableOpacity
-        className="bg-black py-5 rounded-2xl"
+        className="bg-[#006D5B] py-5 rounded-2xl"
         onPress={handleProceed}
         disabled={isLoading}
       >

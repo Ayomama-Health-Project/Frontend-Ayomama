@@ -7,6 +7,8 @@ import {
   Alert,
   Image,
   Platform,
+  ScrollView,
+  StatusBar,
   Switch,
   Text,
   TouchableOpacity,
@@ -15,10 +17,9 @@ import {
 import Toast from "react-native-toast-message";
 import useAuthStore from "../../store/useAuthStore";
 
-const ios = Platform.OS === "ios";
-const topMargin = ios ? "" : "mt-3";
+const isIOS = Platform.OS === "ios";
 
-export default function Profile() {
+export default function HealthWorkerProfile() {
   const router = useRouter();
   const { user: authUser, logout } = useAuthStore();
   const [notificationEnabled, setNotificationEnabled] = useState(false);
@@ -26,8 +27,8 @@ export default function Profile() {
 
   // Use authenticated user data or fallback to default
   const user = authUser || {
-    name: "Guest User",
-    email: "guest@example.com",
+    name: "Healthcare Worker",
+    email: "worker@example.com",
   };
 
   // Get avatar image source - use profilepic.png as default
@@ -75,7 +76,7 @@ export default function Profile() {
         type: "success",
         text1: value ? "Notifications Enabled" : "Notifications Disabled",
         text2: value
-          ? "You'll receive daily reminders for your routine"
+          ? "You'll receive notifications for your patients"
           : "You won't receive notifications",
         position: "top",
         visibilityTime: 2000,
@@ -108,12 +109,22 @@ export default function Profile() {
 
   const handleHelpCenter = () => {
     // TODO: Navigate to help center
-    console.log("Help center");
+    Toast.show({
+      type: "info",
+      text1: "Help Center",
+      text2: "This feature is coming soon",
+      position: "top",
+    });
   };
 
   const handleReportBug = () => {
     // TODO: Navigate to bug report
-    console.log("Report bug");
+    Toast.show({
+      type: "info",
+      text1: "Report Bug",
+      text2: "This feature is coming soon",
+      position: "top",
+    });
   };
 
   const handleLogout = async () => {
@@ -131,19 +142,18 @@ export default function Profile() {
           onPress: async () => {
             const result = await logout();
             if (result.success) {
-              // Navigate to onboarding immediately
-              router.replace("/Onboarding");
+              Toast.show({
+                type: "success",
+                text1: "Logged Out",
+                text2: "You have been logged out successfully",
+                position: "top",
+                visibilityTime: 2000,
+              });
 
-              // Show toast after navigation starts
+              // Navigate to onboarding after logout
               setTimeout(() => {
-                Toast.show({
-                  type: "success",
-                  text1: "Logged Out",
-                  text2: "You have been logged out successfully",
-                  position: "top",
-                  visibilityTime: 2000,
-                });
-              }, 100);
+                router.replace("/Onboarding");
+              }, 2000);
             } else {
               Toast.show({
                 type: "error",
@@ -162,46 +172,75 @@ export default function Profile() {
 
   return (
     <View className="flex-1 bg-[#FCFCFC]">
-      <View className="flex-1">
-        {/* Profile Header with Gradient */}
+      <StatusBar barStyle="dark-content" />
+
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* Header and Profile with Gradient */}
         <LinearGradient
           colors={["#BCF2E9", "#FCFCFC"]}
           style={{
-            paddingHorizontal: 24,
-            paddingTop: ios ? 64 : 76,
-            paddingBottom: 32,
+            paddingTop: isIOS ? 50 : StatusBar.currentHeight || 24,
           }}
         >
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center flex-1">
-              <Image
-                source={getAvatarSource()}
-                className="w-16 h-20 rounded-2xl"
-                resizeMode="cover"
-              />
-              <View className="ml-4 flex-1">
-                <Text
-                  className="text-xl font-bold text-[#293231]"
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {user.name || "User"}
-                </Text>
-                <Text
-                  className="text-[15px] text-[#6B7280] mt-1"
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {user.email || ""}
-                </Text>
-              </View>
+          {/* Fixed Header */}
+          <View
+            style={{
+              paddingBottom: 16,
+              paddingHorizontal: 24,
+            }}
+          >
+            <View className="flex-row items-center justify-center">
+              <TouchableOpacity
+                onPress={() => router.back()}
+                className="absolute left-0"
+              >
+                <Ionicons name="arrow-back" size={24} color="#293231" />
+              </TouchableOpacity>
+              <Text className="text-[#293231] text-xl font-bold">Profile</Text>
             </View>
-            <TouchableOpacity
-              onPress={handleEditProfile}
-              className="bg-[#006D5B] px-6 py-3 rounded-xl"
-            >
-              <Text className="text-white font-semibold text-[15px]">Edit</Text>
-            </TouchableOpacity>
+          </View>
+
+          {/* Profile Header */}
+          <View
+            style={{
+              paddingHorizontal: 24,
+              paddingTop: 24,
+              paddingBottom: 32,
+            }}
+          >
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center flex-1">
+                <Image
+                  source={getAvatarSource()}
+                  className="w-16 h-20 rounded-2xl"
+                  resizeMode="cover"
+                />
+                <View className="ml-4 flex-1">
+                  <Text
+                    className="text-xl font-bold text-[#293231]"
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {user.name || "Healthcare Worker"}
+                  </Text>
+                  <Text
+                    className="text-[15px] text-[#6B7280] mt-1"
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {user.email || ""}
+                  </Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                onPress={handleEditProfile}
+                className="bg-[#006D5B] px-6 py-3 rounded-xl"
+              >
+                <Text className="text-white font-semibold text-[15px]">
+                  Edit
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </LinearGradient>
 
@@ -324,7 +363,7 @@ export default function Profile() {
             </View>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Toast component */}
       <Toast />
