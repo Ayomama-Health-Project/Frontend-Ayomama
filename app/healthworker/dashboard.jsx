@@ -170,7 +170,7 @@ export default function HealthcareDashboard() {
               {nurseName}
             </Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/notifications")}> 
             <Ionicons name="notifications-outline" size={24} color="#293231" />
           </TouchableOpacity>
         </View>

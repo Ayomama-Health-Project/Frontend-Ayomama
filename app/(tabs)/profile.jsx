@@ -153,19 +153,19 @@ export default function Profile() {
           onPress: async () => {
             const result = await logout();
             if (result.success) {
-              // Navigate to onboarding immediately
-              router.replace("/Onboarding");
+              // Show toast before navigation
+              Toast.show({
+                type: "success",
+                text1: loggedOutText,
+                text2: loggedOutSuccessText,
+                position: "top",
+                visibilityTime: 2000,
+              });
 
-              // Show toast after navigation starts
+              // Navigate to auth flow after a short delay to ensure state is cleared
               setTimeout(() => {
-                Toast.show({
-                  type: "success",
-                  text1: loggedOutText,
-                  text2: loggedOutSuccessText,
-                  position: "top",
-                  visibilityTime: 2000,
-                });
-              }, 100);
+                router.replace("/auth/currentuser");
+              }, 300);
             } else {
               Toast.show({
                 type: "error",

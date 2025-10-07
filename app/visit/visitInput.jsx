@@ -16,10 +16,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useVisitStore from "../../store/useVisitStore";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const VisitInput = () => {
   const [visitDate, setVisitDate] = useState(null);
@@ -85,28 +85,6 @@ const VisitInput = () => {
 
     return combined;
   };
-
-  const InputField = ({
-    icon,
-    placeholder,
-    value,
-    onChangeText,
-    onPress,
-    editable = true,
-  }) => (
-    <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
-      <Icon name={icon} size={22} color="#999" style={{ marginRight: 8 }} />
-      <TextInput
-        className="flex-1 text-[16px] text-[#333333]"
-        placeholder={placeholder}
-        placeholderTextColor="#999999"
-        value={value}
-        onChangeText={onChangeText}
-        editable={editable}
-        onFocus={onPress}
-      />
-    </View>
-  );
 
   const handleSave = async () => {
     dismissKeyboard();
@@ -300,13 +278,22 @@ const VisitInput = () => {
                   <Text className="text-[16px] font-medium text-[#333333] mb-2">
                     Duration (minutes) *
                   </Text>
-                  <InputField
-                    icon="hourglass-empty"
-                    placeholder="30"
-                    value={duration}
-                    onChangeText={setDuration}
-                    keyboardType="numeric"
-                  />
+                  <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
+                    <Icon
+                      name="hourglass-empty"
+                      size={22}
+                      color="#999"
+                      style={{ marginRight: 8 }}
+                    />
+                    <TextInput
+                      value={duration}
+                      onChangeText={setDuration}
+                      placeholder="30"
+                      placeholderTextColor="#9CA3AF"
+                      keyboardType="numeric"
+                      className="flex-1 text-[16px] text-[#293231]"
+                    />
+                  </View>
                 </View>
               </View>
 
@@ -314,34 +301,64 @@ const VisitInput = () => {
               <Text className="text-[16px] font-medium text-[#333333] mb-2 mt-4">
                 Service Type
               </Text>
-              <InputField
-                icon="medical-services"
-                placeholder="Service type"
-                value={serviceType}
-                onChangeText={setServiceType}
-              />
+              <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
+                <Icon
+                  name="medical-services"
+                  size={22}
+                  color="#999"
+                  style={{ marginRight: 8 }}
+                />
+                <TextInput
+                  value={serviceType}
+                  onChangeText={setServiceType}
+                  placeholder="Service type"
+                  placeholderTextColor="#9CA3AF"
+                  autoCapitalize="words"
+                  className="flex-1 text-[16px] text-[#293231]"
+                />
+              </View>
 
               {/* Hospital Name */}
               <Text className="text-[16px] font-medium text-[#333333] mb-2">
                 Hospital Name *
               </Text>
-              <InputField
-                icon="local-hospital"
-                placeholder="Write hospital name"
-                value={hospitalName}
-                onChangeText={setHospitalName}
-              />
+              <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
+                <Icon
+                  name="local-hospital"
+                  size={22}
+                  color="#999"
+                  style={{ marginRight: 8 }}
+                />
+                <TextInput
+                  value={hospitalName}
+                  onChangeText={setHospitalName}
+                  placeholder="Write hospital name"
+                  placeholderTextColor="#9CA3AF"
+                  autoCapitalize="words"
+                  className="flex-1 text-[16px] text-[#293231]"
+                />
+              </View>
 
               {/* Healthcare Provider */}
               <Text className="text-[16px] font-medium text-[#333333] mb-2">
                 Healthcare Provider *
               </Text>
-              <InputField
-                icon="person"
-                placeholder="Doctor/Nurse name"
-                value={healthcareProvider}
-                onChangeText={setHealthcareProvider}
-              />
+              <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
+                <Icon
+                  name="person"
+                  size={22}
+                  color="#999"
+                  style={{ marginRight: 8 }}
+                />
+                <TextInput
+                  value={healthcareProvider}
+                  onChangeText={setHealthcareProvider}
+                  placeholder="Doctor/Nurse name"
+                  placeholderTextColor="#9CA3AF"
+                  autoCapitalize="words"
+                  className="flex-1 text-[16px] text-[#293231]"
+                />
+              </View>
 
               {/* Save Button */}
               <TouchableOpacity
