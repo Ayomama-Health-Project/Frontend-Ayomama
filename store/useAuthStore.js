@@ -320,6 +320,8 @@ const useAuthStore = create((set, get) => ({
           temperature: antenatalData.temperature,
           weight: antenatalData.weight,
           bloodLevel: antenatalData.bloodLevel,
+          prescribedDrugs: antenatalData.prescribedDrugs,
+          drugsToAvoid: antenatalData.drugsToAvoid,
           date: antenatalData.date,
         },
         {
