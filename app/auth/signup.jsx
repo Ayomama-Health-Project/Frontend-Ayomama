@@ -50,6 +50,8 @@ const SignUp = () => {
   const pleaseLoginText = useTranslation("Please login to continue");
   const signUpFailedText = useTranslation("Sign Up Failed");
   const failedToCreateText = useTranslation("Failed to create account");
+  const switchAccountText = useTranslation("Want to switch account type?");
+  const clickHereText = useTranslation("Click here");
 
   const handleSignUp = async () => {
     // Validation
@@ -73,8 +75,8 @@ const SignUp = () => {
     // Clear error
     setError("");
 
-    // Call signup API
-    const result = await signUp(name, email, password);
+    // Call signup API with lowercase email
+    const result = await signUp(name, email.toLowerCase().trim(), password);
 
     if (result.success) {
       Toast.show({
@@ -211,13 +213,32 @@ const SignUp = () => {
         </View>
 
         {/* Footer pinned to bottom */}
-        <View className="flex-row justify-center items-center mb-16">
-          <Text className="text-gray-600">{haveAccountText} </Text>
+        <View className="mb-16">
+          <View className="flex-row justify-center items-center mb-4">
+            <Text className="text-gray-600">{haveAccountText} </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/auth/login")}
+              disabled={isLoading}
+            >
+              <Text className="text-[#006D5B] font-semibold">{loginText}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Switch Account Type */}
           <TouchableOpacity
-            onPress={() => router.push("/auth/login")}
+            onPress={() => router.push("/AccountSelection?action=signup")}
             disabled={isLoading}
+            className="flex-row items-center justify-center bg-[#F0F9FF] px-4 py-3 rounded-xl"
           >
-            <Text className="text-[#006D5B] font-semibold">{loginText}</Text>
+            <Ionicons
+              name="swap-horizontal-outline"
+              size={20}
+              color="#006D5B"
+            />
+            <Text className="text-gray-600 ml-2">{switchAccountText} </Text>
+            <Text className="text-[#006D5B] font-semibold">
+              {clickHereText}
+            </Text>
           </TouchableOpacity>
         </View>
 

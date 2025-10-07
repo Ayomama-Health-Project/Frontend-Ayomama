@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import useAuthWorkerStore from "../../../store/useAuthWorkerStore";
 import { useTranslation } from "../../../utils/translator";
 
 const HealthcareLogIn = () => {
@@ -43,6 +44,10 @@ const HealthcareLogIn = () => {
   const loginFailedText = useTranslation("Login Failed");
   const invalidCredentialsText = useTranslation("Invalid credentials");
   const failedToLoginText = useTranslation("Failed to login");
+  const switchAccountText = useTranslation("Want to switch account type?");
+  const clickHereText = useTranslation("Click here");
+
+  const { login, hasCompletedProfile } = useAuthWorkerStore();
 
   const handleLogIn = async () => {
     // Validation
@@ -69,9 +74,10 @@ const HealthcareLogIn = () => {
     setError("");
     setIsLoading(true);
 
-    try {
-      // TODO: Implement healthcare worker login API call
-      // For now, just show success message
+    // Call login from store with lowercase email
+    const result = await login(email.toLowerCase().trim(), password);
+
+    if (result.success) {
       Toast.show({
         type: "success",
         text1: loginSuccessText,
@@ -80,22 +86,27 @@ const HealthcareLogIn = () => {
         visibilityTime: 2000,
       });
 
-      // Navigate to healthcare info page after 2 seconds
+      // Check if worker has completed profile
       setTimeout(() => {
-        // TODO: Check if healthcare worker has completed profile, if yes go to dashboard
-        router.replace("/healthinfo/info");
+        setIsLoading(false);
+        if (hasCompletedProfile()) {
+          // Profile complete, go to dashboard
+          router.replace("/healthworker/dashboard");
+        } else {
+          // Profile incomplete, go to health info step
+          router.replace("/healthinfo/info");
+        }
       }, 2000);
-    } catch (err) {
-      setError(failedToLoginText);
+    } else {
+      setIsLoading(false);
+      setError(result.error || failedToLoginText);
       Toast.show({
         type: "error",
         text1: loginFailedText,
-        text2: invalidCredentialsText,
+        text2: result.error || invalidCredentialsText,
         position: "top",
         visibilityTime: 3000,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -177,13 +188,32 @@ const HealthcareLogIn = () => {
         </View>
 
         {/* Footer pinned */}
-        <View className="flex-row justify-center items-center mb-16">
-          <Text className="text-gray-600">{noAccountText} </Text>
+        <View className="mb-16">
+          <View className="flex-row justify-center items-center mb-4">
+            <Text className="text-gray-600">{noAccountText} </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/auth/healthcare/signup")}
+              disabled={isLoading}
+            >
+              <Text className="text-[#006D5B] font-semibold">{signUpText}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Switch Account Type */}
           <TouchableOpacity
-            onPress={() => router.push("/auth/healthcare/signup")}
+            onPress={() => router.push("/AccountSelection?action=login")}
             disabled={isLoading}
+            className="flex-row items-center justify-center bg-[#F0F9FF] px-4 py-3 rounded-xl"
           >
-            <Text className="text-[#006D5B] font-semibold">{signUpText}</Text>
+            <Ionicons
+              name="swap-horizontal-outline"
+              size={20}
+              color="#006D5B"
+            />
+            <Text className="text-gray-600 ml-2">{switchAccountText} </Text>
+            <Text className="text-[#006D5B] font-semibold">
+              {clickHereText}
+            </Text>
           </TouchableOpacity>
         </View>
 

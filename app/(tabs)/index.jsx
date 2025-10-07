@@ -22,7 +22,6 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useAuthStore from "../../store/useAuthStore";
 import { useTranslation } from "../../utils/translator";
@@ -204,20 +203,17 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-[#FCFCFC]">
-      <StatusBar barStyle="dark-content" />
-
       {/* Fixed Header */}
       <View
         className="bg-white"
         style={{
-          paddingTop: ios ? 50 : StatusBar.currentHeight || 24,
+          paddingTop: ios ? 50 : (StatusBar.currentHeight || 0) + 16,
           paddingBottom: 16,
           paddingHorizontal: 24,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.1,
           shadowRadius: 4,
-          elevation: 3,
         }}
       >
         <View className="flex-row items-center justify-between">
@@ -235,7 +231,7 @@ export default function HomeScreen() {
             </Text>
           </View>
           <TouchableOpacity onPress={() => router.push("/notifications")}>
-            <Ionicons name="notifications-outline" size={24} color="#293231" />
+            <Icon name="notifications" size={25} color="#000" />
           </TouchableOpacity>
         </View>
       </View>
@@ -252,7 +248,7 @@ export default function HomeScreen() {
           {/* Baby Development Info */}
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => router.push("/babyProgress")}
+            onPress={() => router.push("/babyDevelopment/development")}
           >
             <LinearGradient
               colors={["#FBE9E2", "#A5DFD7"]}
@@ -1628,8 +1624,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               style={{ height: 37, borderRadius: 15 }}
               className="bg-[#006D5B] rounded-[10px] justify-center items-center"
-              // onPress={handleLearnMore}
-              onPress={() => console.log("clicked")}
+              onPress={() => router.push("/babyDevelopment/development")}
               activeOpacity={0.7}
             >
               <Text className="text-white text-center font-semibold text-[16px]">

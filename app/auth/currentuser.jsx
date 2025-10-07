@@ -10,13 +10,33 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import useAuthStore from "../../store/useAuthStore";
+import useAuthWorkerStore from "../../store/useAuthWorkerStore";
 import { useTranslation } from "../../utils/translator";
 
 const CurrentUser = () => {
   const router = useRouter();
-  const { user, isAuthenticated, isLoading, refreshUser, logout } =
-    useAuthStore();
+  const {
+    user,
+    isAuthenticated: isMotherAuth,
+    isLoading: isMotherLoading,
+    refreshUser,
+    logout: logoutMother,
+  } = useAuthStore();
+  const {
+    worker,
+    isAuthenticated: isWorkerAuth,
+    isLoading: isWorkerLoading,
+    refreshWorker,
+    logout: logoutWorker,
+  } = useAuthWorkerStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Determine which user type is authenticated
+  const isHealthcareWorker = isWorkerAuth;
+  const isAuthenticated = isMotherAuth || isWorkerAuth;
+  const isLoading = isMotherLoading || isWorkerLoading;
+  const currentUser = isHealthcareWorker ? worker : user;
+  const logout = isHealthcareWorker ? logoutWorker : logoutMother;
 
   // Translate all text
   const welcomeBackText = useTranslation("Welcome Back");
@@ -52,9 +72,11 @@ const CurrentUser = () => {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    const result = await refreshUser();
+    const result = isHealthcareWorker
+      ? await refreshWorker()
+      : await refreshUser();
     setIsRefreshing(false);
-    if (result) {
+    if (result?.success) {
       Toast.show({
         type: "success",
         text1: refreshedText,
@@ -74,7 +96,12 @@ const CurrentUser = () => {
       visibilityTime: 1500,
     });
     setTimeout(() => {
-      router.replace("/(tabs)");
+      // Navigate to appropriate dashboard based on user type
+      if (isHealthcareWorker) {
+        router.replace("/healthworker/dashboard");
+      } else {
+        router.replace("/(tabs)");
+      }
     }, 1500);
   };
 
@@ -97,7 +124,12 @@ const CurrentUser = () => {
             visibilityTime: 2000,
           });
           setTimeout(() => {
-            router.replace("/auth/login");
+            // Navigate to appropriate login page based on user type
+            if (isHealthcareWorker) {
+              router.replace("/auth/healthcare/login");
+            } else {
+              router.replace("/auth/login");
+            }
           }, 2000);
         },
       },
@@ -113,13 +145,13 @@ const CurrentUser = () => {
     );
   }
 
-  if (!isAuthenticated || !user) {
+  if (!isAuthenticated || !currentUser) {
     return (
       <View className="flex-1 items-center justify-center bg-[#FCFCFC] p-6">
         <Text className="text-red-500 text-lg mb-4">{noUserText}</Text>
         <TouchableOpacity
           className="bg-[#006D5B] px-6 py-3 rounded-2xl"
-          onPress={() => router.push("/auth/login")}
+          onPress={() => router.push("/Onboarding")}
         >
           <Text className="text-white font-semibold">{goToLoginText}</Text>
         </TouchableOpacity>
@@ -141,7 +173,8 @@ const CurrentUser = () => {
 
         {/* Title */}
         <Text className="text-2xl font-bold text-left mt-6 mb-2">
-          {welcomeBackText}, {user.name}!
+          {welcomeBackText},{" "}
+          {isHealthcareWorker ? currentUser.fullName : currentUser.name}!
         </Text>
 
         {/* Subtitle */}
@@ -152,19 +185,25 @@ const CurrentUser = () => {
           <View className="flex-row items-center mb-2">
             <Text className="text-gray-500 w-20">{emailText}</Text>
             <Text className="text-gray-700 flex-1" numberOfLines={1}>
-              {user.email}
+              {currentUser.email}
             </Text>
           </View>
-          {user.phone && (
+          {currentUser.phone && (
             <View className="flex-row items-center mb-2">
               <Text className="text-gray-500 w-20">{phoneText}</Text>
-              <Text className="text-gray-700 flex-1">{user.phone}</Text>
+              <Text className="text-gray-700 flex-1">{currentUser.phone}</Text>
+            </View>
+          )}
+          {isHealthcareWorker && currentUser.facilityName && (
+            <View className="flex-row items-center mb-2">
+              <Text className="text-gray-500 w-20">Facility:</Text>
+              <Text className="text-gray-700">{currentUser.facilityName}</Text>
             </View>
           )}
           <View className="flex-row items-center">
             <Text className="text-gray-500 w-20">{languageText}</Text>
             <Text className="text-gray-700 flex-1">
-              {user.preferredLanguages || "en"}
+              {currentUser.preferredLanguages || "en"}
             </Text>
           </View>
         </View>

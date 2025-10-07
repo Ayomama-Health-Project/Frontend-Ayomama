@@ -184,7 +184,9 @@ export default function Visit() {
             {user.name}
           </Text>
         </View>
-        <Icon name="notifications" size={25} color="#000" />
+        <TouchableOpacity onPress={() => router.push("/notifications")}>
+          <Icon name="notifications" size={25} color="#000" />
+        </TouchableOpacity>
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>

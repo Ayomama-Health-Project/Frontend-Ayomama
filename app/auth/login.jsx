@@ -43,6 +43,8 @@ const LogIn = () => {
   const welcomeBackText = useTranslation("Welcome back");
   const loginFailedText = useTranslation("Login Failed");
   const invalidCredentialsText = useTranslation("Invalid credentials");
+  const switchAccountText = useTranslation("Want to switch account type?");
+  const clickHereText = useTranslation("Click here");
 
   const handleLogIn = async () => {
     // Validation
@@ -68,8 +70,8 @@ const LogIn = () => {
 
     setError("");
 
-    // Call login API
-    const result = await login(email, password);
+    // Call login API with lowercase email
+    const result = await login(email.toLowerCase().trim(), password);
 
     if (result.success) {
       Toast.show({
@@ -179,13 +181,32 @@ const LogIn = () => {
         </View>
 
         {/* Footer pinned */}
-        <View className="flex-row justify-center items-center mb-16">
-          <Text className="text-gray-600">{noAccountText} </Text>
+        <View className="mb-16">
+          <View className="flex-row justify-center items-center mb-4">
+            <Text className="text-gray-600">{noAccountText} </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/auth/signup")}
+              disabled={isLoading}
+            >
+              <Text className="text-[#006D5B] font-semibold">{signUpText}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Switch Account Type */}
           <TouchableOpacity
-            onPress={() => router.push("/auth/signup")}
+            onPress={() => router.push("/AccountSelection?action=login")}
             disabled={isLoading}
+            className="flex-row items-center justify-center bg-[#F0F9FF] px-4 py-3 rounded-xl"
           >
-            <Text className="text-[#006D5B] font-semibold">{signUpText}</Text>
+            <Ionicons
+              name="swap-horizontal-outline"
+              size={20}
+              color="#006D5B"
+            />
+            <Text className="text-gray-600 ml-2">{switchAccountText} </Text>
+            <Text className="text-[#006D5B] font-semibold">
+              {clickHereText}
+            </Text>
           </TouchableOpacity>
         </View>
 

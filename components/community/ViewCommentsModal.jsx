@@ -47,7 +47,6 @@ export default function ViewCommentsModal({ visible, selectedPost, onClose }) {
                     shadowOffset: { width: 0, height: 1 },
                     shadowOpacity: 0.05,
                     shadowRadius: 2,
-                    elevation: 2,
                   }}
                 >
                   <Ionicons name="close" size={24} color="#293231" />
@@ -108,7 +107,6 @@ export default function ViewCommentsModal({ visible, selectedPost, onClose }) {
                             shadowOffset: { width: 0, height: 1 },
                             shadowOpacity: 0.1,
                             shadowRadius: 2,
-                            elevation: 2,
                           }}
                         />
                         <View className="flex-1">
@@ -119,7 +117,6 @@ export default function ViewCommentsModal({ visible, selectedPost, onClose }) {
                               shadowOffset: { width: 0, height: 1 },
                               shadowOpacity: 0.05,
                               shadowRadius: 2,
-                              elevation: 1,
                             }}
                           >
                             <Text className="text-[#293231] font-semibold text-sm mb-1">
@@ -145,7 +142,6 @@ export default function ViewCommentsModal({ visible, selectedPost, onClose }) {
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.05,
                         shadowRadius: 4,
-                        elevation: 2,
                       }}
                     >
                       <Ionicons

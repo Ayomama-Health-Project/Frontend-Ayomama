@@ -277,7 +277,6 @@ export default function Community() {
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.1,
             shadowRadius: 4,
-            elevation: 3,
           }}
         >
           <View className="flex-row items-center justify-center">
@@ -447,7 +446,6 @@ export default function Community() {
             shadowOffset: { width: 0, height: -2 },
             shadowOpacity: 0.1,
             shadowRadius: 4,
-            elevation: 5,
           }}
         >
           <View className="flex-row items-center">

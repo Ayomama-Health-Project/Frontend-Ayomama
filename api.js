@@ -13,7 +13,12 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     try {
-      const token = await AsyncStorage.getItem("token");
+      // Check for healthcare worker token first, then regular user token
+      let token = await AsyncStorage.getItem("worker_token");
+      if (!token) {
+        token = await AsyncStorage.getItem("token");
+      }
+
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -51,8 +56,9 @@ api.interceptors.response.use(
     }
 
     if (error.response?.status === 401) {
-      // Token expired or invalid, clear it
+      // Token expired or invalid, clear both tokens
       await AsyncStorage.removeItem("token");
+      await AsyncStorage.removeItem("worker_token");
     }
     return Promise.reject(error);
   }

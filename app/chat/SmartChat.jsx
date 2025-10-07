@@ -317,7 +317,6 @@ export default function SmartChat() {
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.3,
                   shadowRadius: 4,
-                  elevation: 4,
                 }}
               >
                 <Image
@@ -343,7 +342,6 @@ export default function SmartChat() {
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.2,
                   shadowRadius: 3,
-                  elevation: 3,
                 }}
               />
             </View>
@@ -361,7 +359,6 @@ export default function SmartChat() {
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.1,
                 shadowRadius: 2,
-                elevation: 2,
               }}
               pointerEvents="box-none"
             >
@@ -420,7 +417,6 @@ export default function SmartChat() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
               }}
             >
               <Ionicons name="arrow-back" size={24} color="#293231" />
@@ -438,7 +434,6 @@ export default function SmartChat() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
               }}
             >
               <Ionicons name="trash-outline" size={22} color="#EF4444" />
@@ -462,7 +457,6 @@ export default function SmartChat() {
                     shadowOffset: { width: 0, height: 4 },
                     shadowOpacity: 0.2,
                     shadowRadius: 8,
-                    elevation: 8,
                   }}
                 />
                 <Text className="text-[#293231] text-lg font-semibold text-center mb-2">
@@ -513,7 +507,6 @@ export default function SmartChat() {
                               shadowOffset: { width: 0, height: 2 },
                               shadowOpacity: 0.3,
                               shadowRadius: 4,
-                              elevation: 4,
                             }}
                           >
                             <Image
@@ -530,8 +523,7 @@ export default function SmartChat() {
                             shadowOffset: { width: 0, height: 1 },
                             shadowOpacity: 0.1,
                             shadowRadius: 2,
-                            elevation: 2,
-                          }}
+                                      }}
                         >
                           <TypingIndicator />
                         </View>
@@ -555,7 +547,6 @@ export default function SmartChat() {
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.1,
                   shadowRadius: 4,
-                  elevation: 3,
                 }}
               >
                 <Ionicons name="add" size={28} color="#293231" />
@@ -569,7 +560,6 @@ export default function SmartChat() {
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.1,
                   shadowRadius: 4,
-                  elevation: 3,
                 }}
               >
                 <TextInput

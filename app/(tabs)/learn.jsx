@@ -81,7 +81,6 @@ export default function Learn() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
               }}
             >
               <Text className="text-[#293231] font-semibold text-base text-center">
@@ -98,7 +97,6 @@ export default function Learn() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
               }}
             >
               <Ionicons name="mic" size={24} color="#293231" />
@@ -113,7 +111,6 @@ export default function Learn() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
               }}
             >
               <Ionicons name="image" size={24} color="#293231" />
@@ -131,7 +128,6 @@ export default function Learn() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
                 minHeight: 160,
               }}
             >
@@ -155,7 +151,6 @@ export default function Learn() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
                 minHeight: 160,
               }}
             >

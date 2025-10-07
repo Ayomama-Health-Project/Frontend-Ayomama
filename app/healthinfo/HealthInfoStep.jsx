@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
@@ -11,10 +11,12 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import useAuthWorkerStore from "../../store/useAuthWorkerStore";
 import { useTranslation } from "../../utils/translator";
 
 export default function HealthInfoStep() {
   const router = useRouter();
+  const { worker, updateProfileInformation, isLoading } = useAuthWorkerStore();
 
   const [fullName, setFullName] = useState("");
   const [state, setState] = useState("");
@@ -22,7 +24,17 @@ export default function HealthInfoStep() {
   const [facilityName, setFacilityName] = useState("");
   const [facilityCode, setFacilityCode] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  // Pre-fill form with existing worker data
+  useEffect(() => {
+    if (worker) {
+      if (worker.fullName) setFullName(worker.fullName);
+      if (worker.state) setState(worker.state);
+      if (worker.localGovernment) setLga(worker.localGovernment);
+      if (worker.facilityName) setFacilityName(worker.facilityName);
+      if (worker.facilityCode) setFacilityCode(worker.facilityCode);
+    }
+  }, [worker]);
 
   // Translate all text
   const personalInfoText = useTranslation("Personal information");
@@ -45,85 +57,84 @@ export default function HealthInfoStep() {
   const failedToSaveText = useTranslation("Failed to save your information");
 
   const handleProceed = async () => {
-    // // Validation
-    // if (!fullName.trim()) {
-    //   setError("Full name is required");
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Validation Error",
-    //     text2: "Please enter your full name",
-    //     position: "top",
-    //     visibilityTime: 2000,
-    //   });
-    //   return;
-    // }
+    // Validation
+    if (!fullName.trim()) {
+      setError("Full name is required");
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please enter your full name",
+        position: "top",
+        visibilityTime: 2000,
+      });
+      return;
+    }
 
-    // if (!state.trim()) {
-    //   setError("State is required");
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Validation Error",
-    //     text2: "Please enter your state",
-    //     position: "top",
-    //     visibilityTime: 2000,
-    //   });
-    //   return;
-    // }
+    if (!state.trim()) {
+      setError("State is required");
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please enter your state",
+        position: "top",
+        visibilityTime: 2000,
+      });
+      return;
+    }
 
-    // if (!lga.trim()) {
-    //   setError("LGA is required");
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Validation Error",
-    //     text2: "Please enter your LGA",
-    //     position: "top",
-    //     visibilityTime: 2000,
-    //   });
-    //   return;
-    // }
+    if (!lga.trim()) {
+      setError("LGA is required");
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please enter your LGA",
+        position: "top",
+        visibilityTime: 2000,
+      });
+      return;
+    }
 
-    // if (!facilityName.trim()) {
-    //   setError("Facility name is required");
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Validation Error",
-    //     text2: "Please enter facility name",
-    //     position: "top",
-    //     visibilityTime: 2000,
-    //   });
-    //   return;
-    // }
+    if (!facilityName.trim()) {
+      setError("Facility name is required");
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please enter facility name",
+        position: "top",
+        visibilityTime: 2000,
+      });
+      return;
+    }
 
-    // if (!facilityCode.trim()) {
-    //   setError("Facility code/ID is required");
-    //   Toast.show({
-    //     type: "error",
-    //     text1: "Validation Error",
-    //     text2: "Please enter facility code or ID",
-    //     position: "top",
-    //     visibilityTime: 2000,
-    //   });
-    //   return;
-    // }
+    if (!facilityCode.trim()) {
+      setError("Facility code/ID is required");
+      Toast.show({
+        type: "error",
+        text1: "Validation Error",
+        text2: "Please enter facility code or ID",
+        position: "top",
+        visibilityTime: 2000,
+      });
+      return;
+    }
 
     setError("");
-    setIsLoading(true);
 
-    try {
-      // TODO: Implement healthcare worker profile API call
-      const healthcareData = {
-        fullName: fullName.trim(),
-        state: state.trim(),
-        lga: lga.trim(),
-        facilityName: facilityName.trim(),
-        facilityCode: facilityCode.trim(),
-      };
+    // Prepare data matching backend field names
+    const healthcareData = {
+      fullName: fullName.trim(),
+      state: state.trim(),
+      localGovernment: lga.trim(), // Backend expects localGovernment
+      facilityName: facilityName.trim(),
+      facilityCode: facilityCode.trim(),
+    };
 
-      console.log("Healthcare worker data:", healthcareData);
+    console.log("Healthcare worker data:", healthcareData);
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Call updateProfileInformation from store
+    const result = await updateProfileInformation(healthcareData);
 
+    if (result.success) {
       Toast.show({
         type: "success",
         text1: profileCompleteText,
@@ -136,17 +147,15 @@ export default function HealthInfoStep() {
       setTimeout(() => {
         router.replace("/healthworker/dashboard");
       }, 2000);
-    } catch (err) {
-      setError(failedToSaveText);
+    } else {
+      setError(result.error || failedToSaveText);
       Toast.show({
         type: "error",
         text1: updateFailedText,
-        text2: failedToSaveText,
+        text2: result.error || failedToSaveText,
         position: "top",
         visibilityTime: 3000,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -244,7 +253,6 @@ export default function HealthInfoStep() {
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.3,
               shadowRadius: 8,
-              elevation: 4,
             }}
             onPress={handleProceed}
             disabled={isLoading}

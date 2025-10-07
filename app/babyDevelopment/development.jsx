@@ -81,7 +81,6 @@ export default function BabyDevelopment() {
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.1,
               shadowRadius: 8,
-              elevation: 5,
             }}
           >
             {/* Header with emoji and text */}
@@ -162,7 +161,6 @@ export default function BabyDevelopment() {
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.08,
               shadowRadius: 4,
-              elevation: 3,
             }}
           >
             <Text className="text-3xl mr-3">😊</Text>
@@ -179,7 +177,6 @@ export default function BabyDevelopment() {
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.08,
               shadowRadius: 4,
-              elevation: 3,
             }}
           >
             <Text className="text-3xl mr-3">😊</Text>
@@ -196,7 +193,6 @@ export default function BabyDevelopment() {
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.08,
               shadowRadius: 4,
-              elevation: 3,
             }}
           >
             <Text className="text-3xl mr-3">😊</Text>

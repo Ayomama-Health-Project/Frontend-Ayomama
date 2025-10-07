@@ -14,14 +14,14 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import useAuthStore from "../../store/useAuthStore";
+import useAuthWorkerStore from "../../store/useAuthWorkerStore";
 import { useTranslation } from "../../utils/translator";
 
 const ios = Platform.OS === "ios";
 
 export default function HealthWorkerProfile() {
   const router = useRouter();
-  const { user: authUser, logout } = useAuthStore();
+  const { worker, logout } = useAuthWorkerStore();
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -57,10 +57,11 @@ export default function HealthWorkerProfile() {
     "Failed to save notification setting"
   );
 
-  // Use authenticated user data or fallback to default
-  const user = authUser || {
-    name: "Healthcare Worker",
-    email: "worker@example.com",
+  // Use authenticated worker data or fallback to default
+  const user = {
+    name: worker?.fullName || "Healthcare Worker",
+    email: worker?.email || "worker@example.com",
+    avatar: worker?.avatar || null,
   };
 
   // Get avatar image source - use profilepic.png as default

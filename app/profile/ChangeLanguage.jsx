@@ -1,9 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
 import useAuthStore from "../../store/useAuthStore";
+import useAuthWorkerStore from "../../store/useAuthWorkerStore";
 import useTranslatorStore from "../../store/useTranslatorStore";
 import { useTranslation } from "../../utils/translator";
 
@@ -12,8 +14,12 @@ const ios = Platform.OS === "ios";
 export default function ChangeLanguage() {
   const router = useRouter();
   const { user, updateLanguagePreference, isLoading } = useAuthStore();
+  const { worker } = useAuthWorkerStore();
   const { setLanguage: setTranslatorLanguage } = useTranslatorStore();
   const [selectedLanguage, setSelectedLanguage] = useState("English");
+
+  // Determine if current user is a healthcare worker
+  const isHealthcareWorker = !!worker;
 
   // Translate UI text
   const titleText = useTranslation("Change Language");
@@ -31,13 +37,16 @@ export default function ChangeLanguage() {
     return language ? language.name : "English";
   };
 
-  // Set initial language from user data
+  // Set initial language from user data or worker data
   useEffect(() => {
-    if (user?.preferredLanguages) {
+    if (isHealthcareWorker && worker?.preferredLanguages) {
+      const languageName = getLanguageName(worker.preferredLanguages);
+      setSelectedLanguage(languageName);
+    } else if (user?.preferredLanguages) {
       const languageName = getLanguageName(user.preferredLanguages);
       setSelectedLanguage(languageName);
     }
-  }, [user]);
+  }, [user, worker, isHealthcareWorker]);
 
   const handleBack = () => {
     router.back();
@@ -57,13 +66,23 @@ export default function ChangeLanguage() {
     // Update translator language immediately
     await setTranslatorLanguage(languageCode);
 
-    // Update language preference via API immediately
-    const result = await updateLanguagePreference(languageCode);
-
-    if (result.success) {
-      console.log("Language updated successfully to:", language);
+    // If healthcare worker, only save locally (no API call)
+    if (isHealthcareWorker) {
+      try {
+        await AsyncStorage.setItem("worker_language", languageCode);
+        console.log("Healthcare worker language saved locally to:", language);
+      } catch (error) {
+        console.error("Failed to save worker language locally:", error);
+      }
     } else {
-      console.log("Failed to update language:", result.error);
+      // For regular users, update language preference via API
+      const result = await updateLanguagePreference(languageCode);
+
+      if (result.success) {
+        console.log("Language updated successfully to:", language);
+      } else {
+        console.log("Failed to update language:", result.error);
+      }
     }
   };
 
@@ -95,7 +114,6 @@ export default function ChangeLanguage() {
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.1,
               shadowRadius: 4,
-              elevation: 3,
             }}
           >
             <Ionicons name="arrow-back" size={24} color="#293231" />
@@ -118,7 +136,6 @@ export default function ChangeLanguage() {
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.05,
                 shadowRadius: 2,
-                elevation: 1,
               }}
               disabled={isLoading}
             >

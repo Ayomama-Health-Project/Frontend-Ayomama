@@ -12,15 +12,14 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import useAuthWorkerStore from "../../../store/useAuthWorkerStore";
 import { useTranslation } from "../../../utils/translator";
 
 const HealthcareSignUp = () => {
   const router = useRouter();
 
   // form states
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [hospitalName, setHospitalName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,14 +27,14 @@ const HealthcareSignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const { signUp } = useAuthWorkerStore();
+
   // Translate all text
   const titleText = useTranslation("Create Healthcare Account");
   const subtitleText = useTranslation(
     "Join as a healthcare worker to manage patients"
   );
-  const fullNamePlaceholder = useTranslation("Full Name");
   const emailPlaceholder = useTranslation("Email");
-  const hospitalPlaceholder = useTranslation("Hospital/Clinic Name");
   const passwordPlaceholder = useTranslation("Password");
   const confirmPasswordPlaceholder = useTranslation("Confirm Password");
   const signUpButtonText = useTranslation("Sign Up");
@@ -51,10 +50,12 @@ const HealthcareSignUp = () => {
   const pleaseLoginText = useTranslation("Please login to continue");
   const signUpFailedText = useTranslation("Sign Up Failed");
   const failedToCreateText = useTranslation("Failed to create account");
+  const switchAccountText = useTranslation("Want to switch account type?");
+  const clickHereText = useTranslation("Click here");
 
   const handleSignUp = async () => {
     // Validation
-    if (!name || !email || !hospitalName || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
       setError(allFieldsRequiredText);
       return;
     }
@@ -75,9 +76,11 @@ const HealthcareSignUp = () => {
     setError("");
     setIsLoading(true);
 
-    try {
-      // TODO: Implement healthcare worker signup API call
-      // For now, just show success message
+    // Call signUp from store with lowercase email
+    const result = await signUp(email.toLowerCase().trim(), password);
+    setIsLoading(false);
+
+    if (result.success) {
       Toast.show({
         type: "success",
         text1: accountCreatedText,
@@ -90,17 +93,15 @@ const HealthcareSignUp = () => {
       setTimeout(() => {
         router.push("/auth/healthcare/login");
       }, 2000);
-    } catch (err) {
-      setError(failedToCreateText);
+    } else {
+      setError(result.error || failedToCreateText);
       Toast.show({
         type: "error",
         text1: signUpFailedText,
-        text2: failedToCreateText,
+        text2: result.error || failedToCreateText,
         position: "top",
         visibilityTime: 3000,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -125,16 +126,6 @@ const HealthcareSignUp = () => {
 
           <Text className="text-gray-600 mb-4">{subtitleText}</Text>
 
-          {/* Name Input */}
-          <TextInput
-            placeholder={fullNamePlaceholder}
-            value={name}
-            onChangeText={setName}
-            className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] mb-4"
-            placeholderTextColor="#9CA3AF"
-            editable={!isLoading}
-          />
-
           {/* Email Input */}
           <TextInput
             placeholder={emailPlaceholder}
@@ -142,16 +133,6 @@ const HealthcareSignUp = () => {
             onChangeText={setEmail}
             className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] mb-4"
             keyboardType="email-address"
-            placeholderTextColor="#9CA3AF"
-            editable={!isLoading}
-          />
-
-          {/* Hospital Name Input */}
-          <TextInput
-            placeholder={hospitalPlaceholder}
-            value={hospitalName}
-            onChangeText={setHospitalName}
-            className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] mb-4"
             placeholderTextColor="#9CA3AF"
             editable={!isLoading}
           />
@@ -226,13 +207,32 @@ const HealthcareSignUp = () => {
         </View>
 
         {/* Footer pinned to bottom */}
-        <View className="flex-row justify-center items-center mb-16">
-          <Text className="text-gray-600">{haveAccountText} </Text>
+        <View className="mb-16">
+          <View className="flex-row justify-center items-center mb-4">
+            <Text className="text-gray-600">{haveAccountText} </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/auth/healthcare/login")}
+              disabled={isLoading}
+            >
+              <Text className="text-[#006D5B] font-semibold">{loginText}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Switch Account Type */}
           <TouchableOpacity
-            onPress={() => router.push("/auth/healthcare/login")}
+            onPress={() => router.push("/AccountSelection?action=signup")}
             disabled={isLoading}
+            className="flex-row items-center justify-center bg-[#F0F9FF] px-4 py-3 rounded-xl"
           >
-            <Text className="text-[#006D5B] font-semibold">{loginText}</Text>
+            <Ionicons
+              name="swap-horizontal-outline"
+              size={20}
+              color="#006D5B"
+            />
+            <Text className="text-gray-600 ml-2">{switchAccountText} </Text>
+            <Text className="text-[#006D5B] font-semibold">
+              {clickHereText}
+            </Text>
           </TouchableOpacity>
         </View>
 

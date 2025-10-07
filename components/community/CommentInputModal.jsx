@@ -65,7 +65,6 @@ export default function CommentInputModal({
                       shadowOffset: { width: 0, height: 1 },
                       shadowOpacity: 0.05,
                       shadowRadius: 2,
-                      elevation: 2,
                     }}
                   >
                     <Ionicons name="close" size={24} color="#293231" />
@@ -113,7 +112,7 @@ export default function CommentInputModal({
                 </View>
 
                 {/* Action Buttons */}
-                <View className="flex-row px-6 space-x-3">
+                <View className="flex-row px-6 gap-2">
                   <TouchableOpacity
                     onPress={onClose}
                     className="flex-1 bg-gray-200 rounded-full py-3"

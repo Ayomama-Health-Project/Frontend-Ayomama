@@ -101,7 +101,6 @@ export default function EditProfile() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
               }}
             >
               <Ionicons name="arrow-back" size={24} color="#293231" />
@@ -124,7 +123,6 @@ export default function EditProfile() {
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.2,
                   shadowRadius: 3,
-                  elevation: 4,
                 }}
               >
                 <Ionicons name="pencil" size={16} color="white" />
@@ -186,7 +184,6 @@ export default function EditProfile() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 2,
               }}
             >
               <Text className="text-[#293231] font-semibold text-[16px]">

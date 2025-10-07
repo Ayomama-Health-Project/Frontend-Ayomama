@@ -1,7 +1,6 @@
 import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import {
   Image,
   Platform,
@@ -11,13 +10,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import useAuthWorkerStore from "../../store/useAuthWorkerStore";
 import { useTranslation } from "../../utils/translator";
 
 const isIOS = Platform.OS === "ios";
 
 export default function HealthcareDashboard() {
   const router = useRouter();
-  const [nurseName] = useState("Nurse Becca");
+  const { worker } = useAuthWorkerStore();
+  const nurseName = worker?.fullName || "Healthcare Worker";
 
   // Translate all text
   const monitorText = useTranslation("Monitor");
@@ -233,7 +234,6 @@ export default function HealthcareDashboard() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
               }}
               onPress={() => router.push("/healthworker/addPatient")}
             >
@@ -250,7 +250,6 @@ export default function HealthcareDashboard() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
-                elevation: 3,
               }}
               onPress={() => router.push("/healthworker/logVisit")}
             >

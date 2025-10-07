@@ -1,10 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -16,20 +16,10 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  ActivityIndicator,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useVisitStore from "../../store/useVisitStore";
-
-// 🔔 Configure notifications
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
 
 const VisitInput = () => {
   const [visitDate, setVisitDate] = useState(null);
@@ -43,24 +33,6 @@ const VisitInput = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { createSchedule } = useVisitStore();
-
-  // 🟢 Handle notification click
-  useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        const data = response.notification.request.content.data;
-        Toast.show({
-          type: "info",
-          text1: "Visit Reminder",
-          text2: `It's time for your ${
-            data?.serviceType || "scheduled"
-          } visit.`,
-          position: "top",
-        });
-      }
-    );
-    return () => subscription.remove();
-  }, []);
 
   const dismissKeyboard = () => Keyboard.dismiss();
 
@@ -181,29 +153,10 @@ const VisitInput = () => {
       const result = await createSchedule(visitData);
 
       if (result.success) {
-        // 🔔 Schedule local notification 10 minutes before visit
-        const triggerTime = new Date(
-          reminderDateTime.getTime() - 10 * 60 * 1000
-        );
-
-        // Only schedule if trigger time is in the future
-        if (triggerTime > new Date()) {
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: "⏰ Upcoming Visit Reminder",
-              body: `You have a ${serviceType} at ${hospitalName} with ${healthcareProvider} at ${formatTime(
-                visitTime
-              )}.`,
-              data: visitData,
-            },
-            trigger: triggerTime,
-          });
-        }
-
         Toast.show({
           type: "success",
           text1: "Visit Scheduled ✅",
-          text2: "Your visit has been saved and a reminder set!",
+          text2: "Your visit has been saved successfully!",
           position: "top",
         });
 
