@@ -68,11 +68,11 @@ export default function TabLayout() {
           name="emergency"
           options={{
             title: emergencyText,
-            tabBarIcon: ({ color, focused }) => (
+            tabBarIcon: ({ color = "#FF5E5EBD", focused }) => (
               <Ionicons
                 name={focused ? "medkit" : "medkit"}
                 size={24}
-                color={color}
+                color={"#FF5E5EBD"}
               />
             ),
           }}

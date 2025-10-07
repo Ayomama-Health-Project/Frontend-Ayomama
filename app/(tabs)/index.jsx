@@ -14,7 +14,6 @@ import {
   Alert,
   Dimensions,
   Image,
-  Linking,
   Platform,
   ScrollView,
   StatusBar,
@@ -129,7 +128,7 @@ export default function HomeScreen() {
   const handleWellnessStart = (activity) => {
     Toast.show({
       type: "info",
-      text1: `${activity} Started 🎯`,
+      text1: `${activity} Started `,
       text2: "Enjoy your wellness session!",
       position: "top",
     });
@@ -139,29 +138,20 @@ export default function HomeScreen() {
   };
 
   // Handle emergency calls
-  const handleEmergencyCall = (type) => {
-    const phoneNumbers = {
-      hospital: "+2348145760560",
-      family: "+2348145760560",
-      friend: "+2348145760560",
-    };
-
+  const handleEmergencyCall = (contact) => {
     Alert.alert(
-      `Call ${type.charAt(0).toUpperCase() + type.slice(1)}?`,
-      `Are you sure you want to call ${type}?`,
+      `Call ${contact.name}?`,
+      `Are you sure you want to call ${contact.name}?`,
       [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
+        { text: "Cancel", style: "cancel" },
         {
           text: "Call",
           onPress: () => {
-            Linking.openURL(`tel:${phoneNumbers[type]}`).catch(() => {
+            Linking.openURL(`tel:${contact.phone}`).catch(() => {
               Toast.show({
                 type: "error",
-                text1: "Call Failed 📞",
-                text2: "Unable to make call. Please try again.",
+                text1: callFailedText,
+                text2: unableToCallText,
                 position: "top",
               });
             });
@@ -171,6 +161,15 @@ export default function HomeScreen() {
     );
   };
 
+  const emergencyContacts = user?.emergencyContact || [];
+
+  const groupedContacts = emergencyContacts.reduce((acc, contact) => {
+    const { type } = contact;
+    if (!acc[type]) acc[type] = [];
+    acc[type].push(contact);
+    return acc;
+  }, {});
+
   // Handle view details navigation
   const handleViewDetails = () => {
     router.push("/(tabs)/visit");
@@ -178,7 +177,7 @@ export default function HomeScreen() {
 
   // Handle add to calendar
   const handleAddToCalendar = () => {
-    router.push("/(tabs)/atenatal");
+    router.push("/visit/visitInput");
   };
 
   // Handle learn more about baby development
@@ -619,54 +618,39 @@ export default function HomeScreen() {
               </LinearGradient>
             </View>
 
-            <View className="flex flex-col gap-2">
-              {/* Call Hospital Button */}
-              <View className="flex flex-row justify-center">
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]"
-                  onPress={() => handleEmergencyCall("hospital")}
+            <View className="flex flex-col gap-3 mb-4">
+              {Object.entries(groupedContacts).map(([type, contacts]) => (
+                <View
+                  key={type}
+                  className="flex flex-row flex-wrap justify-center gap-3"
                 >
-                  <Image
-                    source={require("../../assets/images/hospital.png")}
-                    style={{ height: 26, width: 26 }}
-                  />
-                  <Text className="font-semibold text-[14px]">
-                    Call Hospital
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                  {contacts.map((contact, idx) => (
+                    <TouchableOpacity
+                      key={idx}
+                      activeOpacity={0.7}
+                      className="flex flex-row gap-3 items-center text-xl leading-6 h-[42px] w-[180px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]"
+                      onPress={() => handleEmergencyCall(contact)}
+                    >
+                      <Image
+                        source={require("../../assets/images/hospital.png")}
+                        style={{ height: 26, width: 26 }}
+                      />
+                      <Text className="font-semibold text-[14px]">
+                        Call{" "}
+                        {contact.name ||
+                          type.charAt(0).toUpperCase() + type.slice(1)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ))}
 
-              {/* Call Family + Call Friend */}
-              <View className="flex flex-row gap-3">
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]"
-                  onPress={() => handleEmergencyCall("family")}
-                >
-                  <Image
-                    source={require("../../assets/images/hospital.png")}
-                    style={{ height: 26, width: 26 }}
-                  />
-                  <Text className="font-semibold text-[14px]">
-                    {callFamilyText}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  className="flex flex-row gap-3 font-semibold items-center text-xl leading-6 h-[42px] w-[146px] bg-[#FCFCFC] shadow-md rounded-[10px] py-[10px] px-[18px]"
-                  onPress={() => handleEmergencyCall("friend")}
-                >
-                  <Image
-                    source={require("../../assets/images/hospital.png")}
-                    style={{ height: 26, width: 26 }}
-                  />
-                  <Text className="font-semibold text-[14px]">
-                    {callFriendText}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              {/* If no emergency contacts */}
+              {emergencyContacts.length === 0 && (
+                <Text className="text-gray-500 text-center mt-4">
+                  No emergency contacts added yet.
+                </Text>
+              )}
             </View>
           </View>
 

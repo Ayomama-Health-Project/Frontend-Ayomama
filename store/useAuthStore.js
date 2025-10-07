@@ -300,6 +300,65 @@ const useAuthStore = create((set, get) => ({
     }
   },
 
+  // Submit antenatal data
+  submitAntenatalData: async (antenatalData) => {
+    try {
+      set({ isLoading: true, error: null });
+
+      const { token } = get();
+
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+
+      console.log("Submitting antenatal data:", antenatalData);
+
+      const response = await api.post(
+        "/api/antenatal/",
+        {
+          bloodPressure: antenatalData.bloodPressure,
+          temperature: antenatalData.temperature,
+          weight: antenatalData.weight,
+          bloodLevel: antenatalData.bloodLevel,
+          date: antenatalData.date,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Antenatal data submission response:", response.data);
+
+      if (response.status === 200 || response.status === 201) {
+        set({ isLoading: false, error: null });
+        return { success: true, message: "Antenatal info saved successfully" };
+      } else {
+        set({
+          isLoading: false,
+          error: response.data?.error || "Unexpected response",
+        });
+        return {
+          success: false,
+          error: response.data?.error || "Unexpected response",
+        };
+      }
+    } catch (error) {
+      console.error("Antenatal submission error:", error);
+
+      const errorMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to submit antenatal data";
+
+      set({ isLoading: false, error: errorMessage });
+
+      return { success: false, error: errorMessage };
+    }
+  },
+
   // Check if user has completed profile setup
   hasCompletedProfile: () => {
     const { user } = get();

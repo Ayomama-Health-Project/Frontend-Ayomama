@@ -9,19 +9,21 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import useAuthStore from "../../store/useAuthStore";
 
 export default function AntenatalStep({ onNext, onBack }) {
   const [hasStarted, setHasStarted] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const { submitAntenatalData } = useAuthStore();
+
   const [formData, setFormData] = useState({
     bloodPressure: "",
     temperature: "",
     weight: "",
     bloodLevel: "",
-    prescribedDrugs: "",
-    drugsToAvoid: "",
+    date: "",
   });
 
   const handleChange = (key, value) => {
@@ -31,6 +33,7 @@ export default function AntenatalStep({ onNext, onBack }) {
   const handleProceed = async () => {
     if (loading) return;
 
+    // Step 1: Validation for Yes/No stage
     if (!showForm) {
       if (hasStarted === null) {
         Toast.show({
@@ -42,14 +45,17 @@ export default function AntenatalStep({ onNext, onBack }) {
         return;
       }
 
+      // If user selected "No", skip form and go next
       if (hasStarted === false) {
         onNext();
       } else {
+        // Show form if "Yes" selected
         setShowForm(true);
       }
       return;
     }
 
+    // Step 2: Validation for form fields
     const emptyField = Object.entries(formData).find(
       ([, value]) => !value.trim()
     );
@@ -63,25 +69,37 @@ export default function AntenatalStep({ onNext, onBack }) {
       return;
     }
 
+    // Step 3: Submit data to backend
     try {
-      Toast.show({
-        type: "success",
-        text1: "Antenatal Info Saved",
-        text2: "Your antenatal details have been recorded",
-        visibilityTime: 2000,
-      });
+      setLoading(true);
+      const result = await submitAntenatalData(formData);
+      setLoading(false);
 
-      onNext();
+      if (result.success) {
+        Toast.show({
+          type: "success",
+          text1: "Antenatal Info Saved",
+          text2: "Your antenatal details have been recorded successfully",
+          visibilityTime: 2000,
+        });
+        onNext();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Submission Failed",
+          text2: result.error || "Something went wrong",
+          visibilityTime: 2000,
+        });
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Antenatal submission failed:", error);
+      setLoading(false);
       Toast.show({
         type: "error",
         text1: "Submission Failed",
-        text2: "Something went wrong, please try again",
+        text2: "Something went wrong, please try again.",
         visibilityTime: 2000,
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -99,7 +117,7 @@ export default function AntenatalStep({ onNext, onBack }) {
 
           {/* STEP 1: Yes/No Section */}
           {!showForm && (
-            <View className="">
+            <View>
               <Text className="text-gray-700 mb-4 text-base">
                 Have you started antenatal?
               </Text>
@@ -143,8 +161,7 @@ export default function AntenatalStep({ onNext, onBack }) {
                 { key: "temperature", label: "Temperature" },
                 { key: "weight", label: "Weight" },
                 { key: "bloodLevel", label: "Blood Level" },
-                { key: "prescribedDrugs", label: "Prescribed Drugs" },
-                { key: "drugsToAvoid", label: "Drugs To Avoid" },
+                { key: "date", label: "Date (YYYY-MM-DD)" },
               ].map((field) => (
                 <View key={field.key} className="mb-4">
                   <Text className="text-gray-700 mb-2">{field.label}</Text>
