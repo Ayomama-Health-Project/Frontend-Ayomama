@@ -21,6 +21,17 @@ import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useVisitStore from "../../store/useVisitStore";
 
+<<<<<<< HEAD
+=======
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+>>>>>>> 821678f07f1a69a41980d49847932ea93dfc041f
 const VisitInput = () => {
   const [visitDate, setVisitDate] = useState(null);
   const [visitTime, setVisitTime] = useState(null);
@@ -34,7 +45,26 @@ const VisitInput = () => {
 
   const { createSchedule } = useVisitStore();
 
+<<<<<<< HEAD
   const dismissKeyboard = () => Keyboard.dismiss();
+=======
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const data = response.notification.request.content.data;
+        Toast.show({
+          type: "info",
+          text1: "Visit Reminder",
+          text2: `It's time for your ${
+            data?.serviceType || "scheduled"
+          } visit.`,
+          position: "top",
+        });
+      }
+    );
+    return () => subscription.remove();
+  }, []);
+>>>>>>> 821678f07f1a69a41980d49847932ea93dfc041f
 
   const onChangeDate = (event, selectedDate) => {
     setShowDatePicker(false);
@@ -60,11 +90,10 @@ const VisitInput = () => {
       ? time.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
-          hour12: false, // 🔹 backend expects HH:mm
+          hour12: false,
         })
       : "00:00";
 
-  // ✅ Format date for backend (YYYY-MM-DD)
   const formatDateForBackend = (date) => {
     if (!date) return null;
     const year = date.getFullYear();
@@ -73,7 +102,6 @@ const VisitInput = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // ✅ Create proper reminderDateTime by combining date and time
   const createReminderDateTime = (date, time) => {
     if (!date || !time) return null;
 
@@ -86,31 +114,7 @@ const VisitInput = () => {
     return combined;
   };
 
-  const InputField = ({
-    icon,
-    placeholder,
-    value,
-    onChangeText,
-    onPress,
-    editable = true,
-  }) => (
-    <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
-      <Icon name={icon} size={22} color="#999" style={{ marginRight: 8 }} />
-      <TextInput
-        className="flex-1 text-[16px] text-[#333333]"
-        placeholder={placeholder}
-        placeholderTextColor="#999999"
-        value={value}
-        onChangeText={onChangeText}
-        editable={editable}
-        onFocus={onPress}
-      />
-    </View>
-  );
-
   const handleSave = async () => {
-    dismissKeyboard();
-
     if (
       !visitDate ||
       !visitTime ||
@@ -120,7 +124,7 @@ const VisitInput = () => {
     ) {
       Toast.show({
         type: "error",
-        text1: "Missing Fields ⚠️",
+        text1: "Missing Fields ",
         text2: "Please fill in all the required fields before saving.",
         position: "top",
       });
@@ -130,37 +134,58 @@ const VisitInput = () => {
     setIsLoading(true);
 
     try {
-      // ✅ Create proper reminderDateTime
       const reminderDateTime = createReminderDateTime(visitDate, visitTime);
 
       if (!reminderDateTime || isNaN(reminderDateTime.getTime())) {
         throw new Error("Invalid date/time combination");
       }
 
-      // ✅ Prepare visit data for backend
       const visitData = {
-        visitDate: formatDateForBackend(visitDate), // YYYY-MM-DD format
-        visitTime: formatTime(visitTime), // HH:mm format
-        reminderDateTime: reminderDateTime.toISOString(), // ISO string for backend
+        visitDate: formatDateForBackend(visitDate),
+        visitTime: formatTime(visitTime),
+        reminderDateTime: reminderDateTime.toISOString(),
         duration: parseInt(duration),
         doctorName: healthcareProvider.trim(),
         hospitalName: hospitalName.trim(),
         serviceType: serviceType.trim(),
       };
 
-      console.log("📤 Sending visit data:", visitData);
+      console.log("Sending visit data:", visitData);
 
       const result = await createSchedule(visitData);
 
       if (result.success) {
+<<<<<<< HEAD
         Toast.show({
           type: "success",
           text1: "Visit Scheduled ✅",
           text2: "Your visit has been saved successfully!",
+=======
+        const triggerTime = new Date(
+          reminderDateTime.getTime() - 10 * 60 * 1000
+        );
+
+        if (triggerTime > new Date()) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: "Upcoming Visit Reminder",
+              body: `You have a ${serviceType} at ${hospitalName} with ${healthcareProvider} at ${formatTime(
+                visitTime
+              )}.`,
+              data: visitData,
+            },
+            trigger: triggerTime,
+          });
+        }
+
+        Toast.show({
+          type: "success",
+          text1: "Visit Scheduled ",
+          text2: "Your visit has been saved and a reminder set!",
+>>>>>>> 821678f07f1a69a41980d49847932ea93dfc041f
           position: "top",
         });
 
-        // 🔄 Reset fields
         setVisitDate(null);
         setVisitTime(null);
         setDuration("");
@@ -171,22 +196,26 @@ const VisitInput = () => {
         console.error("❌ Create visit error:", result.error);
         Toast.show({
           type: "error",
-          text1: "Error ❌",
+          text1: "Error ",
           text2: result.error || "Something went wrong, please try again.",
           position: "top",
         });
       }
     } catch (error) {
-      console.error("❌ Error in handleSave:", error);
+      console.error(" Error in handleSave:", error);
       Toast.show({
         type: "error",
-        text1: "Validation Error ⚠️",
+        text1: "Validation Error",
         text2: "Please check your date and time inputs.",
         position: "top",
       });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
   };
 
   return (
@@ -230,6 +259,7 @@ const VisitInput = () => {
                     borderColor: "#00D2B3",
                     borderWidth: 1,
                   }}
+                  className="flex flex-row items-center border border-[#00D2B3]"
                 >
                   <Image
                     source={require("../../assets/images/clinicVisit.png")}
@@ -239,50 +269,41 @@ const VisitInput = () => {
               </View>
 
               {/* Visit Date */}
-              <Text className="text-[16px] font-medium text-[#333333] mb-2">
-                Visit Date *
-              </Text>
-              <TouchableOpacity
-                onPress={() => setShowDatePicker(true)}
-                className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white"
-              >
-                <Icon
-                  name="calendar-today"
-                  size={22}
-                  color="#999"
-                  style={{ marginRight: 8 }}
-                />
-                <Text className="flex-1 text-[16px] text-[#333333]">
-                  {formatDate(visitDate)}
+              <View className="mb-8">
+                <Text className="text-[16px] font-medium text-[#333333] mb-4">
+                  Visit Date *
                 </Text>
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  mode="date"
-                  display="default"
-                  value={visitDate || new Date()}
-                  onChange={onChangeDate}
-                  minimumDate={new Date()} // Prevent past dates
-                />
-              )}
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(true)}
+                  className="border border-[#00D2B3] rounded-xl px-4 py-5 bg-white"
+                >
+                  <Text className="text-[16px] text-[#333333]">
+                    {formatDate(visitDate)}
+                  </Text>
+                </TouchableOpacity>
+                {showDatePicker && (
+                  <DateTimePicker
+                    mode="date"
+                    display="default"
+                    value={visitDate || new Date()}
+                    onChange={onChangeDate}
+                    minimumDate={new Date()}
+                  />
+                )}
+              </View>
 
-              {/* Time & Duration */}
-              <View className="flex-row justify-between">
+              {/* Time and Duration Row */}
+              <View className="flex-row justify-between mb-8">
+                {/* Time */}
                 <View className="flex-1 mr-3">
-                  <Text className="text-[16px] font-medium text-[#333333] mb-2">
+                  <Text className="text-[16px] font-medium text-[#333333] mb-4">
                     Time *
                   </Text>
                   <TouchableOpacity
                     onPress={() => setShowTimePicker(true)}
-                    className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white"
+                    className="border border-[#00D2B3] rounded-xl px-4 py-5 bg-white"
                   >
-                    <Icon
-                      name="access-time"
-                      size={22}
-                      color="#999"
-                      style={{ marginRight: 8 }}
-                    />
-                    <Text className="flex-1 text-[16px] text-[#333333]">
+                    <Text className="text-[16px] text-[#333333]">
                       {formatTime(visitTime)}
                     </Text>
                   </TouchableOpacity>
@@ -296,56 +317,70 @@ const VisitInput = () => {
                   )}
                 </View>
 
+                {/* Duration */}
                 <View className="flex-1 ml-3">
-                  <Text className="text-[16px] font-medium text-[#333333] mb-2">
+                  <Text className="text-[16px] font-medium text-[#333333] mb-4">
                     Duration (minutes) *
                   </Text>
-                  <InputField
-                    icon="hourglass-empty"
+                  <TextInput
+                    className="border border-[#00D2B3] rounded-xl px-4 py-5 bg-white text-[16px]"
                     placeholder="30"
+                    placeholderTextColor="#999999"
                     value={duration}
                     onChangeText={setDuration}
                     keyboardType="numeric"
+                    returnKeyType="next"
                   />
                 </View>
               </View>
 
               {/* Service Type */}
-              <Text className="text-[16px] font-medium text-[#333333] mb-2 mt-4">
-                Service Type
-              </Text>
-              <InputField
-                icon="medical-services"
-                placeholder="Service type"
-                value={serviceType}
-                onChangeText={setServiceType}
-              />
+              <View className="mb-8">
+                <Text className="text-[16px] font-medium text-[#333333] mb-4">
+                  Service Type
+                </Text>
+                <TextInput
+                  className="border border-[#00D2B3] rounded-xl px-4 py-5 bg-white text-[16px] text-[#333333]"
+                  value={serviceType}
+                  onChangeText={setServiceType}
+                  returnKeyType="next"
+                />
+              </View>
 
               {/* Hospital Name */}
-              <Text className="text-[16px] font-medium text-[#333333] mb-2">
-                Hospital Name *
-              </Text>
-              <InputField
-                icon="local-hospital"
-                placeholder="Write hospital name"
-                value={hospitalName}
-                onChangeText={setHospitalName}
-              />
+              <View className="mb-8">
+                <Text className="text-[16px] font-medium text-[#333333] mb-4">
+                  Hospital Name *
+                </Text>
+                <TextInput
+                  className="border border-[#00D2B3] rounded-xl px-4 py-5 bg-white text-[16px]"
+                  placeholder="Write hospital name"
+                  placeholderTextColor="#999999"
+                  value={hospitalName}
+                  onChangeText={setHospitalName}
+                  returnKeyType="next"
+                />
+              </View>
 
               {/* Healthcare Provider */}
-              <Text className="text-[16px] font-medium text-[#333333] mb-2">
-                Healthcare Provider *
-              </Text>
-              <InputField
-                icon="person"
-                placeholder="Doctor/Nurse name"
-                value={healthcareProvider}
-                onChangeText={setHealthcareProvider}
-              />
+              <View className="mb-10">
+                <Text className="text-[16px] font-medium text-[#333333] mb-4">
+                  Healthcare Provider *
+                </Text>
+                <TextInput
+                  className="border border-[#00D2B3] rounded-xl px-4 py-5 bg-white text-[16px]"
+                  placeholder="Write doctor/nurse name below"
+                  placeholderTextColor="#999999"
+                  value={healthcareProvider}
+                  onChangeText={setHealthcareProvider}
+                  returnKeyType="done"
+                  onSubmitEditing={dismissKeyboard}
+                />
+              </View>
 
               {/* Save Button */}
               <TouchableOpacity
-                className="bg-[#00D2B3] rounded-xl py-5 items-center mt-4 mb-4 flex-row justify-center"
+                className="bg-[#006D5B] rounded-xl py-5 items-center mt-4 mb-4 flex-row justify-center"
                 onPress={handleSave}
                 disabled={isLoading}
               >
@@ -368,6 +403,7 @@ const VisitInput = () => {
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      <Toast />
     </SafeAreaView>
   );
 };

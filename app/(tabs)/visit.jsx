@@ -49,7 +49,7 @@ export default function Visit() {
   const takeIronText = useTranslation("Take iron supplement");
   const drinkWaterText = useTranslation("Drink enough water");
   const upcomingApptText = useTranslation("Upcoming Appointments");
-  const editText = useTranslation("Edit");
+  const editText = useTranslation("New");
   const noUpcomingText = useTranslation("No upcoming appointments scheduled.");
 
   // Fetch visits on mount
@@ -173,7 +173,7 @@ export default function Visit() {
         className={`flex flex-row justify-between items-center px-4 ${topMargin} bg-[#FBE9E2] pt-16 pb-4`}
       >
         <TouchableOpacity
-          className="w-[54px] h-[42px] bg-white flex flex-row items-center justify-center rounded-full"
+          className="w-[50px] h-[50px] bg-white flex flex-row items-center justify-center rounded-full"
           onPress={() => router.push("/(tabs)")}
         >
           <Ionicons name="arrow-back" size={25} />
