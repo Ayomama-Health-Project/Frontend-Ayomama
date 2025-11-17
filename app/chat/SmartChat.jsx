@@ -13,7 +13,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -139,7 +138,7 @@ export default function SmartChat() {
   useEffect(() => {
     let animationFrameId;
     let lastScrollTime = 0;
-    const scrollInterval = 50; // Minimum time between scrolls
+    const scrollInterval = 50;
 
     const smoothScroll = (timestamp) => {
       if (isStreaming && flatListRef.current) {
@@ -293,7 +292,6 @@ export default function SmartChat() {
   const renderMessage = ({ item, index }) => {
     const isUser = item.role === "user";
     const isLastMessage = index === messages.length - 1;
-    // Only stream if this is the last AI message AND it's the one just added
     const shouldStream = !isUser && isLastMessage && item.id === lastMessageId;
 
     return (
@@ -385,213 +383,225 @@ export default function SmartChat() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="flex-1">
-        {/* Gradient Background */}
-        <LinearGradient
-          colors={["#B5FFFC", "#FFDEE9"]}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-        />
+    <View className="flex-1">
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={["#B5FFFC", "#FFDEE9"]}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
+      />
 
-        <KeyboardAvoidingView
-          className="flex-1"
-          behavior={ios ? "padding" : "height"}
-          keyboardVerticalOffset={ios ? 0 : 0}
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={ios ? "padding" : undefined}
+        keyboardVerticalOffset={ios ? 0 : 0}
+      >
+        {/* Header */}
+        <View
+          className="px-6 flex-row items-center justify-between"
+          style={{ paddingTop: ios ? 64 : 76 }}
         >
-          {/* Header */}
-          <View
-            className="px-6 flex-row items-center justify-between"
-            style={{ paddingTop: ios ? 64 : 76 }}
+          <TouchableOpacity
+            onPress={handleBack}
+            className="w-12 h-12 rounded-full bg-white items-center justify-center"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+            }}
           >
-            <TouchableOpacity
-              onPress={handleBack}
-              className="w-12 h-12 rounded-full bg-white items-center justify-center"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-              }}
+            <Ionicons name="arrow-back" size={24} color="#293231" />
+          </TouchableOpacity>
+
+          <Text className="text-xl font-bold text-[#FF7F50]">
+            {smartChatText}
+          </Text>
+
+          <TouchableOpacity
+            onPress={handleClearChat}
+            className="w-12 h-12 rounded-full bg-white items-center justify-center"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+            }}
+          >
+            <Ionicons name="trash-outline" size={22} color="#EF4444" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Chat Content Area */}
+        <View className="flex-1 pt-2 px-1">
+          {messages.length === 0 ? (
+            // AI Orb/Avatar - Show only when no messages
+            <Animated.View
+              style={{ opacity: fadeAnim }}
+              className="flex-1 items-center justify-center"
             >
-              <Ionicons name="arrow-back" size={24} color="#293231" />
-            </TouchableOpacity>
-
-            <Text className="text-xl font-bold text-[#FF7F50]">
-              {smartChatText}
-            </Text>
-
-            <TouchableOpacity
-              onPress={handleClearChat}
-              className="w-12 h-12 rounded-full bg-white items-center justify-center"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
+              <Image
+                source={require("../../assets/images/smartchat.png")}
+                className="w-80 h-80 rounded-full mb-8"
+                resizeMode="contain"
+                style={{
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 8,
+                }}
+              />
+              <Text className="text-[#293231] text-lg font-semibold text-center mb-2">
+                {aiGreetingText}
+              </Text>
+              <Text className="text-[#6B7280] text-center px-8">
+                {aiDescriptionText}
+              </Text>
+            </Animated.View>
+          ) : (
+            // Chat Messages
+            <FlatList
+              ref={flatListRef}
+              data={messages}
+              renderItem={renderMessage}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={true}
+              scrollEnabled={true}
+              bounces={true}
+              alwaysBounceVertical={true}
+              overScrollMode="always"
+              scrollEventThrottle={16}
+              directionalLockEnabled={true}
+              removeClippedSubviews={false}
+              maintainVisibleContentPosition={null}
+              initialNumToRender={20}
+              maxToRenderPerBatch={10}
+              windowSize={21}
+              updateCellsBatchingPeriod={50}
+              onScrollToIndexFailed={(info) => {
+                console.log("Scroll failed:", info);
               }}
-            >
-              <Ionicons name="trash-outline" size={22} color="#EF4444" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Chat Content Area */}
-          <View className="flex-1 pt-2 px-1">
-            {messages.length === 0 ? (
-              // AI Orb/Avatar - Show only when no messages
-              <Animated.View
-                style={{ opacity: fadeAnim }}
-                className="flex-1 items-center justify-center"
-              >
-                <Image
-                  source={require("../../assets/images/smartchat.png")}
-                  className="w-80 h-80 rounded-full mb-8"
-                  resizeMode="contain"
-                  style={{
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 8,
-                  }}
-                />
-                <Text className="text-[#293231] text-lg font-semibold text-center mb-2">
-                  {aiGreetingText}
-                </Text>
-                <Text className="text-[#6B7280] text-center px-8">
-                  {aiDescriptionText}
-                </Text>
-              </Animated.View>
-            ) : (
-              // Chat Messages
-              <FlatList
-                ref={flatListRef}
-                data={messages}
-                renderItem={renderMessage}
-                keyExtractor={(item) => item.id}
-                showsVerticalScrollIndicator={true}
-                scrollEnabled={true}
-                bounces={true}
-                alwaysBounceVertical={true}
-                overScrollMode="always"
-                scrollEventThrottle={16}
-                directionalLockEnabled={true}
-                removeClippedSubviews={false}
-                maintainVisibleContentPosition={null}
-                initialNumToRender={20}
-                maxToRenderPerBatch={10}
-                windowSize={21}
-                updateCellsBatchingPeriod={50}
-                onScrollToIndexFailed={(info) => {
-                  console.log("Scroll failed:", info);
-                }}
-                style={{ flex: 1 }}
-                contentContainerStyle={{
-                  paddingBottom: 30,
-                  paddingTop: 8,
-                  flexGrow: 1,
-                }}
-                ListFooterComponent={
-                  isLoading ? (
-                    <View className="items-start mb-4">
-                      <View className="flex-row items-end">
-                        <View className="mr-3">
-                          <View
-                            className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#FF6B9D] items-center justify-center"
-                            style={{
-                              shadowColor: "#FF7F50",
-                              shadowOffset: { width: 0, height: 2 },
-                              shadowOpacity: 0.3,
-                              shadowRadius: 4,
-                            }}
-                          >
-                            <Image
-                              source={require("../../assets/images/smartchat.png")}
-                              className="w-9 h-9 rounded-full"
-                              resizeMode="cover"
-                            />
-                          </View>
-                        </View>
+              style={{ flex: 1 }}
+              contentContainerStyle={{
+                paddingBottom: 20,
+                paddingTop: 8,
+                flexGrow: 1,
+              }}
+              ListFooterComponent={
+                isLoading ? (
+                  <View className="items-start mb-4">
+                    <View className="flex-row items-end">
+                      <View className="mr-3">
                         <View
-                          className="bg-white px-5 py-3 rounded-2xl rounded-bl-sm"
+                          className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF7F50] to-[#FF6B9D] items-center justify-center"
                           style={{
-                            shadowColor: "#000",
-                            shadowOffset: { width: 0, height: 1 },
-                            shadowOpacity: 0.1,
-                            shadowRadius: 2,
-                                      }}
+                            shadowColor: "#FF7F50",
+                            shadowOffset: { width: 0, height: 2 },
+                            shadowOpacity: 0.3,
+                            shadowRadius: 4,
+                          }}
                         >
-                          <TypingIndicator />
+                          <Image
+                            source={require("../../assets/images/smartchat.png")}
+                            className="w-9 h-9 rounded-full"
+                            resizeMode="cover"
+                          />
                         </View>
                       </View>
+                      <View
+                        className="bg-white px-5 py-3 rounded-2xl rounded-bl-sm"
+                        style={{
+                          shadowColor: "#000",
+                          shadowOffset: { width: 0, height: 1 },
+                          shadowOpacity: 0.1,
+                          shadowRadius: 2,
+                        }}
+                      >
+                        <TypingIndicator />
+                      </View>
                     </View>
-                  ) : null
-                }
+                  </View>
+                ) : null
+              }
+            />
+          )}
+        </View>
+
+        {/* Input Area - Now inside KeyboardAvoidingView */}
+        <View
+          className="px-6 pb-4"
+          style={{
+            backgroundColor: "transparent",
+          }}
+        >
+          <View className="flex-row items-center">
+            {/* Add Button */}
+            <TouchableOpacity
+              onPress={handleAttachment}
+              className="w-12 h-12 rounded-full bg-white items-center justify-center mr-3"
+              style={{
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+              }}
+            >
+              <Ionicons name="add" size={28} color="#293231" />
+            </TouchableOpacity>
+
+            {/* Text Input */}
+            <View
+              className="flex-1 bg-white rounded-3xl px-5 py-3 flex-row items-center"
+              style={{
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                minHeight: 48,
+                maxHeight: 120,
+              }}
+            >
+              <TextInput
+                value={inputMessage}
+                onChangeText={setInputMessage}
+                placeholder={inputPlaceholderText}
+                placeholderTextColor="#9CA3AF"
+                className="flex-1 text-[16px] text-[#293231] mr-2"
+                multiline={true}
+                maxLength={1000}
+                returnKeyType="send"
+                blurOnSubmit={false}
+                onSubmitEditing={handleSendMessage}
+                editable={!isLoading}
+                style={{
+                  paddingTop: ios ? 8 : 4,
+                  paddingBottom: ios ? 8 : 4,
+                  textAlignVertical: "center",
+                }}
               />
-            )}
-          </View>
-
-          {/* Input Area */}
-          <View className="px-6 pb-8">
-            <View className="flex-row items-center">
-              {/* Add Button */}
-              <TouchableOpacity
-                onPress={handleAttachment}
-                className="w-12 h-12 rounded-full bg-white items-center justify-center mr-3"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 4,
-                }}
-              >
-                <Ionicons name="add" size={28} color="#293231" />
-              </TouchableOpacity>
-
-              {/* Text Input */}
-              <View
-                className="flex-1 bg-white rounded-full px-5 py-3 flex-row items-center"
-                style={{
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 4,
-                }}
-              >
-                <TextInput
-                  value={inputMessage}
-                  onChangeText={setInputMessage}
-                  placeholder={inputPlaceholderText}
-                  placeholderTextColor="#9CA3AF"
-                  className="flex-1 text-[16px] text-[#293231] mr-2"
-                  multiline={false}
-                  returnKeyType="send"
-                  onSubmitEditing={handleSendMessage}
-                  editable={!isLoading}
-                />
-                {inputMessage.trim() ? (
-                  <TouchableOpacity
-                    onPress={handleSendMessage}
-                    disabled={isLoading}
-                    className="bg-[#006D5B] rounded-full p-2"
-                  >
-                    <Ionicons name="send" size={20} color="#FFFFFF" />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity onPress={handleVoiceInput}>
-                    <Ionicons name="mic" size={24} color="#293231" />
-                  </TouchableOpacity>
-                )}
-              </View>
+              {inputMessage.trim() ? (
+                <TouchableOpacity
+                  onPress={handleSendMessage}
+                  disabled={isLoading}
+                  className="bg-[#006D5B] rounded-full p-2"
+                >
+                  <Ionicons name="send" size={20} color="#FFFFFF" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={handleVoiceInput}>
+                  <Ionicons name="mic" size={24} color="#293231" />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
-        </KeyboardAvoidingView>
-        <Toast />
-      </View>
-    </TouchableWithoutFeedback>
+        </View>
+      </KeyboardAvoidingView>
+      <Toast />
+    </View>
   );
 }

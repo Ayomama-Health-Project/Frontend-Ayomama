@@ -5,15 +5,19 @@ import {
   ActivityIndicator,
   Image,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import useAuthStore from "../../store/useAuthStore";
 import { useTranslation } from "../../utils/translator";
+
+const ios = Platform.OS === "ios";
 
 const LogIn = () => {
   const router = useRouter();
@@ -47,6 +51,9 @@ const LogIn = () => {
   const clickHereText = useTranslation("Click here");
 
   const handleLogIn = async () => {
+    // Dismiss keyboard
+    Keyboard.dismiss();
+
     // Validation
     if (!email) {
       setError(emailRequiredText);
@@ -105,8 +112,16 @@ const LogIn = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="flex-1 bg-[#FCFCFC] px-6">
+    <KeyboardAvoidingView
+      className="flex-1 bg-[#FCFCFC]"
+      behavior={ios ? "padding" : undefined}
+      keyboardVerticalOffset={0}
+    >
+      <ScrollView
+        className="flex-1 px-6"
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
         <View className="flex-1">
           {/* Logo */}
           <View className="mt-5 items-start">
@@ -131,10 +146,13 @@ const LogIn = () => {
             placeholderTextColor="#9CA3AF"
             value={email}
             onChangeText={setEmail}
-            className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] mb-4"
+            className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] mb-4 text-[#293231]"
             keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
             editable={!isLoading}
           />
+
           {/* Password Input */}
           <View className="relative mb-4">
             <TextInput
@@ -142,8 +160,10 @@ const LogIn = () => {
               placeholderTextColor="#9CA3AF"
               value={password}
               onChangeText={setPassword}
-              className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] pr-12"
+              className="w-full border border-gray-300 rounded-2xl px-4 py-[14px] pr-12 text-[#293231]"
               secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              autoCorrect={false}
               editable={!isLoading}
             />
             <TouchableOpacity
@@ -152,7 +172,7 @@ const LogIn = () => {
               disabled={isLoading}
             >
               <Ionicons
-                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                name={showPassword ? "eye-outline" : "eye-off-outline"}
                 size={24}
                 color="#9CA3AF"
               />
@@ -180,8 +200,8 @@ const LogIn = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Footer pinned */}
-        <View className="mb-16">
+        {/* Footer */}
+        <View className="mb-8 mt-8">
           <View className="flex-row justify-center items-center mb-4">
             <Text className="text-gray-600">{noAccountText} </Text>
             <TouchableOpacity
@@ -209,11 +229,11 @@ const LogIn = () => {
             </Text>
           </TouchableOpacity>
         </View>
+      </ScrollView>
 
-        {/* Toast component */}
-        <Toast />
-      </View>
-    </TouchableWithoutFeedback>
+      {/* Toast component */}
+      <Toast />
+    </KeyboardAvoidingView>
   );
 };
 

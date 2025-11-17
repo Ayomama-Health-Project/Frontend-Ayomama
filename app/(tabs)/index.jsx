@@ -14,6 +14,7 @@ import {
   Alert,
   Dimensions,
   Image,
+  Linking,
   Platform,
   ScrollView,
   StatusBar,
@@ -66,6 +67,8 @@ export default function HomeScreen() {
   const callHospitalText = useTranslation("Call Hospital");
   const callFamilyText = useTranslation("Call Family");
   const callFriendText = useTranslation("Call Friend");
+  const callFailedText = useTranslation("Call Failed");
+  const unableToCallText = useTranslation("Unable to make the call");
   const wellnessActivitiesText = useTranslation("Wellness Activities");
   const prenatalYogaText = useTranslation("Prenatal Yoga");
   const minsSessionText = useTranslation("15 mins session");

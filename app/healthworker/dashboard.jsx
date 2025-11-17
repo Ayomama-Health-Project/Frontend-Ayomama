@@ -1,6 +1,7 @@
 import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   Image,
   Platform,
@@ -19,6 +20,7 @@ export default function HealthcareDashboard() {
   const router = useRouter();
   const { worker } = useAuthWorkerStore();
   const nurseName = worker?.fullName || "Healthcare Worker";
+  const [activeTab, setActiveTab] = useState("home");
 
   // Translate all text
   const monitorText = useTranslation("Monitor");
@@ -46,6 +48,9 @@ export default function HealthcareDashboard() {
   const visitsCompletedText = useTranslation("Visits Completed");
   const newRegistrationText = useTranslation("New Registration");
   const ofWeeklyTargetText = useTranslation("% of weekly target");
+  const homeText = useTranslation("Home");
+  const patientText = useTranslation("Patient");
+  const profileText = useTranslation("Profile");
 
   // Mock data
   const stats = {
@@ -141,6 +146,16 @@ export default function HealthcareDashboard() {
     }
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (tab === "profile") {
+      router.push("/healthworker/profile");
+    } else if (tab === "patient") {
+      // Navigate to patient list screen when ready
+      router.push("/healthworker/patients");
+    }
+  };
+
   return (
     <View className="flex-1 bg-[#F8F9FA]">
       <StatusBar barStyle="dark-content" />
@@ -170,14 +185,18 @@ export default function HealthcareDashboard() {
               {nurseName}
             </Text>
           </View>
-          <TouchableOpacity onPress={() => router.push("/notifications")}> 
+          <TouchableOpacity onPress={() => router.push("/notifications")}>
             <Ionicons name="notifications-outline" size={24} color="#293231" />
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Stats Card */}
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        {/* Stats Card - FIXED LAYOUT */}
         <View className="mx-6 mt-6 mb-4">
           <LinearGradient
             colors={["#FBE9E2", "#A5DFD7"]}
@@ -190,41 +209,40 @@ export default function HealthcareDashboard() {
               <Text className="text-center text-[#293231] text-sm mb-4">
                 {caringForMothersText}
               </Text>
-              <View className="flex-row justify-between">
+              {/* FIXED: Equal width containers with consistent spacing */}
+              <View className="flex-row justify-between gap-2">
                 {/* Safe */}
-                <View className="bg-[#00D2B3] rounded-2xl px-6 py-4 flex-1 mr-2">
-                  <View className="flex-row items-center justify-between mb-1 gap-2">
-                    <Text className=" font-semibold text-sm">{safeText}</Text>
+                <View className="bg-[#00D2B3] rounded-2xl px-4 py-4 flex-1">
+                  <View className="flex-row items-center justify-between mb-1">
+                    <Text className="font-semibold text-xs">{safeText}</Text>
                     <MaterialIcons name="health-and-safety" size={16} />
                   </View>
-                  <Text className=" text-2xl font-bold">{stats.safe}</Text>
+                  <Text className="text-2xl font-bold">{stats.safe}</Text>
                 </View>
 
                 {/* Monitor */}
-                <View className="bg-[#FFC107] rounded-2xl px-6 py-4 flex-1 mx-1">
-                  <View className="flex-row items-center justify-between mb-1 gap-2">
-                    <Text className=" font-semibold text-sm">
-                      {monitorText}
-                    </Text>
+                <View className="bg-[#FFC107] rounded-2xl px-4 py-4 flex-1">
+                  <View className="flex-row items-center justify-between mb-1">
+                    <Text className="font-semibold text-xs">{monitorText}</Text>
                     <Ionicons name="eye-outline" size={16} />
                   </View>
-                  <Text className=" text-2xl font-bold">{stats.monitor}</Text>
+                  <Text className="text-2xl font-bold">{stats.monitor}</Text>
                 </View>
 
                 {/* Urgent */}
-                <View className="bg-[#F05246] rounded-2xl px-6 py-4 flex-1 ml-2">
-                  <View className="flex-row items-center justify-between mb-1 gap-2">
-                    <Text className=" font-semibold text-sm">{urgentText}</Text>
+                <View className="bg-[#F05246] rounded-2xl px-4 py-4 flex-1">
+                  <View className="flex-row items-center justify-between mb-1">
+                    <Text className="font-semibold text-xs">{urgentText}</Text>
                     <AntDesign name="alert" size={16} />
                   </View>
-                  <Text className=" text-2xl font-bold">{stats.urgent}</Text>
+                  <Text className="text-2xl font-bold">{stats.urgent}</Text>
                 </View>
               </View>
             </View>
           </LinearGradient>
         </View>
 
-        {/* Action Buttons */}
+        {/* Action Buttons - FIXED: Better touch response */}
         <View className="mb-6 items-center">
           <View className="flex-row items-center justify-between w-[80%] gap-2">
             <TouchableOpacity
@@ -234,8 +252,10 @@ export default function HealthcareDashboard() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
+                minHeight: 48,
               }}
-              onPress={() => router.push("/healthworker/addPatient")}
+              activeOpacity={0.7}
+              onPress={() => router.push("/healthworkerComponents/addPatient")}
             >
               <Text className="text-[#293231] font-semibold text-base ml-2">
                 {addPatientText}
@@ -250,8 +270,10 @@ export default function HealthcareDashboard() {
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.1,
                 shadowRadius: 4,
+                minHeight: 48,
               }}
-              onPress={() => router.push("/healthworker/logVisit")}
+              activeOpacity={0.7}
+              onPress={() => router.push("/healthworkerComponents/logVisit")}
             >
               <Text className="text-[#293231] font-semibold text-base ml-2">
                 {logVisitText}
@@ -311,7 +333,9 @@ export default function HealthcareDashboard() {
                 </View>
                 <TouchableOpacity
                   className="border border-[#06D6A0] rounded-xl px-4 py-2"
-                  onPress={() => router.push("/healthworker/motherInfo")}
+                  activeOpacity={0.7}
+                  style={{ minHeight: 40 }}
+                  onPress={() => router.push("/healthworkerComponents/motherInfo")}
                 >
                   <Text className="text-[#06D6A0] font-semibold">
                     {viewText}
@@ -334,7 +358,11 @@ export default function HealthcareDashboard() {
               </View>
             </View>
           ))}
-          <TouchableOpacity className="border border-gray-300 rounded-xl py-3 mt-2">
+          <TouchableOpacity
+            className="border border-gray-300 rounded-xl py-3 mt-2"
+            activeOpacity={0.7}
+            style={{ minHeight: 48 }}
+          >
             <Text className="text-center text-[#293231] font-semibold">
               {viewAllText}
             </Text>
@@ -421,7 +449,9 @@ export default function HealthcareDashboard() {
                 </View>
                 <TouchableOpacity
                   className="bg-white rounded-xl px-4 py-2"
-                  onPress={() => router.push("/healthworker/motherInfo")}
+                  activeOpacity={0.7}
+                  style={{ minHeight: 40 }}
+                  onPress={() => router.push("/healthworkerComponents/motherInfo")}
                 >
                   <Text className="text-[#EF476F] font-semibold">
                     {viewText}
@@ -440,7 +470,11 @@ export default function HealthcareDashboard() {
               </View>
             </View>
           ))}
-          <TouchableOpacity className="border border-gray-300 rounded-xl py-3 mt-2 bg-white">
+          <TouchableOpacity
+            className="border border-gray-300 rounded-xl py-3 mt-2 bg-white"
+            activeOpacity={0.7}
+            style={{ minHeight: 48 }}
+          >
             <Text className="text-center text-[#293231] font-semibold">
               {viewAllText}
             </Text>

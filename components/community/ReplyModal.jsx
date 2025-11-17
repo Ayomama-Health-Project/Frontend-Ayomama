@@ -13,6 +13,8 @@ import {
 } from "react-native";
 import { useTranslation } from "../../utils/translator";
 
+const ios = Platform.OS === "ios";
+
 export default function ReplyModal({
   visible,
   selectedPost,
@@ -35,8 +37,9 @@ export default function ReplyModal({
       onRequestClose={onClose}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={ios ? "padding" : "height"}
         className="flex-1"
+        keyboardVerticalOffset={0}
       >
         <TouchableWithoutFeedback
           onPress={() => {
@@ -49,7 +52,7 @@ export default function ReplyModal({
               <View
                 className="bg-white rounded-t-3xl"
                 style={{
-                  paddingBottom: Platform.OS === "ios" ? 40 : 20,
+                  paddingBottom: ios ? 40 : 20,
                 }}
               >
                 {/* Modal Header */}
@@ -106,7 +109,11 @@ export default function ReplyModal({
                       onChangeText={setReplyText}
                       multiline={true}
                       autoFocus={true}
-                      style={{ minHeight: 80 }}
+                     textAlignVertical="top"
+                      style={{
+                        minHeight: 100,
+                        paddingTop: ios ? 0 : 0,
+                      }}
                     />
                   </View>
                 </View>

@@ -60,11 +60,11 @@ const VisitInput = () => {
       ? time.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
-          hour12: false, // 🔹 backend expects HH:mm
+          hour12: false, //  backend expects HH:mm
         })
       : "00:00";
 
-  // ✅ Format date for backend (YYYY-MM-DD)
+  // Format date for backend (YYYY-MM-DD)
   const formatDateForBackend = (date) => {
     if (!date) return null;
     const year = date.getFullYear();
@@ -73,7 +73,7 @@ const VisitInput = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // ✅ Create proper reminderDateTime by combining date and time
+  // Create proper reminderDateTime by combining date and time
   const createReminderDateTime = (date, time) => {
     if (!date || !time) return null;
 
@@ -108,14 +108,14 @@ const VisitInput = () => {
     setIsLoading(true);
 
     try {
-      // ✅ Create proper reminderDateTime
+      // Create proper reminderDateTime
       const reminderDateTime = createReminderDateTime(visitDate, visitTime);
 
       if (!reminderDateTime || isNaN(reminderDateTime.getTime())) {
         throw new Error("Invalid date/time combination");
       }
 
-      // ✅ Prepare visit data for backend
+      // Prepare visit data for backend
       const visitData = {
         visitDate: formatDateForBackend(visitDate), // YYYY-MM-DD format
         visitTime: formatTime(visitTime), // HH:mm format
@@ -138,7 +138,7 @@ const VisitInput = () => {
           position: "top",
         });
 
-        // 🔄 Reset fields
+        //  Reset fields
         setVisitDate(null);
         setVisitTime(null);
         setDuration("");
@@ -146,16 +146,16 @@ const VisitInput = () => {
         setHospitalName("");
         setHealthcareProvider("");
       } else {
-        console.error("❌ Create visit error:", result.error);
+        console.error("Create visit error:", result.error);
         Toast.show({
           type: "error",
-          text1: "Error ❌",
+          text1: "Error ",
           text2: result.error || "Something went wrong, please try again.",
           position: "top",
         });
       }
     } catch (error) {
-      console.error("❌ Error in handleSave:", error);
+      console.error("Error in handleSave:", error);
       Toast.show({
         type: "error",
         text1: "Validation Error ⚠️",
@@ -362,7 +362,7 @@ const VisitInput = () => {
 
               {/* Save Button */}
               <TouchableOpacity
-                className="bg-[#00D2B3] rounded-xl py-5 items-center mt-4 mb-4 flex-row justify-center"
+                className="bg-[#006D5B] rounded-xl py-5 items-center mt-4 mb-4 flex-row justify-center"
                 onPress={handleSave}
                 disabled={isLoading}
               >
