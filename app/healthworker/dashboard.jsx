@@ -335,7 +335,9 @@ export default function HealthcareDashboard() {
                   className="border border-[#06D6A0] rounded-xl px-4 py-2"
                   activeOpacity={0.7}
                   style={{ minHeight: 40 }}
-                  onPress={() => router.push("/healthworkerComponents/motherInfo")}
+                  onPress={() =>
+                    router.push("/healthworkerComponents/motherInfo")
+                  }
                 >
                   <Text className="text-[#06D6A0] font-semibold">
                     {viewText}
@@ -362,6 +364,7 @@ export default function HealthcareDashboard() {
             className="border border-gray-300 rounded-xl py-3 mt-2"
             activeOpacity={0.7}
             style={{ minHeight: 48 }}
+            onPress={() => router.push("/healthworker/patient")}
           >
             <Text className="text-center text-[#293231] font-semibold">
               {viewAllText}
@@ -451,7 +454,9 @@ export default function HealthcareDashboard() {
                   className="bg-white rounded-xl px-4 py-2"
                   activeOpacity={0.7}
                   style={{ minHeight: 40 }}
-                  onPress={() => router.push("/healthworkerComponents/motherInfo")}
+                  onPress={() =>
+                    router.push("/healthworkerComponents/motherInfo")
+                  }
                 >
                   <Text className="text-[#EF476F] font-semibold">
                     {viewText}
