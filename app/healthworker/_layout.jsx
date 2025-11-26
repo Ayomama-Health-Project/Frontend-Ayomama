@@ -59,7 +59,7 @@ export default function TabLayout() {
             title: patientText,
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
-                name={focused ? "medkit" : "medkit"}
+                name={focused ? "walk" : "walk"}
                 size={24}
                 color={color}
               />
