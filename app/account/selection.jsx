@@ -1,12 +1,15 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useRedirectAuthenticatedUser from "../../hooks/useRedirectAuthenticatedUser";
 import { useTranslation } from "../../utils/translator";
 
 const AccountSelection = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser();
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [authAction, setAuthAction] = useState("signup");
 
@@ -34,6 +37,10 @@ const AccountSelection = () => {
     }
   }, [params.action]);
 
+  if (isCheckingAuthScreenAccess) {
+    return null;
+  }
+
   const handleProceed = () => {
     if (!selectedAccount) return;
 
@@ -41,19 +48,22 @@ const AccountSelection = () => {
       if (authAction === "signup") {
         router.push("/account/setup");
       } else {
-        router.push("/auth/mother/login");
+        router.push("/(auth)/auth/mother/login");
       }
     } else if (selectedAccount === "healthcare") {
       if (authAction === "signup") {
-        router.push("/auth/healthworker/signup");
+        router.push({
+          pathname: "/account/type-selection",
+          params: { account: "healthcare", action: authAction },
+        });
       } else {
-        router.push("/auth/healthworker/login");
+        router.push("/(auth)/auth/healthworker/login");
       }
     } else if (selectedAccount === "partner") {
       if (authAction === "signup") {
-        router.push("/auth/partner/signup");
+        router.push("/(auth)/auth/partner/signup");
       } else {
-        router.push("/auth/partner/login");
+        router.push("/(auth)/auth/partner/login");
       }
     }
   };
@@ -75,7 +85,6 @@ const AccountSelection = () => {
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: isSelected ? 0.15 : 0.06,
           shadowRadius: 12,
-          elevation: isSelected ? 6 : 2,
         }}
       >
         <View className="flex-row items-center px-4 py-5">
@@ -113,7 +122,21 @@ const AccountSelection = () => {
   return (
     <SafeAreaView className="flex-1 bg-[#FCFCFC]">
       <View className="flex-1 px-5">
-        <View className="pt-16 pb-8">
+        <View className="pt-6 pb-8">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            activeOpacity={0.82}
+            className="mb-8 h-12 w-12 items-center justify-center rounded-full border border-[#DDE8E5] bg-white"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.06,
+              shadowRadius: 10,
+            }}
+          >
+            <Ionicons name="arrow-back" size={22} color="#293231" />
+          </TouchableOpacity>
+
           <Text className="text-[24px] font-semibold text-[#293231] mb-2">
             {titleText}
           </Text>

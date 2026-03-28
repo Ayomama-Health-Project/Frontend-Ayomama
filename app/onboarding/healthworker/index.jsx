@@ -1,227 +1,304 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useState } from "react";
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import * as Notifications from "expo-notifications";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-// ─── Background Blobs ─────────────────────────────────────────────────────────
-
-const BgBlobs = () => (
-  <View className="absolute inset-0 overflow-hidden">
-    <View
-      style={{
-        position: "absolute",
-        width: 300,
-        height: 300,
-        borderRadius: 150,
-        backgroundColor: "rgba(0, 109, 91, 0.11)",
-        top: -90,
-        right: -70,
-      }}
-    />
-    <View
-      style={{
-        position: "absolute",
-        width: 260,
-        height: 260,
-        borderRadius: 130,
-        backgroundColor: "rgba(41, 50, 49, 0.06)",
-        bottom: -70,
-        left: -70,
-      }}
-    />
-  </View>
-);
-
-// ─── Input Helper ─────────────────────────────────────────────────────────────
-
-const Field = ({ label, placeholder, value, onChange, keyboardType, hint }) => (
-  <View className="mb-5">
-    <Text className="text-sm font-semibold text-[#293231] mb-2">{label}</Text>
-    <TextInput
-      placeholder={placeholder}
-      placeholderTextColor="#9CA3AF"
-      value={value}
-      onChangeText={onChange}
-      keyboardType={keyboardType || "default"}
-      className="w-full border border-gray-300 rounded-2xl px-5 py-4 text-base text-[#293231] bg-white"
-    />
-    {hint ? (
-      <Text className="text-gray-400 text-xs px-2 pt-1">{hint}</Text>
-    ) : null}
-  </View>
-);
-
-// ─── Main ────────────────────────────────────────────────────────────────────
+import PersonalInfoWithClinicStep from "../../../components/healthworkerOnboarding/PersonalInfoWithClinicStep";
+import PersonalInfoWithoutClinicStep from "../../../components/healthworkerOnboarding/PersonalInfoWithoutClinicStep";
+import BackgroundDecor from "../../../components/onboardingShared/BackgroundDecor";
+import LanguageStep from "../../../components/pregnantMotherOnboarding/LanguageStep";
+import NotificationStep from "../../../components/pregnantMotherOnboarding/NotificationStep";
+import {
+  PrimaryButton,
+  ProgressDots,
+  SecondaryButton,
+} from "../../../components/pregnantMotherOnboarding/shared";
+import useAppAuth from "../../../hooks/useAppAuth";
+import { getAccountAppRoute } from "../../../utils/authRoutes";
+import { setAppLanguage } from "../../../utils/appLanguage";
+import { requestPushNotificationToken } from "../../../utils/pushNotifications";
+import { useTranslation } from "../../../utils/translator";
 
 export default function HealthworkerOnboarding() {
   const router = useRouter();
+  const {
+    account,
+    updateLanguagePreference,
+    updateProfileInformation,
+    completeOnboarding,
+    saveNotificationToken,
+  } =
+    useAppAuth();
+  const { type } = useLocalSearchParams();
+  const profileType =
+    typeof type === "string" && type === "without-clinic"
+      ? "without-clinic"
+      : "with-clinic";
 
-  const [info, setInfo] = useState({
+  const [step, setStep] = useState(0);
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [profile, setProfile] = useState({
     fullName: "",
     state: "",
     lga: "",
     facilityName: "",
     facilityCode: "",
+    occupation: "",
   });
+  const [isSubmittingStep, setIsSubmittingStep] = useState(false);
+  const hasHydratedRef = useRef(false);
+  const lastSavedDraftRef = useRef("");
+  const backText = useTranslation("Back");
+  const proceedText = useTranslation("Proceed");
+  const pleaseWaitText = useTranslation("Please wait...");
+  const notificationTitle = useTranslation("Stay updated on every patient moment");
+  const notificationDescription = useTranslation(
+    "Turn on notifications to receive visit reminders, patient alerts, and important healthworker updates right on time.",
+  );
 
-  const isComplete =
-    info.fullName.trim() &&
-    info.state.trim() &&
-    info.lga.trim() &&
-    info.facilityName.trim();
+  const updateField = (field, value) => {
+    setProfile((prev) => ({ ...prev, [field]: value }));
+  };
 
-  const handleProceed = () => {
-    router.replace("/(healthworker-tabs)");
+  const canProceed =
+    step === 0
+      ? Boolean(selectedLanguage)
+      : step === 1
+        ? profileType === "with-clinic"
+          ? Boolean(
+              profile.fullName.trim() &&
+                profile.state.trim() &&
+                profile.lga.trim() &&
+                profile.facilityName.trim() &&
+                profile.facilityCode.trim(),
+            )
+          : Boolean(
+              profile.fullName.trim() &&
+                profile.state.trim() &&
+                profile.lga.trim() &&
+                profile.occupation.trim(),
+            )
+        : true;
+
+  const onboardingDraft = useMemo(
+    () => ({
+      selectedLanguage,
+      profile,
+      profileType,
+    }),
+    [profile, profileType, selectedLanguage],
+  );
+
+  useEffect(() => {
+    if (!account || hasHydratedRef.current) return;
+    if (account.onboardingCompleted) {
+      router.replace(getAccountAppRoute(account));
+      return;
+    }
+
+    const draft =
+      account.onboardingProgress?.flow === "healthworker_onboarding"
+        ? account.onboardingProgress?.draft || {}
+        : {};
+
+    setSelectedLanguage(draft.selectedLanguage || account.language || "");
+    setProfile({
+      fullName: draft.profile?.fullName || account.profile?.fullName || "",
+      state: draft.profile?.state || account.profile?.state || "",
+      lga: draft.profile?.lga || account.profile?.localGovernment || "",
+      facilityName: draft.profile?.facilityName || account.profile?.facilityName || "",
+      facilityCode: draft.profile?.facilityCode || account.profile?.facilityCode || "",
+      occupation: draft.profile?.occupation || account.profile?.occupation || "",
+    });
+    setStep(
+      account.onboardingProgress?.flow === "healthworker_onboarding"
+        ? Math.min(account.onboardingProgress?.currentStep || 0, 2)
+        : 0,
+    );
+    hasHydratedRef.current = true;
+  }, [account, router]);
+
+  useEffect(() => {
+    if (!hasHydratedRef.current || !account || account.onboardingCompleted) return;
+    const payloadString = JSON.stringify({ step, onboardingDraft });
+    if (payloadString === lastSavedDraftRef.current) return;
+
+    const timer = setTimeout(() => {
+      lastSavedDraftRef.current = payloadString;
+      completeOnboarding({
+        onboardingCompleted: false,
+        currentStep: step,
+        flow: "healthworker_onboarding",
+        draft: onboardingDraft,
+      }).catch(() => {
+        lastSavedDraftRef.current = "";
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [account, completeOnboarding, onboardingDraft, step]);
+
+  const finishOnboarding = async () => {
+    setIsSubmittingStep(true);
+    try {
+      await updateProfileInformation({
+        fullName: profile.fullName,
+        state: profile.state,
+        localGovernment: profile.lga,
+        occupation: profile.occupation,
+        facilityName: profile.facilityName,
+        facilityCode: profile.facilityCode,
+      });
+      await completeOnboarding({
+        onboardingCompleted: true,
+        currentStep: 0,
+        flow: "",
+        draft: {},
+      });
+      router.replace(
+        getAccountAppRoute({
+          role: "health_worker",
+          healthWorkerType: profileType === "without-clinic" ? "without_clinic" : "with_clinic",
+          onboardingCompleted: true,
+        }),
+      );
+    } finally {
+      setIsSubmittingStep(false);
+    }
+  };
+
+  const enableNotificationsAndFinish = async () => {
+    try {
+      await Notifications.requestPermissionsAsync();
+      const expoPushToken = await requestPushNotificationToken();
+      if (expoPushToken) {
+        await saveNotificationToken({
+          platform: Platform.OS === "ios" ? "ios" : "android",
+          expoPushToken,
+          deviceId: `${Platform.OS}-healthworker`,
+          enabled: true,
+        });
+      }
+    } catch (error) {
+      console.error("Notification permission error:", error);
+    } finally {
+      await finishOnboarding();
+    }
+  };
+
+  const goNext = async () => {
+    if (!canProceed) return;
+    try {
+      setIsSubmittingStep(true);
+      if (step === 0) {
+        await setAppLanguage(selectedLanguage);
+        await updateLanguagePreference(selectedLanguage);
+      }
+
+      if (step === 2) {
+        await finishOnboarding();
+        return;
+      }
+
+      setStep((prev) => prev + 1);
+    } finally {
+      setIsSubmittingStep(false);
+    }
+  };
+
+  const goBack = () => {
+    if (step === 0) {
+      router.back();
+      return;
+    }
+
+    setStep((prev) => prev - 1);
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-        <BgBlobs />
+    <SafeAreaView className="flex-1 bg-[#FCFCFC]">
+      <BackgroundDecor />
 
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ProgressDots step={step} />
+
+        <ScrollView
           className="flex-1"
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
-          <View className="flex-row items-center px-6 pt-2 pb-4">
-            <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7}>
-              <Ionicons name="arrow-back" size={24} color="#293231" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Progress (single step indicator) */}
-          <View className="flex-row items-center justify-center mb-8">
-            <View
-              style={{
-                width: 24,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: "#293231",
-              }}
+          {step === 0 ? (
+            <LanguageStep
+              selectedLanguage={selectedLanguage}
+              setSelectedLanguage={setSelectedLanguage}
+              onSelectLanguage={setAppLanguage}
             />
-          </View>
+          ) : null}
 
-          <ScrollView
-            className="flex-1 px-6"
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            {/* Title */}
-            <Text className="text-[26px] font-bold text-[#293231] mb-1">
-              Personal Information
-            </Text>
-            <Text className="text-gray-500 text-[15px] mb-8">
-              Tell us about yourself and your facility.
-            </Text>
-
-            {/* Full Name */}
-            <Field
-              label="Full Name"
-              placeholder="Dr. Amaka Okafor"
-              value={info.fullName}
-              onChange={(v) => setInfo({ ...info, fullName: v })}
-            />
-
-            {/* State + LGA side by side */}
-            <View className="flex-row gap-3 mb-0">
-              <View className="flex-1">
-                <Text className="text-sm font-semibold text-[#293231] mb-2">
-                  State
-                </Text>
-                <TextInput
-                  placeholder="Lagos"
-                  placeholderTextColor="#9CA3AF"
-                  value={info.state}
-                  onChangeText={(v) => setInfo({ ...info, state: v })}
-                  className="border border-gray-300 rounded-2xl px-4 py-4 text-base text-[#293231] bg-white mb-5"
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-sm font-semibold text-[#293231] mb-2">
-                  LGA
-                </Text>
-                <TextInput
-                  placeholder="Ikeja"
-                  placeholderTextColor="#9CA3AF"
-                  value={info.lga}
-                  onChangeText={(v) => setInfo({ ...info, lga: v })}
-                  className="border border-gray-300 rounded-2xl px-4 py-4 text-base text-[#293231] bg-white mb-5"
-                />
-              </View>
-            </View>
-
-            {/* Facility Name */}
-            <Field
-              label="Facility Name"
-              placeholder="General Hospital Lagos"
-              value={info.facilityName}
-              onChange={(v) => setInfo({ ...info, facilityName: v })}
-            />
-
-            {/* Facility Code */}
-            <Field
-              label="Facility Code / ID"
-              placeholder="e.g. GHL-2024-001"
-              value={info.facilityCode}
-              onChange={(v) => setInfo({ ...info, facilityCode: v })}
-              hint="Optional — provided by your facility administrator"
-            />
-
-            {/* Terms note */}
-            <View
-              style={{
-                backgroundColor: "rgba(41,50,49,0.04)",
-                borderRadius: 16,
-                padding: 16,
-                flexDirection: "row",
-                alignItems: "flex-start",
-                marginBottom: 16,
-              }}
-            >
-              <Ionicons
-                name="shield-checkmark-outline"
-                size={18}
-                color="#293231"
-                style={{ marginRight: 10, marginTop: 1 }}
+          {step === 1 ? (
+            profileType === "with-clinic" ? (
+              <PersonalInfoWithClinicStep
+                values={profile}
+                updateField={updateField}
               />
-              <Text className="text-[#293231] text-[13px] flex-1 leading-5">
-                Your information is verified and kept confidential. Only
-                patients you manage can see your profile.
-              </Text>
+            ) : (
+              <PersonalInfoWithoutClinicStep
+                values={profile}
+                updateField={updateField}
+              />
+            )
+          ) : null}
+
+          {step === 2 ? (
+            <NotificationStep
+              onEnableNotifications={enableNotificationsAndFinish}
+              onSkipNotifications={finishOnboarding}
+              title={notificationTitle}
+              description={notificationDescription}
+              primaryLoading={isSubmittingStep}
+              secondaryLoading={isSubmittingStep}
+            />
+          ) : null}
+
+          <View className="h-36" />
+        </ScrollView>
+
+        <View className="px-5 pb-7 pt-2">
+          {step === 2 ? null : (
+            <View className="flex-row items-center gap-3">
+              {step > 0 ? (
+                <>
+                  <View className="flex-1">
+                    <SecondaryButton label={backText} onPress={goBack} />
+                  </View>
+                  <View className="flex-1">
+                    <PrimaryButton
+                      label={proceedText}
+                      loadingLabel={pleaseWaitText}
+                      onPress={goNext}
+                      disabled={!canProceed}
+                      loading={isSubmittingStep}
+                    />
+                  </View>
+                </>
+              ) : (
+                <View className="flex-1">
+                  <PrimaryButton
+                    label={proceedText}
+                    loadingLabel={pleaseWaitText}
+                    onPress={goNext}
+                    disabled={!canProceed}
+                    loading={isSubmittingStep}
+                  />
+                </View>
+              )}
             </View>
-
-            <View style={{ height: 120 }} />
-          </ScrollView>
-
-          {/* CTA */}
-          <View className="px-6 pb-8 pt-4">
-            <TouchableOpacity
-              onPress={handleProceed}
-              activeOpacity={0.85}
-              style={{
-                backgroundColor: isComplete ? "#293231" : "#D1D5DB",
-                paddingVertical: 16,
-                borderRadius: 20,
-                alignItems: "center",
-              }}
-            >
-              <Text className="text-white font-bold text-base">Proceed</Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+          )}
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

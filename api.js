@@ -1,9 +1,10 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { clearStoredTokens, getStoredTokens } from "./utils/authStorage";
 
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000",
   timeout: 30000,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -13,11 +14,8 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     try {
-      // Check for healthcare worker token first, then regular user token
-      let token = await AsyncStorage.getItem("worker_token");
-      if (!token) {
-        token = await AsyncStorage.getItem("token");
-      }
+      const { accessToken } = await getStoredTokens();
+      const token = accessToken;
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -56,9 +54,7 @@ api.interceptors.response.use(
     }
 
     if (error.response?.status === 401) {
-      // Token expired or invalid, clear both tokens
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("worker_token");
+      await clearStoredTokens();
     }
     return Promise.reject(error);
   }

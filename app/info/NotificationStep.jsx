@@ -2,9 +2,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
+import useMockAuth from "../../hooks/useMockAuth";
+import { getAccountAppRoute } from "../../utils/authRoutes";
 import { useTranslation } from "../../utils/translator";
 
 export default function NotificationStep() {
+  const { account } = useMockAuth();
   // Translate all text
   const drugReminderText = useTranslation(
     "Don't forget to use your drug it is essential for your well being",
@@ -41,18 +44,18 @@ export default function NotificationStep() {
 
       // Navigate to tabs after 2 seconds
       setTimeout(() => {
-        router.replace("/(mother-tabs)");
+        router.replace(getAccountAppRoute(account));
       }, 2000);
     } catch (error) {
       console.error("Error saving notification preference:", error);
       // Still navigate even if saving fails
-      router.replace("/(mother-tabs)");
+      router.replace(getAccountAppRoute(account));
     }
   };
 
   const handleSkip = () => {
     // Just navigate without saving notification preference
-    router.replace("/(mother-tabs)");
+    router.replace(getAccountAppRoute(account));
   };
 
   return (
@@ -114,7 +117,6 @@ export default function NotificationStep() {
       </View>
 
       {/* Toast component */}
-      <Toast />
     </View>
   );
 }

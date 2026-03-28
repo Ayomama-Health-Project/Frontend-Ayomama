@@ -4,20 +4,20 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Keyboard,
-  Platform,
   Text,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
+import useAppAuth from "../../hooks/useAppAuth";
 import { useTranslation } from "../../utils/translator";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const ios = Platform.OS === "ios";
-
 export default function Security() {
   const router = useRouter();
+  const { changePassword } = useAppAuth();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -36,14 +36,30 @@ export default function Security() {
     router.back();
   };
 
-  const handleSave = () => {
-    // TODO: Implement password change logic with API
+  const handleSave = async () => {
     if (newPassword !== confirmPassword) {
-      console.log("Passwords don't match");
+      Toast.show({
+        type: "error",
+        text1: "Passwords do not match",
+        text2: "Please confirm the new password correctly.",
+      });
       return;
     }
-    console.log("Changing password");
-    router.back();
+    try {
+      await changePassword({ oldPassword, newPassword });
+      Toast.show({
+        type: "success",
+        text1: "Password updated",
+        text2: "Please use the new password next time you log in.",
+      });
+      router.back();
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Update failed",
+        text2: error?.response?.data?.detail || "We could not update your password.",
+      });
+    }
   };
 
   return (

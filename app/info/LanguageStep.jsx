@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
-import useAuthStore from "../../store/useAuthStore";
-import useTranslatorStore from "../../store/useTranslatorStore";
+import useMockAuth from "../../hooks/useMockAuth";
+import { setAppLanguage } from "../../utils/appLanguage";
 import { useTranslation } from "../../utils/translator";
 
 export default function LanguageStep({ onNext }) {
-  const { updateLanguagePreference, isLoading } = useAuthStore();
-  const { setLanguage } = useTranslatorStore();
+  const { updateLanguagePreference, isLoading } = useMockAuth();
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [error, setError] = useState("");
 
@@ -43,7 +42,7 @@ export default function LanguageStep({ onNext }) {
     // Update language immediately for live preview
     const languageCode = languageMap[language];
     if (languageCode) {
-      await setLanguage(languageCode);
+      await setAppLanguage(languageCode);
     }
   };
 
@@ -57,7 +56,7 @@ export default function LanguageStep({ onNext }) {
     const languageCode = languageMap[selectedLanguage];
 
     // Update language preference in translator store
-    await setLanguage(languageCode);
+    await setAppLanguage(languageCode);
 
     // Update language preference via API
     const result = await updateLanguagePreference(languageCode);
@@ -180,7 +179,6 @@ export default function LanguageStep({ onNext }) {
       </TouchableOpacity>
 
       {/* Toast component */}
-      <Toast />
     </View>
   );
 }

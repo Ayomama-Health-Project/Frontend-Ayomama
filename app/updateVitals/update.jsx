@@ -4,9 +4,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Platform,
   ScrollView,
-  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
@@ -14,13 +12,13 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useAuthStore from "../../store/useAuthStore";
+import useMockAuth from "../../hooks/useMockAuth";
+import { getAccountAppRoute } from "../../utils/authRoutes";
 import { useTranslation } from "../../utils/translator";
 
 export default function UpdateVitalsStep() {
   const router = useRouter();
-  const isIOS = Platform.OS === "ios";
-  const { submitAntenatalData, isLoading } = useAuthStore();
+  const { submitAntenatalData, isLoading, account } = useMockAuth();
 
   // Form state
   const [bloodPressure, setBloodPressure] = useState("");
@@ -72,7 +70,7 @@ export default function UpdateVitalsStep() {
         text2: result.message || "Your vitals have been saved.",
         position: "top",
       });
-      setTimeout(() => router.push("/(mother-tabs)"), 1500);
+      setTimeout(() => router.push(getAccountAppRoute(account)), 1500);
     } else {
       Toast.show({
         type: "error",
@@ -223,7 +221,6 @@ export default function UpdateVitalsStep() {
         </TouchableOpacity>
       </View>
 
-      <Toast />
     </SafeAreaView>
   );
 }

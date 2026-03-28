@@ -19,7 +19,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import useVisitStore from "../../store/useVisitStore";
+import useMockVisits from "../../hooks/useMockVisits";
 
 const VisitInput = () => {
   const [visitDate, setVisitDate] = useState(null);
@@ -32,7 +32,7 @@ const VisitInput = () => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { createSchedule } = useVisitStore();
+  const { createSchedule } = useMockVisits();
 
   const dismissKeyboard = () => Keyboard.dismiss();
 

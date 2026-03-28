@@ -11,12 +11,14 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import useAuthWorkerStore from "../../store/useAuthWorkerStore";
+import useMockWorkerAuth from "../../hooks/useMockWorkerAuth";
+import { getAccountAppRoute } from "../../utils/authRoutes";
 import { useTranslation } from "../../utils/translator";
 
 export default function HealthInfoStep() {
   const router = useRouter();
-  const { worker, updateProfileInformation, isLoading } = useAuthWorkerStore();
+  const { worker, account, updateProfileInformation, isLoading } =
+    useMockWorkerAuth();
 
   const [fullName, setFullName] = useState("");
   const [state, setState] = useState("");
@@ -145,7 +147,7 @@ export default function HealthInfoStep() {
 
       // Navigate to healthcare dashboard after success
       setTimeout(() => {
-        router.replace("/(healthworker-tabs)");
+        router.replace(getAccountAppRoute(account));
       }, 2000);
     } else {
       setError(result.error || failedToSaveText);
@@ -269,7 +271,6 @@ export default function HealthInfoStep() {
         </View>
 
         {/* Toast component */}
-        <Toast />
       </View>
     </TouchableWithoutFeedback>
   );

@@ -20,15 +20,13 @@ import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
 import StreamedMessage from "../../components/chat/StreamedMessage";
 import TypingIndicator from "../../components/chat/TypingIndicator";
-import useAiStore from "../../store/useAiStore";
-import useAuthStore from "../../store/useAuthStore";
+import useMockAi from "../../hooks/useMockAi";
+import useMockAuth from "../../hooks/useMockAuth";
 import { useTranslation } from "../../utils/translator";
-
-const ios = Platform.OS === "ios";
 
 export default function SmartChat() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user } = useMockAuth();
   const {
     messages,
     isLoading,
@@ -38,12 +36,11 @@ export default function SmartChat() {
     lastMessageId,
     error,
     storageWarning,
-  } = useAiStore();
+  } = useMockAi();
   const [inputMessage, setInputMessage] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const flatListRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  const scrollIntervalRef = useRef(null);
 
   // Translate all text
   const smartChatText = useTranslation("Smart Chat");
@@ -591,7 +588,6 @@ export default function SmartChat() {
             </View>
           </View>
         </KeyboardAvoidingView>
-        <Toast />
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );

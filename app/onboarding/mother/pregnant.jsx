@@ -1,478 +1,554 @@
-import { Ionicons } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import {
-  Dimensions,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const { width } = Dimensions.get("window");
-
-// ─── Data ────────────────────────────────────────────────────────────────────
-
-const PREGNANCY_OPTIONS = [
-  { id: "due_date", icon: "calendar-outline", label: "I know my due date" },
-  { id: "weeks", icon: "today-outline", label: "I know how many weeks" },
-  { id: "unknown", icon: "help-circle-outline", label: "I don't know" },
-  { id: "just_found", icon: "heart-outline", label: "I just found out today" },
-];
-
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-const SUPPORT_OPTIONS = [
-  { id: "just_me", icon: "person-outline", label: "Just me" },
-  { id: "partner", icon: "people-outline", label: "My partner" },
-  { id: "health_worker", icon: "medical-outline", label: "Health Worker" },
-  { id: "friends", icon: "happy-outline", label: "Friends" },
-];
-
-// ─── Components ──────────────────────────────────────────────────────────────
-
-const BgBlobs = () => (
-  <View className="absolute inset-0 overflow-hidden pointer-events-none">
-    <View
-      style={{
-        position: "absolute",
-        width: 320,
-        height: 320,
-        borderRadius: 160,
-        backgroundColor: "rgba(0, 109, 91, 0.12)",
-        top: -100,
-        right: -80,
-      }}
-    />
-    <View
-      style={{
-        position: "absolute",
-        width: 280,
-        height: 280,
-        borderRadius: 140,
-        backgroundColor: "rgba(41, 50, 49, 0.07)",
-        bottom: -80,
-        left: -80,
-      }}
-    />
-  </View>
-);
-
-const ProgressDots = ({ total, current }) => (
-  <View className="flex-row items-center justify-center gap-2 mb-8">
-    {Array.from({ length: total }).map((_, i) => (
-      <View
-        key={i}
-        style={{
-          width: i === current ? 24 : 8,
-          height: 8,
-          borderRadius: 4,
-          backgroundColor: i === current ? "#293231" : "#D1D5DB",
-        }}
-      />
-    ))}
-  </View>
-);
-
-const SelectCard = ({ option, selected, onPress }) => (
-  <TouchableOpacity
-    onPress={() => onPress(option.id)}
-    activeOpacity={0.8}
-    style={{
-      width: (width - 56) / 2,
-      borderRadius: 16,
-      padding: 20,
-      alignItems: "center",
-      backgroundColor: selected ? "#293231" : "#FFFFFF",
-      borderWidth: 1.5,
-      borderColor: selected ? "#293231" : "#E5E7EB",
-      marginBottom: 12,
-    }}
-  >
-    <View
-      style={{
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: selected
-          ? "rgba(255,255,255,0.15)"
-          : "rgba(41,50,49,0.07)",
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 10,
-      }}
-    >
-      <Ionicons
-        name={option.icon}
-        size={24}
-        color={selected ? "#FFFFFF" : "#293231"}
-      />
-    </View>
-    <Text
-      style={{
-        fontSize: 13,
-        fontWeight: "600",
-        color: selected ? "#FFFFFF" : "#293231",
-        textAlign: "center",
-        lineHeight: 18,
-      }}
-    >
-      {option.label}
-    </Text>
-  </TouchableOpacity>
-);
-
-// ─── Steps ───────────────────────────────────────────────────────────────────
-
-const Step1 = ({ selected, onSelect }) => (
-  <View className="flex-1">
-    <Text className="text-[26px] font-bold text-[#293231] mb-1">
-      Pregnancy Setup
-    </Text>
-    <Text className="text-gray-500 text-[15px] mb-8">
-      How far along are you?
-    </Text>
-    <View className="flex-row flex-wrap justify-between">
-      {PREGNANCY_OPTIONS.map((opt) => (
-        <SelectCard
-          key={opt.id}
-          option={opt}
-          selected={selected === opt.id}
-          onPress={onSelect}
-        />
-      ))}
-    </View>
-  </View>
-);
-
-const Step2 = ({ pregnancyType, data, onChange }) => {
-  if (pregnancyType === "just_found") {
-    return (
-      <View className="flex-1">
-        <Text className="text-[26px] font-bold text-[#293231] mb-1">
-          Congratulations!
-        </Text>
-        <Text className="text-gray-500 text-[15px] mb-8">
-          We are so excited for you. Let's get you set up.
-        </Text>
-        <View
-          style={{
-            backgroundColor: "rgba(0,109,91,0.08)",
-            borderRadius: 20,
-            padding: 28,
-            alignItems: "center",
-          }}
-        >
-          <Ionicons name="heart" size={48} color="#006D5B" />
-          <Text className="text-[#293231] font-bold text-xl mt-4 text-center">
-            You just found out — that's amazing!
-          </Text>
-          <Text className="text-gray-500 text-[14px] mt-2 text-center">
-            Tap Continue to start your journey with Ayomama.
-          </Text>
-        </View>
-      </View>
-    );
-  }
-
-  const title =
-    pregnancyType === "due_date"
-      ? "When is your due date?"
-      : pregnancyType === "weeks"
-        ? "How many weeks along are you?"
-        : "When was your last period?";
-
-  const subtitle =
-    pregnancyType === "weeks"
-      ? "Enter the number of weeks pregnant"
-      : "Select the date below";
-
-  return (
-    <View className="flex-1">
-      <Text className="text-[26px] font-bold text-[#293231] mb-1">{title}</Text>
-      <Text className="text-gray-500 text-[15px] mb-8">{subtitle}</Text>
-
-      {pregnancyType === "weeks" ? (
-        <TextInput
-          placeholder="e.g. 20"
-          placeholderTextColor="#9CA3AF"
-          keyboardType="number-pad"
-          value={data.weeks}
-          onChangeText={(v) => onChange({ ...data, weeks: v })}
-          className="w-full border border-gray-300 rounded-2xl px-5 py-4 text-base text-[#293231]"
-        />
-      ) : (
-        <View className="flex-row gap-3">
-          {/* Month */}
-          <View className="flex-1 border border-gray-300 rounded-2xl px-4 py-3">
-            <Text className="text-xs text-gray-400 mb-1">Month</Text>
-            <TextInput
-              placeholder="Month"
-              placeholderTextColor="#9CA3AF"
-              value={data.month}
-              onChangeText={(v) => onChange({ ...data, month: v })}
-              className="text-[#293231] text-base"
-            />
-          </View>
-          {/* Day */}
-          <View
-            style={{ width: 80 }}
-            className="border border-gray-300 rounded-2xl px-4 py-3"
-          >
-            <Text className="text-xs text-gray-400 mb-1">Day</Text>
-            <TextInput
-              placeholder="DD"
-              placeholderTextColor="#9CA3AF"
-              keyboardType="number-pad"
-              value={data.day}
-              onChangeText={(v) => onChange({ ...data, day: v })}
-              className="text-[#293231] text-base"
-            />
-          </View>
-          {/* Year */}
-          <View
-            style={{ width: 90 }}
-            className="border border-gray-300 rounded-2xl px-4 py-3"
-          >
-            <Text className="text-xs text-gray-400 mb-1">Year</Text>
-            <TextInput
-              placeholder="YYYY"
-              placeholderTextColor="#9CA3AF"
-              keyboardType="number-pad"
-              value={data.year}
-              onChangeText={(v) => onChange({ ...data, year: v })}
-              className="text-[#293231] text-base"
-            />
-          </View>
-        </View>
-      )}
-    </View>
-  );
-};
-
-const Step3 = ({ nickname, onChange }) => (
-  <View className="flex-1">
-    <Text className="text-[26px] font-bold text-[#293231] mb-1">
-      Baby Nickname Setup
-    </Text>
-    <Text className="text-gray-500 text-[15px] mb-8">
-      What would you like to call your baby?
-    </Text>
-    <TextInput
-      placeholder="e.g. Little Star, Peanut…"
-      placeholderTextColor="#9CA3AF"
-      value={nickname}
-      onChangeText={onChange}
-      className="w-full border border-gray-300 rounded-2xl px-5 py-4 text-base text-[#293231]"
-    />
-    <Text className="text-gray-400 text-xs px-2 pt-2">
-      You can always change this later in your profile.
-    </Text>
-  </View>
-);
-
-const Step4 = ({ selected, onToggle, router }) => (
-  <View className="flex-1">
-    <Text className="text-[26px] font-bold text-[#293231] mb-1">
-      Support Circle
-    </Text>
-    <Text className="text-gray-500 text-[15px] mb-8">
-      Who's joining you on this journey?
-    </Text>
-
-    <View className="gap-3">
-      {SUPPORT_OPTIONS.map((opt) => {
-        const isSelected = selected.includes(opt.id);
-        return (
-          <TouchableOpacity
-            key={opt.id}
-            onPress={() => onToggle(opt.id)}
-            activeOpacity={0.8}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              padding: 16,
-              borderRadius: 16,
-              borderWidth: 1.5,
-              borderColor: isSelected ? "#293231" : "#E5E7EB",
-              backgroundColor: isSelected ? "#293231" : "#FFFFFF",
-            }}
-          >
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: isSelected
-                  ? "rgba(255,255,255,0.15)"
-                  : "rgba(41,50,49,0.07)",
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: 14,
-              }}
-            >
-              <Ionicons
-                name={opt.icon}
-                size={20}
-                color={isSelected ? "#FFFFFF" : "#293231"}
-              />
-            </View>
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: "600",
-                color: isSelected ? "#FFFFFF" : "#293231",
-                flex: 1,
-              }}
-            >
-              {opt.label}
-            </Text>
-            {isSelected && (
-              <Ionicons name="checkmark-circle" size={22} color="#FFFFFF" />
-            )}
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-
-    {/* Generate Invite Link */}
-    <TouchableOpacity
-      activeOpacity={0.7}
-      className="mt-6 flex-row items-center justify-center gap-2 py-4 border border-dashed border-gray-300 rounded-2xl"
-    >
-      <Ionicons name="link-outline" size={20} color="#293231" />
-      <Text className="text-[#293231] font-semibold text-[15px]">
-        Generate Invite Link
-      </Text>
-    </TouchableOpacity>
-  </View>
-);
-
-// ─── Main ────────────────────────────────────────────────────────────────────
+import PickerModal from "../../../components/PickerModal";
+import AntenatalStep from "../../../components/pregnantMotherOnboarding/AntenatalStep";
+import BackgroundDecor from "../../../components/onboardingShared/BackgroundDecor";
+import FollowProfessionalStep from "../../../components/pregnantMotherOnboarding/FollowProfessionalStep";
+import LanguageStep from "../../../components/pregnantMotherOnboarding/LanguageStep";
+import NotificationStep from "../../../components/pregnantMotherOnboarding/NotificationStep";
+import PersonalInfoStep from "../../../components/pregnantMotherOnboarding/PersonalInfoStep";
+import PregnancyStep from "../../../components/pregnantMotherOnboarding/PregnancyStep";
+import QuickSetupStep from "../../../components/pregnantMotherOnboarding/QuickSetupStep";
+import SupportStep from "../../../components/pregnantMotherOnboarding/SupportStep";
+import {
+  DAYS,
+  MONTHS,
+  RELATIONSHIP_OPTIONS,
+  STEP_TITLES,
+  YEARS,
+} from "../../../components/pregnantMotherOnboarding/constants";
+import {
+  PrimaryButton,
+  ProgressDots,
+  SecondaryButton,
+} from "../../../components/pregnantMotherOnboarding/shared";
+import useAppAuth from "../../../hooks/useAppAuth";
+import { getAccountAppRoute } from "../../../utils/authRoutes";
+import { setAppLanguage } from "../../../utils/appLanguage";
+import { requestPushNotificationToken } from "../../../utils/pushNotifications";
+import { useTranslation } from "../../../utils/translator";
 
 export default function PregnantOnboarding() {
   const router = useRouter();
+  const {
+    account,
+    updateLanguagePreference,
+    updateProfileInformation,
+    completeOnboarding,
+    saveNotificationToken,
+    createPartnerInvite,
+    fetchHealthProfessionals,
+  } = useAppAuth();
   const [step, setStep] = useState(0);
-  const [pregnancyType, setPregnancyType] = useState(null);
-  const [dateData, setDateData] = useState({
-    month: "",
-    day: "",
-    year: "",
-    weeks: "",
-  });
-  const [nickname, setNickname] = useState("");
-  const [supportSelections, setSupportSelections] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [address, setAddress] = useState("");
+  const [emergencyContacts, setEmergencyContacts] = useState([
+    { phone: "", name: "", relationship: "" },
+  ]);
+  const [openPicker, setOpenPicker] = useState(null);
+  const [pregnancyType, setPregnancyType] = useState("");
+  const [dateData, setDateData] = useState({ month: "", day: "", year: "" });
+  const [weeks, setWeeks] = useState("");
+  const [startedAntenatal, setStartedAntenatal] = useState("");
+  const [supportSelection, setSupportSelection] = useState("");
+  const [quickSelections, setQuickSelections] = useState([
+    "health",
+    "tips",
+    "community",
+    "emergency",
+  ]);
+  const [followedProfessionals, setFollowedProfessionals] = useState([]);
+  const [professionals, setProfessionals] = useState([]);
+  const [isLoadingProfessionals, setIsLoadingProfessionals] = useState(false);
+  const [generatedInvite, setGeneratedInvite] = useState(null);
+  const [isGeneratingInvite, setIsGeneratingInvite] = useState(false);
+  const [isSubmittingStep, setIsSubmittingStep] = useState(false);
+  const setLanguage = setAppLanguage;
+  const hasHydratedRef = useRef(false);
+  const lastSavedDraftRef = useRef("");
+  const inviteCreatedText = useTranslation("Invite code created");
+  const inviteReadyText = useTranslation("Your partner invite code is ready to share.");
+  const inviteFailedText = useTranslation("Invite failed");
+  const inviteFailedDetailText = useTranslation("We could not generate an invite right now.");
+  const backText = useTranslation("Back");
+  const proceedText = useTranslation("Proceed");
+  const pleaseWaitText = useTranslation("Please wait...");
+  const pickerSelectText = useTranslation("Select");
 
-  const TOTAL_STEPS = 4;
+  const currentPickerOptions =
+    openPicker?.kind === "relationship"
+      ? RELATIONSHIP_OPTIONS
+      : openPicker?.kind === "month"
+        ? MONTHS
+        : openPicker?.kind === "day"
+          ? DAYS
+          : YEARS;
 
-  const toggleSupport = (id) => {
-    setSupportSelections((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id],
+  const updateEmergencyContact = (index, field, value) => {
+    setEmergencyContacts((prev) =>
+      prev.map((contact, currentIndex) =>
+        currentIndex === index ? { ...contact, [field]: value } : contact,
+      ),
     );
   };
 
-  const canProceed = () => {
-    if (step === 0) return !!pregnancyType;
-    return true;
+  const addEmergencyContact = () => {
+    setEmergencyContacts((prev) => [
+      ...prev,
+      { phone: "", name: "", relationship: "" },
+    ]);
   };
 
-  const handleNext = () => {
-    if (step < TOTAL_STEPS - 1) {
-      setStep((s) => s + 1);
-    } else {
-      router.replace("/(mother-tabs)");
+  const removeEmergencyContact = (index) => {
+    setEmergencyContacts((prev) =>
+      prev.length === 1
+        ? prev
+        : prev.filter((_, currentIndex) => currentIndex !== index),
+    );
+  };
+
+  const toggleQuickSelection = (id) => {
+    setQuickSelections((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
+
+  const toggleProfessional = (id) => {
+    setFollowedProfessionals((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+    );
+  };
+
+  const canProceed =
+    step === 0
+      ? Boolean(selectedLanguage)
+      : step === 1
+      ? Boolean(
+          fullName.trim() &&
+            address.trim() &&
+            emergencyContacts.length &&
+            emergencyContacts.every(
+              (contact) =>
+                contact.phone.trim() &&
+                contact.name.trim() &&
+                contact.relationship,
+            ),
+        )
+      : step === 2
+        ? pregnancyType === "just_found"
+          ? true
+          : pregnancyType === "weeks"
+            ? Boolean(weeks.trim())
+            : Boolean(
+                pregnancyType && dateData.month && dateData.day && dateData.year,
+              )
+        : step === 3
+          ? Boolean(startedAntenatal)
+          : step === 4
+            ? Boolean(supportSelection)
+            : true;
+
+  const onboardingDraft = useMemo(
+    () => ({
+      selectedLanguage,
+      fullName,
+      address,
+      emergencyContacts,
+      pregnancyType,
+      dateData,
+      weeks,
+      startedAntenatal,
+      supportSelection,
+      quickSelections,
+      followedProfessionals,
+      generatedInvite,
+    }),
+    [
+      selectedLanguage,
+      fullName,
+      address,
+      emergencyContacts,
+      pregnancyType,
+      dateData,
+      weeks,
+      startedAntenatal,
+      supportSelection,
+      quickSelections,
+      followedProfessionals,
+      generatedInvite,
+    ],
+  );
+
+  useEffect(() => {
+    if (!account || hasHydratedRef.current) return;
+    if (account.onboardingCompleted) {
+      router.replace(getAccountAppRoute(account));
+      return;
+    }
+
+    const draft =
+      account.onboardingProgress?.flow === "mother_pregnant_onboarding"
+        ? account.onboardingProgress?.draft || {}
+        : {};
+    const restoredEmergencyContacts =
+      draft.emergencyContacts ||
+      (account.profile?.emergencyContacts || []).map((contact) => ({
+        phone: contact.phoneNumber || "",
+        name: contact.name || "",
+        relationship: contact.relationship || "",
+      }));
+
+    setSelectedLanguage(draft.selectedLanguage || account.language || "");
+    setFullName(draft.fullName || account.profile?.fullName || "");
+    setAddress(draft.address || account.profile?.address || "");
+    setEmergencyContacts(
+      restoredEmergencyContacts?.length
+        ? restoredEmergencyContacts
+        : [{ phone: "", name: "", relationship: "" }],
+    );
+    setPregnancyType(draft.pregnancyType || "");
+    setDateData(draft.dateData || { month: "", day: "", year: "" });
+    setWeeks(draft.weeks || (account.profile?.pregnancyWeek ? String(account.profile.pregnancyWeek) : ""));
+    setStartedAntenatal(draft.startedAntenatal || account.profile?.antenatalProvider || "");
+    setSupportSelection(
+      draft.supportSelection ||
+        account.profile?.supportCircle?.[0] ||
+        "",
+    );
+    setQuickSelections(
+      draft.quickSelections ||
+        account.profile?.quickSetupSelections ||
+        ["health", "tips", "community", "emergency"],
+    );
+    setFollowedProfessionals(draft.followedProfessionals || []);
+    setGeneratedInvite(draft.generatedInvite || null);
+    setStep(
+      account.onboardingProgress?.flow === "mother_pregnant_onboarding"
+        ? Math.min(account.onboardingProgress?.currentStep || 0, STEP_TITLES.length - 1)
+        : 0,
+    );
+    hasHydratedRef.current = true;
+  }, [account, router]);
+
+  useEffect(() => {
+    if (!hasHydratedRef.current || !account || account.onboardingCompleted) return;
+    const payloadString = JSON.stringify({ step, onboardingDraft });
+    if (payloadString === lastSavedDraftRef.current) return;
+
+    const timer = setTimeout(() => {
+      lastSavedDraftRef.current = payloadString;
+      completeOnboarding({
+        onboardingCompleted: false,
+        currentStep: step,
+        flow: "mother_pregnant_onboarding",
+        draft: onboardingDraft,
+        quickSetupSelections: quickSelections,
+        supportCircle: supportSelection ? [supportSelection] : [],
+      }).catch(() => {
+        lastSavedDraftRef.current = "";
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [account, completeOnboarding, onboardingDraft, quickSelections, step, supportSelection]);
+
+  useEffect(() => {
+    let mounted = true;
+    if (!account || step !== 6 || professionals.length > 0) return undefined;
+
+    const loadProfessionals = async () => {
+      try {
+        setIsLoadingProfessionals(true);
+        const result = await fetchHealthProfessionals(5);
+        if (!mounted) return;
+        setProfessionals(result || []);
+      } catch (_error) {
+        if (mounted) {
+          setProfessionals([]);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoadingProfessionals(false);
+        }
+      }
+    };
+
+    loadProfessionals();
+
+    return () => {
+      mounted = false;
+    };
+  }, [account, fetchHealthProfessionals, professionals.length, step]);
+
+  const handlePickerSelect = (item) => {
+    if (openPicker?.kind === "relationship") {
+      updateEmergencyContact(openPicker.index, "relationship", item);
+    } else if (
+      openPicker?.kind === "month" ||
+      openPicker?.kind === "day" ||
+      openPicker?.kind === "year"
+    ) {
+      setDateData((prev) => ({ ...prev, [openPicker.kind]: item }));
+    }
+    setOpenPicker(null);
+  };
+
+  const goNext = async () => {
+    if (!canProceed) return;
+    try {
+      setIsSubmittingStep(true);
+      if (step === 0) {
+        await setLanguage(selectedLanguage);
+        await updateLanguagePreference(selectedLanguage);
+      }
+      if (step === STEP_TITLES.length - 1) {
+        router.replace("/(pregnant-women-tabs)");
+        return;
+      }
+      setStep((prev) => prev + 1);
+    } finally {
+      setIsSubmittingStep(false);
     }
   };
 
-  const handleBack = () => {
-    if (step > 0) setStep((s) => s - 1);
-    else router.back();
+  const goBack = () => {
+    if (step === 0) {
+      router.back();
+      return;
+    }
+    setStep((prev) => prev - 1);
   };
 
-  const renderStep = () => {
-    switch (step) {
-      case 0:
-        return <Step1 selected={pregnancyType} onSelect={setPregnancyType} />;
-      case 1:
-        return (
-          <Step2
-            pregnancyType={pregnancyType}
-            data={dateData}
-            onChange={setDateData}
-          />
-        );
-      case 2:
-        return <Step3 nickname={nickname} onChange={setNickname} />;
-      case 3:
-        return (
-          <Step4
-            selected={supportSelections}
-            onToggle={toggleSupport}
-            router={router}
-          />
-        );
-      default:
-        return null;
+  const finishOnboarding = async () => {
+    setIsSubmittingStep(true);
+    try {
+      await updateProfileInformation({
+        fullName,
+        address,
+        emergencyContacts: emergencyContacts.map((contact) => ({
+          name: contact.name,
+          phoneNumber: contact.phone,
+          relationship: contact.relationship,
+        })),
+        ...(pregnancyType === "weeks" ? { pregnancyWeek: Number(weeks || 0) } : {}),
+        ...(pregnancyType === "last_period"
+          ? {
+              lastPeriodDate:
+                dateData.year && dateData.month && dateData.day
+                  ? new Date(
+                      `${dateData.year}-${String(
+                        MONTHS.indexOf(dateData.month) + 1,
+                      ).padStart(2, "0")}-${String(dateData.day).padStart(2, "0")}`,
+                    ).toISOString()
+                  : undefined,
+            }
+          : {}),
+        antenatalProvider: startedAntenatal,
+      });
+      await completeOnboarding({
+        onboardingCompleted: true,
+        quickSetupSelections: quickSelections,
+        supportCircle: supportSelection ? [supportSelection] : [],
+        currentStep: 0,
+        flow: "",
+        draft: {},
+      });
+      router.replace(
+        getAccountAppRoute({ role: "mother", motherType: "pregnant", onboardingCompleted: true }),
+      );
+    } finally {
+      setIsSubmittingStep(false);
+    }
+  };
+
+  const handleGenerateInvite = async () => {
+    try {
+      setIsGeneratingInvite(true);
+      const invite = await createPartnerInvite({});
+      setGeneratedInvite(invite);
+      Toast.show({
+        type: "success",
+        text1: inviteCreatedText,
+        text2: inviteReadyText,
+        position: "top",
+      });
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: inviteFailedText,
+        text2: error?.response?.data?.detail || inviteFailedDetailText,
+        position: "top",
+      });
+    } finally {
+      setIsGeneratingInvite(false);
+    }
+  };
+
+  const enableNotificationsAndFinish = async () => {
+    setIsSubmittingStep(true);
+    try {
+      await Notifications.requestPermissionsAsync();
+      const expoPushToken = await requestPushNotificationToken();
+      if (expoPushToken) {
+        await saveNotificationToken({
+          platform: Platform.OS === "ios" ? "ios" : "android",
+          expoPushToken,
+          deviceId: `${Platform.OS}-mother`,
+          enabled: true,
+        });
+      }
+    } catch (error) {
+      console.error("Notification permission error:", error);
+    } finally {
+      await finishOnboarding();
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-      <BgBlobs />
+    <SafeAreaView className="flex-1 bg-[#FCFCFC]">
+      <BackgroundDecor />
 
-      {/* Header */}
-      <View className="flex-row items-center px-6 pt-2 pb-4">
-        <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-          <Ionicons name="arrow-back" size={24} color="#293231" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Progress Dots */}
-      <ProgressDots total={TOTAL_STEPS} current={step} />
-
-      {/* Content */}
-      <ScrollView
-        className="flex-1 px-6"
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        {renderStep()}
-        <View style={{ height: 120 }} />
-      </ScrollView>
+        <ProgressDots step={step} />
 
-      {/* CTA Button */}
-      <View className="px-6 pb-8 pt-4 bg-transparent">
-        <TouchableOpacity
-          onPress={handleNext}
-          activeOpacity={0.85}
-          disabled={!canProceed()}
-          style={{
-            backgroundColor: canProceed() ? "#293231" : "#D1D5DB",
-            paddingVertical: 16,
-            borderRadius: 20,
-            alignItems: "center",
-          }}
+        <ScrollView
+          className="flex-1"
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <Text className="text-white font-bold text-base">
-            {step === TOTAL_STEPS - 1 ? "Get Started" : "Continue"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          {step === 0 ? (
+            <LanguageStep
+              selectedLanguage={selectedLanguage}
+              setSelectedLanguage={setSelectedLanguage}
+              onSelectLanguage={setLanguage}
+            />
+          ) : null}
+
+          {step === 1 ? (
+            <PersonalInfoStep
+              fullName={fullName}
+              setFullName={setFullName}
+              address={address}
+              setAddress={setAddress}
+              emergencyContacts={emergencyContacts}
+              updateEmergencyContact={updateEmergencyContact}
+              addEmergencyContact={addEmergencyContact}
+              removeEmergencyContact={removeEmergencyContact}
+              onOpenRelationship={(index) =>
+                setOpenPicker({ kind: "relationship", index })
+              }
+            />
+          ) : null}
+
+          {step === 2 ? (
+            <PregnancyStep
+              pregnancyType={pregnancyType}
+              setPregnancyType={setPregnancyType}
+              dateData={dateData}
+              weeks={weeks}
+              setWeeks={setWeeks}
+              onOpenPicker={(kind) => setOpenPicker({ kind })}
+              onContinue={goNext}
+              canContinue={canProceed}
+            />
+          ) : null}
+
+          {step === 3 ? (
+            <AntenatalStep
+              startedAntenatal={startedAntenatal}
+              setStartedAntenatal={setStartedAntenatal}
+            />
+          ) : null}
+
+          {step === 4 ? (
+            <SupportStep
+              supportSelection={supportSelection}
+              setSupportSelection={setSupportSelection}
+              generatedInvite={generatedInvite}
+              onGenerateInvite={handleGenerateInvite}
+              isGeneratingInvite={isGeneratingInvite}
+            />
+          ) : null}
+
+          {step === 5 ? (
+            <QuickSetupStep
+              selections={quickSelections}
+              toggleSelection={toggleQuickSelection}
+            />
+          ) : null}
+
+          {step === 6 ? (
+            <FollowProfessionalStep
+              followedProfessionals={followedProfessionals}
+              toggleProfessional={toggleProfessional}
+              professionals={professionals}
+              isLoading={isLoadingProfessionals}
+            />
+          ) : null}
+
+          {step === 7 ? (
+            <NotificationStep
+              onEnableNotifications={enableNotificationsAndFinish}
+              onSkipNotifications={finishOnboarding}
+              primaryLoading={isSubmittingStep}
+              secondaryLoading={isSubmittingStep}
+            />
+          ) : null}
+
+          <View className="h-36" />
+        </ScrollView>
+
+        <View className="px-5 pb-7 pt-2">
+          {step === 7 ? null : step === 2 ? (
+            <SecondaryButton label={backText} onPress={goBack} />
+          ) : (
+            <View className="flex-row items-center gap-3">
+              {step > 0 ? (
+                <>
+                  <View className="flex-1">
+                    <SecondaryButton label={backText} onPress={goBack} />
+                  </View>
+                  <View className="flex-1">
+                    <PrimaryButton
+                      label={proceedText}
+                      loadingLabel={pleaseWaitText}
+                      onPress={goNext}
+                      disabled={!canProceed}
+                      loading={isSubmittingStep}
+                    />
+                  </View>
+                </>
+              ) : (
+                <View className="flex-1">
+                  <PrimaryButton
+                    label={proceedText}
+                    loadingLabel={pleaseWaitText}
+                    onPress={goNext}
+                    disabled={!canProceed}
+                    loading={isSubmittingStep}
+                  />
+                </View>
+              )}
+            </View>
+          )}
+        </View>
+
+        <PickerModal
+          visible={openPicker !== null}
+          options={currentPickerOptions}
+          onSelect={handlePickerSelect}
+          onClose={() => setOpenPicker(null)}
+          title={`${pickerSelectText} ${openPicker?.kind || "option"}`}
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

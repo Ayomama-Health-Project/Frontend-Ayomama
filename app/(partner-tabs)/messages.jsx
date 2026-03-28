@@ -48,7 +48,6 @@ const Bubble = ({ msg }) => {
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.06,
           shadowRadius: 4,
-          elevation: 1,
         }}
       >
         <Text
@@ -88,7 +87,6 @@ export default function Messages() {
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.05,
           shadowRadius: 4,
-          elevation: 2,
         }}
       >
         <View className="w-10 h-10 rounded-full bg-[#293231] items-center justify-center mr-3">
@@ -125,7 +123,6 @@ export default function Messages() {
             shadowOffset: { width: 0, height: -2 },
             shadowOpacity: 0.04,
             shadowRadius: 4,
-            elevation: 2,
           }}
         >
           <TextInput

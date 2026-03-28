@@ -14,7 +14,7 @@ import {
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import PickerModal from "../../components/PickerModal";
-import useAuthStore from "../../store/useAuthStore";
+import useMockAuth from "../../hooks/useMockAuth";
 import { useTranslation } from "../../utils/translator";
 
 export default function AntenatalStep({ onNext, onBack }) {
@@ -26,7 +26,7 @@ export default function AntenatalStep({ onNext, onBack }) {
   const [openPicker, setOpenPicker] = useState(null); // 'prescribed' | 'avoid' | null
   const [error, setError] = useState("");
 
-  const { submitAntenatalData } = useAuthStore();
+  const { submitAntenatalData } = useMockAuth();
 
   // Translate all text
   const antenatalText = useTranslation("Antenatal");
@@ -552,7 +552,6 @@ export default function AntenatalStep({ onNext, onBack }) {
             title={`${selectText} ${drugsToAvoidText}`}
           />
 
-          <Toast />
         </ScrollView>
       </View>
     </TouchableWithoutFeedback>

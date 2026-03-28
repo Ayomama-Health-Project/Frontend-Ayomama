@@ -14,7 +14,6 @@ const InfoCard = ({ icon, label, value, color, bg }) => (
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.06,
       shadowRadius: 6,
-      elevation: 2,
     }}
   >
     <View
@@ -38,7 +37,6 @@ const TipCard = ({ tip, index }) => (
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.06,
       shadowRadius: 6,
-      elevation: 2,
     }}
   >
     <View className="w-8 h-8 rounded-full bg-[#293231] items-center justify-center mr-3 mt-0.5">
@@ -129,7 +127,6 @@ export default function PartnerHome() {
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.2,
               shadowRadius: 8,
-              elevation: 4,
             }}
           >
             <View className="flex-row items-center">

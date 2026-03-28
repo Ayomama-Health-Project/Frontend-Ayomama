@@ -1,11 +1,14 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useRedirectAuthenticatedUser from "../../hooks/useRedirectAuthenticatedUser";
 import { useTranslation } from "../../utils/translator";
 
 const AccountSetup = () => {
   const router = useRouter();
+  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser();
   const [selectedType, setSelectedType] = useState(null);
 
   const titleText = useTranslation("Account Setup");
@@ -16,9 +19,16 @@ const AccountSetup = () => {
   const postpartumDescText = useTranslation("Lets care for you and your baby");
   const proceedText = useTranslation("Proceed");
 
+  if (isCheckingAuthScreenAccess) {
+    return null;
+  }
+
   const handleProceed = () => {
     if (!selectedType) return;
-    router.push(`/auth/mother/signup?type=${selectedType}`);
+    router.push({
+      pathname: "/(auth)/auth/mother/signup",
+      params: { type: selectedType },
+    });
   };
 
   const SetupCard = ({ type, image, title, description, isSelected }) => (
@@ -39,7 +49,6 @@ const AccountSetup = () => {
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: isSelected ? 0.15 : 0.06,
           shadowRadius: 12,
-          elevation: isSelected ? 6 : 2,
         }}
       >
         <View className="items-center px-3 pt-5 pb-5">
@@ -62,7 +71,21 @@ const AccountSetup = () => {
   return (
     <SafeAreaView className="flex-1 bg-[#FCFCFC]">
       <View className="flex-1 px-5">
-        <View className="pt-16 pb-10">
+        <View className="pt-6 pb-10">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            activeOpacity={0.82}
+            className="mb-8 h-12 w-12 items-center justify-center rounded-full border border-[#DDE8E5] bg-white"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.06,
+              shadowRadius: 10,
+            }}
+          >
+            <Ionicons name="arrow-back" size={22} color="#293231" />
+          </TouchableOpacity>
+
           <Text className="text-[28px] font-bold text-[#293231] mb-2">
             {titleText}
           </Text>

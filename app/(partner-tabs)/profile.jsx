@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -12,6 +11,8 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useAppAuth from "../../hooks/useAppAuth";
+import { requestPushNotificationToken } from "../../utils/pushNotifications";
 import { useTranslation } from "../../utils/translator";
 
 const SettingsRow = ({
@@ -41,6 +42,8 @@ const SettingsRow = ({
 
 export default function PartnerProfile() {
   const router = useRouter();
+  const { account, logout, saveNotificationToken, deleteNotificationToken } =
+    useAppAuth();
   const [notificationsOn, setNotificationsOn] = useState(true);
 
   const profileText = useTranslation("Profile");
@@ -57,6 +60,10 @@ export default function PartnerProfile() {
   const partnerText = useTranslation("Partner");
   const supportingText = useTranslation("Supporting your partner's journey");
 
+  useEffect(() => {
+    setNotificationsOn(Boolean(account?.notifications?.enabled));
+  }, [account]);
+
   const handleLogout = () => {
     Alert.alert(logoutTitleText, logoutMessageText, [
       { text: cancelText, style: "cancel" },
@@ -64,7 +71,7 @@ export default function PartnerProfile() {
         text: logoutText,
         style: "destructive",
         onPress: async () => {
-          await AsyncStorage.clear();
+          await logout();
           Toast.show({ type: "success", text1: loggedOutText });
           router.replace("/account/selection");
         },
@@ -87,7 +94,6 @@ export default function PartnerProfile() {
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.06,
               shadowRadius: 8,
-              elevation: 3,
             }}
           >
             <View className="w-14 h-14 rounded-2xl bg-[#293231] items-center justify-center mr-4">
@@ -110,7 +116,6 @@ export default function PartnerProfile() {
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.06,
               shadowRadius: 8,
-              elevation: 3,
             }}
           >
             <SettingsRow
@@ -119,7 +124,29 @@ export default function PartnerProfile() {
               rightElement={
                 <Switch
                   value={notificationsOn}
-                  onValueChange={setNotificationsOn}
+                  onValueChange={async (value) => {
+                    setNotificationsOn(value);
+                    if (value) {
+                      const expoPushToken =
+                        await requestPushNotificationToken();
+                      if (expoPushToken) {
+                        await saveNotificationToken({
+                          platform: "android",
+                          expoPushToken,
+                          deviceId: "partner-profile",
+                          enabled: true,
+                        });
+                      }
+                    } else {
+                      const tokenIds =
+                        account?.notifications?.tokens?.map(
+                          (token) => token.id,
+                        ) || [];
+                      await Promise.all(
+                        tokenIds.map((id) => deleteNotificationToken(id)),
+                      );
+                    }
+                  }}
                   trackColor={{ false: "#E5E7EB", true: "#293231" }}
                   thumbColor="#fff"
                 />
@@ -128,7 +155,7 @@ export default function PartnerProfile() {
             <SettingsRow
               icon="language-outline"
               label={languageText}
-              onPress={() => router.push("/profile/ChangeLanguage")}
+              onPress={() => router.push("/language-picker")}
             />
             <SettingsRow
               icon="shield-checkmark-outline"
@@ -144,7 +171,6 @@ export default function PartnerProfile() {
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.06,
               shadowRadius: 8,
-              elevation: 3,
             }}
           >
             <SettingsRow
@@ -167,7 +193,6 @@ export default function PartnerProfile() {
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.06,
               shadowRadius: 8,
-              elevation: 3,
             }}
           >
             <View className="w-9 h-9 rounded-xl items-center justify-center mr-3 bg-red-50">
