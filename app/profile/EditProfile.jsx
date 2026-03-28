@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import useAuthStore from "../../store/useAuthStore";
 import { useTranslation } from "../../utils/translator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ios = Platform.OS === "ios";
 
@@ -74,7 +75,7 @@ export default function EditProfile() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="flex-1 bg-[#FCFCFC]">
+      <SafeAreaView className="flex-1 bg-[#FCFCFC]">
         {/* Gradient Background at Top */}
         <LinearGradient
           colors={["#BCF2E9", "#FCFCFC"]}
@@ -91,7 +92,7 @@ export default function EditProfile() {
           {/* Header with Back Button */}
           <View
             className="px-6 flex-row items-center"
-            style={{ paddingTop: ios ? 64 : 76 }}
+            style={{ paddingTop: 16 }}
           >
             <TouchableOpacity
               onPress={handleBack}
@@ -192,7 +193,7 @@ export default function EditProfile() {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 }

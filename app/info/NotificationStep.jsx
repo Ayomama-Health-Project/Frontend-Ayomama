@@ -7,22 +7,22 @@ import { useTranslation } from "../../utils/translator";
 export default function NotificationStep() {
   // Translate all text
   const drugReminderText = useTranslation(
-    "Don't forget to use your drug it is essential for your well being"
+    "Don't forget to use your drug it is essential for your well being",
   );
   const hydrationTipText = useTranslation(
-    "Studies shows that hydration solves more than 50% to boost immunity"
+    "Studies shows that hydration solves more than 50% to boost immunity",
   );
   const neverMissRoutineText = useTranslation(
-    "Never miss out on your daily routine"
+    "Never miss out on your daily routine",
   );
   const turnOnDescriptionText = useTranslation(
-    "When turn on, we will remind you of all your activities through out day"
+    "When turn on, we will remind you of all your activities through out day",
   );
   const turnOnNotificationText = useTranslation("Turn on notication");
   const skipText = useTranslation("Skip");
   const notificationsEnabledText = useTranslation("Notifications Enabled!");
   const dailyRemindersText = useTranslation(
-    "You'll receive daily reminders for your routine"
+    "You'll receive daily reminders for your routine",
   );
 
   const handleTurnOnNotification = async () => {
@@ -41,18 +41,18 @@ export default function NotificationStep() {
 
       // Navigate to tabs after 2 seconds
       setTimeout(() => {
-        router.replace("/(tabs)");
+        router.replace("/(mother-tabs)");
       }, 2000);
     } catch (error) {
       console.error("Error saving notification preference:", error);
       // Still navigate even if saving fails
-      router.replace("/(tabs)");
+      router.replace("/(mother-tabs)");
     }
   };
 
   const handleSkip = () => {
     // Just navigate without saving notification preference
-    router.replace("/(tabs)");
+    router.replace("/(mother-tabs)");
   };
 
   return (

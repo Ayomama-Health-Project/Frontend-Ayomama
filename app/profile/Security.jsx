@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { useTranslation } from "../../utils/translator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ios = Platform.OS === "ios";
 
@@ -47,7 +48,7 @@ export default function Security() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="flex-1 bg-[#FCFCFC]">
+      <SafeAreaView className="flex-1 bg-[#FCFCFC]">
         {/* Gradient Background at Top */}
         <LinearGradient
           colors={["#BCF2E9", "#FCFCFC"]}
@@ -64,7 +65,7 @@ export default function Security() {
           {/* Header with Back Button and Title */}
           <View
             className="px-6 flex-row items-center"
-            style={{ paddingTop: ios ? 64 : 76 }}
+            style={{ paddingTop: 16 }}
           >
             <TouchableOpacity
               onPress={handleBack}
@@ -175,7 +176,7 @@ export default function Security() {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 }

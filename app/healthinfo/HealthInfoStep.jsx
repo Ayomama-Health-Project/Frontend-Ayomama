@@ -51,7 +51,7 @@ export default function HealthInfoStep() {
   const proceedText = useTranslation("Proceed");
   const profileCompleteText = useTranslation("Profile Complete!");
   const infoSavedText = useTranslation(
-    "Your information has been saved successfully"
+    "Your information has been saved successfully",
   );
   const updateFailedText = useTranslation("Update Failed");
   const failedToSaveText = useTranslation("Failed to save your information");
@@ -145,7 +145,7 @@ export default function HealthInfoStep() {
 
       // Navigate to healthcare dashboard after success
       setTimeout(() => {
-        router.replace("/healthworker/dashboard");
+        router.replace("/(healthworker-tabs)");
       }, 2000);
     } else {
       setError(result.error || failedToSaveText);

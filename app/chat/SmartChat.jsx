@@ -17,6 +17,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
 import StreamedMessage from "../../components/chat/StreamedMessage";
 import TypingIndicator from "../../components/chat/TypingIndicator";
 import useAiStore from "../../store/useAiStore";
@@ -48,11 +49,11 @@ export default function SmartChat() {
   const smartChatText = useTranslation("Smart Chat");
   const storageAlmostFullText = useTranslation("Storage Almost Full");
   const clearOldMessagesText = useTranslation(
-    "Consider clearing old messages to free up space"
+    "Consider clearing old messages to free up space",
   );
   const storageFullText = useTranslation("Storage Full");
   const storageFullMessageText = useTranslation(
-    "Your chat history has reached the maximum storage limit. Please clear some messages to continue chatting."
+    "Your chat history has reached the maximum storage limit. Please clear some messages to continue chatting.",
   );
   const cancelText = useTranslation("Cancel");
   const clearChatText = useTranslation("Clear Chat");
@@ -62,28 +63,28 @@ export default function SmartChat() {
   const noMessagesText = useTranslation("There are no messages to clear");
   const clearChatHistoryText = useTranslation("Clear Chat History");
   const clearConfirmText = useTranslation(
-    "Are you sure you want to clear all chat messages? This action cannot be undone."
+    "Are you sure you want to clear all chat messages? This action cannot be undone.",
   );
   const clearText = useTranslation("Clear");
   const chatDeletedText = useTranslation("Your chat history has been deleted");
   const connectionErrorText = useTranslation("Connection Error");
   const failedToSendText = useTranslation(
-    "Failed to send message. Please try again."
+    "Failed to send message. Please try again.",
   );
   const comingSoonText = useTranslation("Coming Soon");
   const attachmentSoonText = useTranslation(
-    "Attachment feature will be available soon"
+    "Attachment feature will be available soon",
   );
   const voiceSoonText = useTranslation(
-    "Voice input feature will be available soon"
+    "Voice input feature will be available soon",
   );
   const justNowText = useTranslation("Just now");
   const aiGreetingText = useTranslation("Hi! I'm Favour, your AI assistant");
   const aiDescriptionText = useTranslation(
-    "Ask me anything about pregnancy, health tips, or your daily routine"
+    "Ask me anything about pregnancy, health tips, or your daily routine",
   );
   const inputPlaceholderText = useTranslation(
-    "Ask anything about your pregnancy..."
+    "Ask anything about your pregnancy...",
   );
 
   useEffect(() => {
@@ -222,7 +223,7 @@ export default function SmartChat() {
           },
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -386,7 +387,7 @@ export default function SmartChat() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="flex-1">
+      <SafeAreaView className="flex-1">
         {/* Gradient Background */}
         <LinearGradient
           colors={["#B5FFFC", "#FFDEE9"]}
@@ -407,7 +408,7 @@ export default function SmartChat() {
           {/* Header */}
           <View
             className="px-6 flex-row items-center justify-between"
-            style={{ paddingTop: ios ? 64 : 76 }}
+            style={{ paddingTop: 16 }}
           >
             <TouchableOpacity
               onPress={handleBack}
@@ -523,7 +524,7 @@ export default function SmartChat() {
                             shadowOffset: { width: 0, height: 1 },
                             shadowOpacity: 0.1,
                             shadowRadius: 2,
-                                      }}
+                          }}
                         >
                           <TypingIndicator />
                         </View>
@@ -591,7 +592,7 @@ export default function SmartChat() {
           </View>
         </KeyboardAvoidingView>
         <Toast />
-      </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 }

@@ -328,7 +328,7 @@ const useAuthStore = create((set, get) => ({
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       console.log("Antenatal data submission response:", response.data);

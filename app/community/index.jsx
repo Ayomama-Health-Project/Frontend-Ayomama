@@ -17,6 +17,7 @@ import CommentInputModal from "../../components/community/CommentInputModal";
 import ReplyModal from "../../components/community/ReplyModal";
 import ViewCommentsModal from "../../components/community/ViewCommentsModal";
 import { useTranslation } from "../../utils/translator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const isIOS = Platform.OS === "ios";
 
@@ -32,10 +33,10 @@ export default function Community() {
   const commentPostedText = useTranslation("Your comment has been posted");
   const messageSentText = useTranslation("Message sent! 📨");
   const messagePostedText = useTranslation(
-    "Your message has been posted to the community"
+    "Your message has been posted to the community",
   );
   const shareThoughtsText = useTranslation(
-    "Share your thoughts with other mothers..."
+    "Share your thoughts with other mothers...",
   );
   const repliesText = useTranslation("Replies");
   const replyText = useTranslation("Reply");
@@ -139,8 +140,8 @@ export default function Community() {
                 ? post.likesCount - 1
                 : post.likesCount + 1,
             }
-          : post
-      )
+          : post,
+      ),
     );
   };
 
@@ -187,8 +188,8 @@ export default function Community() {
                 replies: [...post.replies, newReply],
                 repliesCount: post.repliesCount + 1,
               }
-            : post
-        )
+            : post,
+        ),
       );
 
       Toast.show({
@@ -226,8 +227,8 @@ export default function Community() {
                 comments: [...post.comments, newComment],
                 commentsCount: post.commentsCount + 1,
               }
-            : post
-        )
+            : post,
+        ),
       );
 
       Toast.show({
@@ -263,14 +264,12 @@ export default function Community() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
     >
-      <View className="flex-1 bg-[#FCFCFC]">
-        <StatusBar barStyle="dark-content" />
-
+      <SafeAreaView className="flex-1 bg-[#FCFCFC]">
         {/* Fixed Header */}
         <View
           className="bg-white"
           style={{
-            paddingTop: isIOS ? 50 : StatusBar.currentHeight || 24,
+            paddingTop: 16,
             paddingBottom: 16,
             paddingHorizontal: 24,
             shadowColor: "#000",
@@ -505,7 +504,7 @@ export default function Community() {
             setSelectedPost(null);
           }}
         />
-      </View>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 }

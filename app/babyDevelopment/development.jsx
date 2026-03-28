@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useTranslation } from "../../utils/translator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ios = Platform.OS === "ios";
 
@@ -21,17 +22,17 @@ export default function BabyDevelopment() {
   const weekMilestonesText = useTranslation("Week 18 Milestones");
   const milestone1Text = useTranslation("Your baby can now hear sounds 🎉");
   const milestone2Text = useTranslation(
-    "Your baby's finger and toes are growing 🎉"
+    "Your baby's finger and toes are growing 🎉",
   );
   const milestone3Text = useTranslation("Your baby can move actively 🎉");
   const babyWeightText = useTranslation(
-    "Your baby now weighs about 900g and is around 36cm long"
+    "Your baby now weighs about 900g and is around 36cm long",
   );
   const healthTipText = useTranslation(
-    "You might notice more pain this week, try gentle walk and keep hydrated"
+    "You might notice more pain this week, try gentle walk and keep hydrated",
   );
   const nutritionTipText = useTranslation(
-    "Add fruit like pawpaw and vegetable like spinanach to your meal"
+    "Add fruit like pawpaw and vegetable like spinanach to your meal",
   );
 
   const handleBack = () => {
@@ -39,12 +40,12 @@ export default function BabyDevelopment() {
   };
 
   return (
-    <View className="flex-1 bg-[#FCFCFC]">
+    <SafeAreaView className="flex-1 bg-[#FCFCFC]">
       {/* Fixed Header */}
       <View
         className="px-6 flex-row items-center justify-between absolute top-0 left-0 right-0 z-10"
         style={{
-          paddingTop: ios ? 64 : 76,
+          paddingTop: 16,
           paddingBottom: 16,
           backgroundColor: "white",
         }}
@@ -202,6 +203,6 @@ export default function BabyDevelopment() {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

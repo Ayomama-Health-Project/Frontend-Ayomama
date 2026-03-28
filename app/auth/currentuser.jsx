@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
 import useAuthStore from "../../store/useAuthStore";
 import useAuthWorkerStore from "../../store/useAuthWorkerStore";
 import { useTranslation } from "../../utils/translator";
@@ -54,7 +55,7 @@ const CurrentUser = () => {
   const redirectingText = useTranslation("Redirecting to home...");
   const logoutTitleText = useTranslation("Logout");
   const logoutMessageText = useTranslation(
-    "Are you sure you want to logout? You can login with another account."
+    "Are you sure you want to logout? You can login with another account.",
   );
   const cancelText = useTranslation("Cancel");
   const loggedOutText = useTranslation("Logged Out");
@@ -66,7 +67,7 @@ const CurrentUser = () => {
   useEffect(() => {
     // If not authenticated, redirect to login
     if (!isLoading && !isAuthenticated) {
-      router.replace("/auth/login");
+      router.replace("/auth/mother/login");
     }
   }, [isLoading, isAuthenticated, router]);
 
@@ -98,9 +99,9 @@ const CurrentUser = () => {
     setTimeout(() => {
       // Navigate to appropriate dashboard based on user type
       if (isHealthcareWorker) {
-        router.replace("/healthworker/dashboard");
+        router.replace("/(healthworker-tabs)");
       } else {
-        router.replace("/(tabs)");
+        router.replace("/(mother-tabs)");
       }
     }, 1500);
   };
@@ -126,9 +127,9 @@ const CurrentUser = () => {
           setTimeout(() => {
             // Navigate to appropriate login page based on user type
             if (isHealthcareWorker) {
-              router.replace("/auth/healthcare/login");
+              router.replace("/auth/healthworker/login");
             } else {
-              router.replace("/auth/login");
+              router.replace("/auth/mother/login");
             }
           }, 2000);
         },
@@ -138,16 +139,16 @@ const CurrentUser = () => {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#FCFCFC]">
+      <SafeAreaView className="flex-1 items-center justify-center bg-[#FCFCFC]">
         <ActivityIndicator size="large" color="#006D5B" />
-        <Text className="mt-2 text-gray-600">{loadingUserText}</Text>
-      </View>
+        <Text className="pt-2 text-gray-600">{loadingUserText}</Text>
+      </SafeAreaView>
     );
   }
 
   if (!isAuthenticated || !currentUser) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#FCFCFC] p-6">
+      <SafeAreaView className="flex-1 items-center justify-center bg-[#FCFCFC] p-6">
         <Text className="text-red-500 text-lg mb-4">{noUserText}</Text>
         <TouchableOpacity
           className="bg-[#006D5B] px-6 py-3 rounded-2xl"
@@ -155,15 +156,15 @@ const CurrentUser = () => {
         >
           <Text className="text-white font-semibold">{goToLoginText}</Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-[#FCFCFC] px-6">
+    <SafeAreaView className="flex-1 bg-[#FCFCFC] px-6">
       <View className="flex-1">
         {/* Logo */}
-        <View className="mt-5 items-start">
+        <View className="items-start">
           <Image
             source={require("../../assets/images/AyomamaLogo.png")}
             className="w-24 h-24"
@@ -172,7 +173,7 @@ const CurrentUser = () => {
         </View>
 
         {/* Title */}
-        <Text className="text-2xl font-bold text-left mt-6 mb-2">
+        <Text className="text-2xl font-bold text-left mb-2">
           {welcomeBackText},{" "}
           {isHealthcareWorker ? currentUser.fullName : currentUser.name}!
         </Text>
@@ -225,7 +226,7 @@ const CurrentUser = () => {
 
         {/* Go to Home Button */}
         <TouchableOpacity
-          className="bg-[#006D5B] py-5 rounded-2xl mt-2"
+          className="bg-[#006D5B] py-5 rounded-2xl mb-2"
           onPress={handleGoToHome}
         >
           <Text className="text-white text-center font-bold text-base">
@@ -244,7 +245,7 @@ const CurrentUser = () => {
 
       {/* Toast component */}
       <Toast />
-    </View>
+    </SafeAreaView>
   );
 };
 

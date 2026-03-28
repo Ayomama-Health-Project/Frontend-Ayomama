@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { FlatList, Platform, Text, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "../utils/translator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ios = Platform.OS === "ios";
 
@@ -11,16 +12,16 @@ export default function Notifications() {
   // Translate all text
   const notificationText = useTranslation("Notification");
   const ironSupplementText = useTranslation(
-    "Time for your iron supplement, your glow up fuel"
+    "Time for your iron supplement, your glow up fuel",
   );
   const hydrationText = useTranslation(
-    "8 glasses today, mama! Hydration = happy baby"
+    "8 glasses today, mama! Hydration = happy baby",
   );
   const walkTimeText = useTranslation(
-    "Walk time! Even a few steps count toward strength"
+    "Walk time! Even a few steps count toward strength",
   );
   const clinicVisitText = useTranslation(
-    "Clinic visit tomorrow let's stay ready and steady"
+    "Clinic visit tomorrow let's stay ready and steady",
   );
 
   // Sample notification data
@@ -102,12 +103,12 @@ export default function Notifications() {
   );
 
   return (
-    <View className="flex-1 bg-[#FCFCFC]">
+    <SafeAreaView className="flex-1 bg-[#FCFCFC]">
       {/* Header */}
       <View
         className="bg-white border-b border-gray-100"
         style={{
-          paddingTop: ios ? 60 : 40,
+          paddingTop: 16,
           paddingBottom: 16,
           paddingHorizontal: 24,
           shadowColor: "#000",
@@ -140,6 +141,6 @@ export default function Notifications() {
           paddingTop: 8,
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }

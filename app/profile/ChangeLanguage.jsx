@@ -8,6 +8,7 @@ import useAuthStore from "../../store/useAuthStore";
 import useAuthWorkerStore from "../../store/useAuthWorkerStore";
 import useTranslatorStore from "../../store/useTranslatorStore";
 import { useTranslation } from "../../utils/translator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ios = Platform.OS === "ios";
 
@@ -87,7 +88,7 @@ export default function ChangeLanguage() {
   };
 
   return (
-    <View className="flex-1 bg-[#FCFCFC]">
+    <SafeAreaView className="flex-1 bg-[#FCFCFC]">
       {/* Gradient Background at Top */}
       <LinearGradient
         colors={["#BCF2E9", "#FCFCFC"]}
@@ -102,10 +103,7 @@ export default function ChangeLanguage() {
 
       <View className="flex-1">
         {/* Header with Back Button and Title */}
-        <View
-          className="px-6 flex-row items-center"
-          style={{ paddingTop: ios ? 64 : 76 }}
-        >
+        <View className="px-6 flex-row items-center" style={{ paddingTop: 16 }}>
           <TouchableOpacity
             onPress={handleBack}
             className="w-12 h-12 rounded-full bg-white items-center justify-center"
@@ -159,6 +157,6 @@ export default function ChangeLanguage() {
           ))}
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
