@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PersonalInfoWithClinicStep from "../../../components/healthworkerOnboarding/PersonalInfoWithClinicStep";
 import PersonalInfoWithoutClinicStep from "../../../components/healthworkerOnboarding/PersonalInfoWithoutClinicStep";
 import BackgroundDecor from "../../../components/onboardingShared/BackgroundDecor";
+import WelcomeProfileStep from "../../../components/onboardingShared/WelcomeProfileStep";
 import LanguageStep from "../../../components/pregnantMotherOnboarding/LanguageStep";
 import NotificationStep from "../../../components/pregnantMotherOnboarding/NotificationStep";
 import {
@@ -62,8 +63,10 @@ export default function HealthworkerOnboarding() {
 
   const canProceed =
     step === 0
-      ? Boolean(selectedLanguage)
+      ? true
       : step === 1
+      ? Boolean(selectedLanguage)
+      : step === 2
         ? profileType === "with-clinic"
           ? Boolean(
               profile.fullName.trim() &&
@@ -112,7 +115,7 @@ export default function HealthworkerOnboarding() {
     });
     setStep(
       account.onboardingProgress?.flow === "healthworker_onboarding"
-        ? Math.min(account.onboardingProgress?.currentStep || 0, 2)
+        ? Math.min(account.onboardingProgress?.currentStep || 0, 3)
         : 0,
     );
     hasHydratedRef.current = true;
@@ -190,12 +193,12 @@ export default function HealthworkerOnboarding() {
     if (!canProceed) return;
     try {
       setIsSubmittingStep(true);
-      if (step === 0) {
+      if (step === 1) {
         await setAppLanguage(selectedLanguage);
         await updateLanguagePreference(selectedLanguage);
       }
 
-      if (step === 2) {
+      if (step === 3) {
         await finishOnboarding();
         return;
       }
@@ -231,6 +234,10 @@ export default function HealthworkerOnboarding() {
           showsVerticalScrollIndicator={false}
         >
           {step === 0 ? (
+            <WelcomeProfileStep />
+          ) : null}
+
+          {step === 1 ? (
             <LanguageStep
               selectedLanguage={selectedLanguage}
               setSelectedLanguage={setSelectedLanguage}
@@ -238,7 +245,7 @@ export default function HealthworkerOnboarding() {
             />
           ) : null}
 
-          {step === 1 ? (
+          {step === 2 ? (
             profileType === "with-clinic" ? (
               <PersonalInfoWithClinicStep
                 values={profile}
@@ -252,7 +259,7 @@ export default function HealthworkerOnboarding() {
             )
           ) : null}
 
-          {step === 2 ? (
+          {step === 3 ? (
             <NotificationStep
               onEnableNotifications={enableNotificationsAndFinish}
               onSkipNotifications={finishOnboarding}
@@ -267,7 +274,7 @@ export default function HealthworkerOnboarding() {
         </ScrollView>
 
         <View className="px-5 pb-7 pt-2">
-          {step === 2 ? null : (
+          {step === 3 ? null : (
             <View className="flex-row items-center gap-3">
               {step > 0 ? (
                 <>

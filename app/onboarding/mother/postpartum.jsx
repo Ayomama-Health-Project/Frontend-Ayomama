@@ -6,6 +6,7 @@ import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PickerModal from "../../../components/PickerModal";
 import BackgroundDecor from "../../../components/onboardingShared/BackgroundDecor";
+import WelcomeProfileStep from "../../../components/onboardingShared/WelcomeProfileStep";
 import LanguageStep from "../../../components/pregnantMotherOnboarding/LanguageStep";
 import NotificationStep from "../../../components/pregnantMotherOnboarding/NotificationStep";
 import {
@@ -132,8 +133,10 @@ export default function PostpartumOnboarding() {
 
   const canProceed =
     step === 0
-      ? Boolean(selectedLanguage)
+      ? true
       : step === 1
+      ? Boolean(selectedLanguage)
+      : step === 2
         ? Boolean(
             fullName.trim() &&
               address.trim() &&
@@ -144,19 +147,19 @@ export default function PostpartumOnboarding() {
                   contact.relationship,
               ),
           )
-        : step === 2
+        : step === 3
           ? Boolean(babyAge && babyDob.month && babyDob.day && babyDob.year)
-          : step === 3
+          : step === 4
             ? Boolean(
                 birthInfo.hospital.trim() &&
                   birthInfo.immunization &&
                   birthInfo.weight.trim(),
               )
-            : step === 4
+            : step === 5
               ? true
-              : step === 5
+              : step === 6
                 ? feelings.length > 0
-                : step === 6
+                : step === 7
                   ? Boolean(supportSelection)
                   : true;
 
@@ -264,7 +267,7 @@ export default function PostpartumOnboarding() {
 
   useEffect(() => {
     let mounted = true;
-    if (!account || step !== 7 || professionals.length > 0) return undefined;
+    if (!account || step !== 8 || professionals.length > 0) return undefined;
 
     const loadProfessionals = async () => {
       try {
@@ -307,7 +310,7 @@ export default function PostpartumOnboarding() {
     if (!canProceed) return;
     try {
       setIsSubmittingStep(true);
-      if (step === 0) {
+      if (step === 1) {
         await setLanguage(selectedLanguage);
         await updateLanguagePreference(selectedLanguage);
       }
@@ -433,6 +436,10 @@ export default function PostpartumOnboarding() {
           showsVerticalScrollIndicator={false}
         >
           {step === 0 ? (
+            <WelcomeProfileStep />
+          ) : null}
+
+          {step === 1 ? (
             <LanguageStep
               selectedLanguage={selectedLanguage}
               setSelectedLanguage={setSelectedLanguage}
@@ -440,7 +447,7 @@ export default function PostpartumOnboarding() {
             />
           ) : null}
 
-          {step === 1 ? (
+          {step === 2 ? (
             <PersonalInfoStep
               fullName={fullName}
               setFullName={setFullName}
@@ -456,7 +463,7 @@ export default function PostpartumOnboarding() {
             />
           ) : null}
 
-          {step === 2 ? (
+          {step === 3 ? (
             <BabyDetailsStep
               babyAge={babyAge}
               setBabyAge={setBabyAge}
@@ -469,28 +476,28 @@ export default function PostpartumOnboarding() {
             />
           ) : null}
 
-          {step === 3 ? (
+          {step === 4 ? (
             <BabyBirthInformationStep
               birthInfo={birthInfo}
               setBirthInfo={setBirthInfo}
             />
           ) : null}
 
-          {step === 4 ? (
+          {step === 5 ? (
             <BabyNicknameStep
               nickname={babyNickname}
               setNickname={setBabyNickname}
             />
           ) : null}
 
-          {step === 5 ? (
+          {step === 6 ? (
             <MotherRecoveryStep
               feelings={feelings}
               toggleFeeling={toggleFeeling}
             />
           ) : null}
 
-          {step === 6 ? (
+          {step === 7 ? (
             <SupportStep
               supportSelection={supportSelection}
               setSupportSelection={setSupportSelection}
@@ -500,7 +507,7 @@ export default function PostpartumOnboarding() {
             />
           ) : null}
 
-          {step === 7 ? (
+          {step === 8 ? (
             <FollowProfessionalStep
               followedProfessionals={followedProfessionals}
               toggleProfessional={toggleProfessional}
@@ -509,7 +516,7 @@ export default function PostpartumOnboarding() {
             />
           ) : null}
 
-          {step === 8 ? (
+          {step === 9 ? (
             <NotificationStep
               onEnableNotifications={enableNotificationsAndFinish}
               onSkipNotifications={finishOnboarding}
@@ -524,7 +531,7 @@ export default function PostpartumOnboarding() {
         </ScrollView>
 
         <View className="px-5 pb-7 pt-2">
-          {step === 8 ? null : step === 2 ? (
+          {step === 9 ? null : step === 3 ? (
             <SecondaryButton label={backText} onPress={goBack} />
           ) : (
             <View className="flex-row items-center gap-3">

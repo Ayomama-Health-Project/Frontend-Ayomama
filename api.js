@@ -1,5 +1,11 @@
 import axios from "axios";
+import { router } from "expo-router";
+import Toast from "react-native-toast-message";
 import { clearStoredTokens, getStoredTokens } from "./utils/authStorage";
+import { clearSession } from "./store/authSlice";
+import { store } from "./store";
+
+let isHandlingUnauthorized = false;
 
 const api = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000",
@@ -54,7 +60,21 @@ api.interceptors.response.use(
     }
 
     if (error.response?.status === 401) {
+      if (!isHandlingUnauthorized) {
+        isHandlingUnauthorized = true;
+        Toast.show({
+          type: "error",
+          text1: "Session expired",
+          text2: "Please log back in to continue.",
+          position: "top",
+        });
+      }
       await clearStoredTokens();
+      store.dispatch(clearSession());
+      router.replace("/Onboarding");
+      setTimeout(() => {
+        isHandlingUnauthorized = false;
+      }, 1000);
     }
     return Promise.reject(error);
   }

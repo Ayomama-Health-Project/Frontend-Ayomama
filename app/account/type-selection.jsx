@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useRedirectAuthenticatedUser from "../../hooks/useRedirectAuthenticatedUser";
+import { getAccountAppRoute } from "../../utils/authRoutes";
 import { useTranslation } from "../../utils/translator";
 
 const healthcareImage = require("../../assets/images/healthcare.png");
@@ -58,7 +59,7 @@ function SelectionCard({ id, image, title, description, selected, onPress }) {
 
 export default function AccountTypeSelection() {
   const router = useRouter();
-  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser();
+  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser(getAccountAppRoute);
   const params = useLocalSearchParams();
   const account = typeof params.account === "string" ? params.account : "";
   const action = typeof params.action === "string" ? params.action : "signup";

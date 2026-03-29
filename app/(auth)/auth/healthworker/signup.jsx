@@ -25,7 +25,7 @@ const HealthcareSignUp = () => {
   const router = useRouter();
   const { type } = useLocalSearchParams();
   const { registerHealthWorker, isLoading } = useAppAuth();
-  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser();
+  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser(getAccountAppRoute);
 
   // form states
   const [email, setEmail] = useState("");

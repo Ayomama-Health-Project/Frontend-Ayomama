@@ -92,6 +92,7 @@ export const PROFESSIONALS = [
 ];
 
 export const STEP_TITLES = [
+  "Welcome",
   "Language preferred",
   "Personal information",
   "Pregnancy Setup",

@@ -5,6 +5,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PickerModal from "../../../components/PickerModal";
+import WelcomeProfileStep from "../../../components/onboardingShared/WelcomeProfileStep";
 import AntenatalStep from "../../../components/pregnantMotherOnboarding/AntenatalStep";
 import BackgroundDecor from "../../../components/onboardingShared/BackgroundDecor";
 import FollowProfessionalStep from "../../../components/pregnantMotherOnboarding/FollowProfessionalStep";
@@ -126,8 +127,10 @@ export default function PregnantOnboarding() {
 
   const canProceed =
     step === 0
-      ? Boolean(selectedLanguage)
+      ? true
       : step === 1
+      ? Boolean(selectedLanguage)
+      : step === 2
       ? Boolean(
           fullName.trim() &&
             address.trim() &&
@@ -139,7 +142,7 @@ export default function PregnantOnboarding() {
                 contact.relationship,
             ),
         )
-      : step === 2
+      : step === 3
         ? pregnancyType === "just_found"
           ? true
           : pregnancyType === "weeks"
@@ -147,9 +150,9 @@ export default function PregnantOnboarding() {
             : Boolean(
                 pregnancyType && dateData.month && dateData.day && dateData.year,
               )
-        : step === 3
+        : step === 4
           ? Boolean(startedAntenatal)
-          : step === 4
+          : step === 5
             ? Boolean(supportSelection)
             : true;
 
@@ -259,7 +262,7 @@ export default function PregnantOnboarding() {
 
   useEffect(() => {
     let mounted = true;
-    if (!account || step !== 6 || professionals.length > 0) return undefined;
+    if (!account || step !== 7 || professionals.length > 0) return undefined;
 
     const loadProfessionals = async () => {
       try {
@@ -302,7 +305,7 @@ export default function PregnantOnboarding() {
     if (!canProceed) return;
     try {
       setIsSubmittingStep(true);
-      if (step === 0) {
+      if (step === 1) {
         await setLanguage(selectedLanguage);
         await updateLanguagePreference(selectedLanguage);
       }
@@ -425,6 +428,10 @@ export default function PregnantOnboarding() {
           showsVerticalScrollIndicator={false}
         >
           {step === 0 ? (
+            <WelcomeProfileStep />
+          ) : null}
+
+          {step === 1 ? (
             <LanguageStep
               selectedLanguage={selectedLanguage}
               setSelectedLanguage={setSelectedLanguage}
@@ -432,7 +439,7 @@ export default function PregnantOnboarding() {
             />
           ) : null}
 
-          {step === 1 ? (
+          {step === 2 ? (
             <PersonalInfoStep
               fullName={fullName}
               setFullName={setFullName}
@@ -448,7 +455,7 @@ export default function PregnantOnboarding() {
             />
           ) : null}
 
-          {step === 2 ? (
+          {step === 3 ? (
             <PregnancyStep
               pregnancyType={pregnancyType}
               setPregnancyType={setPregnancyType}
@@ -461,14 +468,14 @@ export default function PregnantOnboarding() {
             />
           ) : null}
 
-          {step === 3 ? (
+          {step === 4 ? (
             <AntenatalStep
               startedAntenatal={startedAntenatal}
               setStartedAntenatal={setStartedAntenatal}
             />
           ) : null}
 
-          {step === 4 ? (
+          {step === 5 ? (
             <SupportStep
               supportSelection={supportSelection}
               setSupportSelection={setSupportSelection}
@@ -478,14 +485,14 @@ export default function PregnantOnboarding() {
             />
           ) : null}
 
-          {step === 5 ? (
+          {step === 6 ? (
             <QuickSetupStep
               selections={quickSelections}
               toggleSelection={toggleQuickSelection}
             />
           ) : null}
 
-          {step === 6 ? (
+          {step === 7 ? (
             <FollowProfessionalStep
               followedProfessionals={followedProfessionals}
               toggleProfessional={toggleProfessional}
@@ -494,7 +501,7 @@ export default function PregnantOnboarding() {
             />
           ) : null}
 
-          {step === 7 ? (
+          {step === 8 ? (
             <NotificationStep
               onEnableNotifications={enableNotificationsAndFinish}
               onSkipNotifications={finishOnboarding}
@@ -507,7 +514,7 @@ export default function PregnantOnboarding() {
         </ScrollView>
 
         <View className="px-5 pb-7 pt-2">
-          {step === 7 ? null : step === 2 ? (
+          {step === 8 ? null : step === 3 ? (
             <SecondaryButton label={backText} onPress={goBack} />
           ) : (
             <View className="flex-row items-center gap-3">

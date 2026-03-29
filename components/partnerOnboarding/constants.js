@@ -1,4 +1,5 @@
 export const STEP_TITLES = [
+  "Welcome",
   "Language",
   "Personal information",
   "Quick setup",

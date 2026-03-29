@@ -25,7 +25,7 @@ const PartnerSignUp = () => {
   const router = useRouter();
   const { type, inviteToken: inviteTokenParam } = useLocalSearchParams();
   const { registerPartner, isLoading } = useAppAuth();
-  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser();
+  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser(getAccountAppRoute);
 
   // form states
   const [email, setEmail] = useState("");
@@ -34,7 +34,6 @@ const PartnerSignUp = () => {
   const [inviteToken, setInviteToken] = useState(
     typeof inviteTokenParam === "string" ? inviteTokenParam : "",
   );
-  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -87,7 +86,6 @@ const PartnerSignUp = () => {
   };
 
   const handleSignUp = async () => {
-    setError("");
     try {
       const result = await registerPartner({
         email,
@@ -105,10 +103,14 @@ const PartnerSignUp = () => {
       });
       router.replace(getAccountAppRoute(result?.account));
     } catch (errorResponse) {
-      setError(
-        errorResponse?.response?.data?.detail ||
-          "We could not create or link this partner account.",
-      );
+      const problem = errorResponse?.response?.data;
+      Toast.show({
+        type: "error",
+        text1: problem?.title || "Sign up failed",
+        text2:
+          problem?.detail || "We could not create or link this partner account.",
+        position: "top",
+      });
     }
   };
 
@@ -186,7 +188,7 @@ const PartnerSignUp = () => {
               <TextInput
                 placeholder={inviteTokenPlaceholder}
                 value={inviteToken}
-                onChangeText={setInviteToken}
+                onChangeText={(value) => setInviteToken(normalizeInviteToken(value))}
                 className="w-full border border-gray-300 rounded-2xl px-5 py-4"
                 placeholderTextColor="#9CA3AF"
                 autoCapitalize="none"
@@ -239,11 +241,6 @@ const PartnerSignUp = () => {
                 />
               </TouchableOpacity>
             </View>
-
-            {/* Error Message */}
-            {error ? (
-              <Text className="text-red-500 text-sm mb-2">{error}</Text>
-            ) : null}
 
             {/* Sign Up Button */}
             <TouchableOpacity

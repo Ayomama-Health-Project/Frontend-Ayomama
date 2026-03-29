@@ -25,7 +25,7 @@ const SignUp = () => {
   const router = useRouter();
   const { type } = useLocalSearchParams();
   const { registerMother, isLoading } = useAppAuth();
-  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser();
+  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser(getAccountAppRoute);
 
   // form states
   const [email, setEmail] = useState("");

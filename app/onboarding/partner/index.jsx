@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackgroundDecor from "../../../components/onboardingShared/BackgroundDecor";
+import WelcomeProfileStep from "../../../components/onboardingShared/WelcomeProfileStep";
 import LanguageStep from "../../../components/pregnantMotherOnboarding/LanguageStep";
 import NotificationStep from "../../../components/pregnantMotherOnboarding/NotificationStep";
 import {
@@ -59,10 +60,12 @@ export default function PartnerOnboarding() {
 
   const canProceed =
     step === 0
-      ? Boolean(selectedLanguage)
+      ? true
       : step === 1
+      ? Boolean(selectedLanguage)
+      : step === 2
         ? Boolean(fullName.trim() && relationship.trim())
-        : step === 2
+        : step === 3
           ? quickSelections.length > 0
         : true;
 
@@ -166,7 +169,7 @@ export default function PartnerOnboarding() {
     if (!canProceed) return;
     try {
       setIsSubmittingStep(true);
-      if (step === 0) {
+      if (step === 1) {
         await setLanguage(selectedLanguage);
         await updateLanguagePreference(selectedLanguage);
       }
@@ -207,6 +210,10 @@ export default function PartnerOnboarding() {
           showsVerticalScrollIndicator={false}
         >
           {step === 0 ? (
+            <WelcomeProfileStep />
+          ) : null}
+
+          {step === 1 ? (
             <LanguageStep
               selectedLanguage={selectedLanguage}
               setSelectedLanguage={setSelectedLanguage}
@@ -214,7 +221,7 @@ export default function PartnerOnboarding() {
             />
           ) : null}
 
-          {step === 1 ? (
+          {step === 2 ? (
             <PersonalInfoStep
               fullName={fullName}
               setFullName={setFullName}
@@ -223,14 +230,14 @@ export default function PartnerOnboarding() {
             />
           ) : null}
 
-          {step === 2 ? (
+          {step === 3 ? (
             <QuickSetupStep
               selections={quickSelections}
               toggleSelection={toggleQuickSelection}
             />
           ) : null}
 
-          {step === 3 ? (
+          {step === 4 ? (
             <NotificationStep
               onEnableNotifications={enableNotificationsAndFinish}
               onSkipNotifications={finishOnboarding}
@@ -245,7 +252,7 @@ export default function PartnerOnboarding() {
         </ScrollView>
 
         <View className="px-5 pb-7 pt-2">
-          {step === 3 ? null : (
+          {step === 4 ? null : (
             <View className="flex-row items-center gap-3">
               {step > 0 ? (
                 <>

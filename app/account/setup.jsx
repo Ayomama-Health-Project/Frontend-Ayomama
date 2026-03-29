@@ -4,11 +4,12 @@ import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useRedirectAuthenticatedUser from "../../hooks/useRedirectAuthenticatedUser";
+import { getAccountAppRoute } from "../../utils/authRoutes";
 import { useTranslation } from "../../utils/translator";
 
 const AccountSetup = () => {
   const router = useRouter();
-  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser();
+  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser(getAccountAppRoute);
   const [selectedType, setSelectedType] = useState(null);
 
   const titleText = useTranslation("Account Setup");

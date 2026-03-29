@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useRedirectAuthenticatedUser from "../hooks/useRedirectAuthenticatedUser";
+import { getAccountAppRoute } from "../utils/authRoutes";
 import { useTranslation } from "../utils/translator";
 
 const { width } = Dimensions.get("window");
@@ -21,7 +22,7 @@ const Onboarding = () => {
   const flatListRef = useRef(null);
   const isTransitioning = useRef(false);
   const router = useRouter();
-  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser();
+  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser(getAccountAppRoute);
 
   // Translate all text
   const slide1Text = useTranslation(

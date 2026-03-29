@@ -254,7 +254,7 @@ const LogIn = () => {
                   {noAccountText}{" "}
                 </Text>
                 <TouchableOpacity
-                  onPress={() => router.push("/(auth)/auth/mother/signup")}
+                  onPress={() => router.push("/account/setup")}
                 >
                   <Text className="text-[#006D5B] font-bold">{signUpText}</Text>
                 </TouchableOpacity>

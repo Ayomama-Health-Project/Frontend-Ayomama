@@ -10,10 +10,10 @@ export function getAccountAppRoute(account) {
           ? "/onboarding/mother/postpartum"
           : "/onboarding/mother/pregnant";
       case "partner":
-        return "/onboarding/partner/index";
+        return "/onboarding/partner";
       case "health_worker":
         return {
-          pathname: "/onboarding/healthworker/index",
+          pathname: "/onboarding/healthworker",
           params: {
             type:
               account.healthWorkerType === "without_clinic"

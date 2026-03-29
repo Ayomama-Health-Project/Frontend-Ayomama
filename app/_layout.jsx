@@ -33,8 +33,8 @@ export default function RootLayout() {
         {/* Onboarding flows */}
         <Stack.Screen name="onboarding/mother/pregnant" options={{ gestureEnabled: false }} />
         <Stack.Screen name="onboarding/mother/postpartum" options={{ gestureEnabled: false }} />
-        <Stack.Screen name="onboarding/partner/index" options={{ gestureEnabled: false }} />
-        <Stack.Screen name="onboarding/healthworker/index" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="onboarding/partner" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="onboarding/healthworker" options={{ gestureEnabled: false }} />
         <Stack.Screen name="info/InfoCarousel" />
         <Stack.Screen name="info/LanguageStep" />
         <Stack.Screen name="info/InformationStep" />
