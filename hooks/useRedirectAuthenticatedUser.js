@@ -1,19 +1,19 @@
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import useAppAuth from "./useAppAuth";
+import { useSelector } from "react-redux";
 
 export default function useRedirectAuthenticatedUser() {
   const router = useRouter();
-  const { account, isLoading } = useAppAuth();
+  const { account, initialized } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (!initialized) return;
     if (account) {
       router.replace("/(auth)/auth/currentuser");
     }
-  }, [account, isLoading, router]);
+  }, [account, initialized, router]);
 
   return {
-    isCheckingAuthScreenAccess: isLoading || Boolean(account),
+    isCheckingAuthScreenAccess: !initialized || Boolean(account),
   };
 }

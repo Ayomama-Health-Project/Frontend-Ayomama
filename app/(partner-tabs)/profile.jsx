@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   ScrollView,
   Switch,
@@ -45,6 +46,7 @@ export default function PartnerProfile() {
   const { account, logout, saveNotificationToken, deleteNotificationToken } =
     useAppAuth();
   const [notificationsOn, setNotificationsOn] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const profileText = useTranslation("Profile");
   const notificationText = useTranslation("Notifications");
@@ -71,9 +73,10 @@ export default function PartnerProfile() {
         text: logoutText,
         style: "destructive",
         onPress: async () => {
+          setIsLoggingOut(true);
           await logout();
           Toast.show({ type: "success", text1: loggedOutText });
-          router.replace("/account/selection");
+          router.replace("/Onboarding");
         },
       },
     ]);
@@ -188,6 +191,7 @@ export default function PartnerProfile() {
           <TouchableOpacity
             onPress={handleLogout}
             className="bg-white rounded-2xl px-5 py-4 flex-row items-center"
+            disabled={isLoggingOut}
             style={{
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },
@@ -198,9 +202,18 @@ export default function PartnerProfile() {
             <View className="w-9 h-9 rounded-xl items-center justify-center mr-3 bg-red-50">
               <Ionicons name="log-out-outline" size={18} color="#EF4444" />
             </View>
-            <Text className="text-sm font-medium text-red-500">
-              {logoutText}
-            </Text>
+            {isLoggingOut ? (
+              <View className="flex-row items-center">
+                <ActivityIndicator size="small" color="#EF4444" />
+                <Text className="ml-2 text-sm font-medium text-red-500">
+                  {logoutText}
+                </Text>
+              </View>
+            ) : (
+              <Text className="text-sm font-medium text-red-500">
+                {logoutText}
+              </Text>
+            )}
           </TouchableOpacity>
 
           <View className="h-6" />

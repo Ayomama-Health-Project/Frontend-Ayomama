@@ -11,6 +11,8 @@ import {
   updateAccount,
 } from "../store/authSlice";
 
+let bootstrapPromise = null;
+
 function mapAccountToLegacyUser(account) {
   if (!account) return null;
   const profile = account.profile || {};
@@ -38,13 +40,18 @@ export default function useAppAuth() {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const authState = useSelector((state) => state.auth);
+  const shouldFetchMe =
+    Boolean(authState.accessToken) && authState.initialized && !authState.account;
 
   const meQuery = useQuery({
     queryKey: ["auth", "me", authState.accessToken],
     queryFn: authApi.fetchMe,
-    enabled: Boolean(authState.accessToken),
+    enabled: shouldFetchMe,
     retry: false,
     staleTime: 30_000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   const sessionMutation = useMutation({
@@ -80,53 +87,69 @@ export default function useAppAuth() {
   });
 
   const bootstrap = useCallback(async () => {
-    dispatch(setInitialized(false));
-    const stored = await getStoredTokens();
-
-    if (!stored.accessToken && !stored.refreshToken) {
-      dispatch(clearSession());
-      return null;
+    if (bootstrapPromise) {
+      return bootstrapPromise;
     }
 
-    dispatch(hydrateTokens(stored));
+    if (authState.initialized && authState.account && authState.accessToken) {
+      return authState.account;
+    }
 
-    try {
-      const account = await authApi.fetchMe();
-      dispatch(
-        setSession({
-          account,
-          accessToken: stored.accessToken,
-          refreshToken: stored.refreshToken,
-        }),
-      );
-      return account;
-    } catch (_error) {
-      if (!stored.refreshToken) {
-        await clearStoredTokens();
+    bootstrapPromise = (async () => {
+      dispatch(setInitialized(false));
+      const stored = await getStoredTokens();
+
+      if (!stored.accessToken && !stored.refreshToken) {
         dispatch(clearSession());
         return null;
       }
+
+      dispatch(hydrateTokens(stored));
 
       try {
-        const refreshed = await authApi.refresh({ refreshToken: stored.refreshToken });
-        await persistTokens(refreshed.tokens);
+        const account = await authApi.fetchMe();
         dispatch(
           setSession({
-            account: refreshed.account,
-            accessToken: refreshed.tokens.accessToken,
-            refreshToken: refreshed.tokens.refreshToken,
+            account,
+            accessToken: stored.accessToken,
+            refreshToken: stored.refreshToken,
           }),
         );
-        return refreshed.account;
-      } catch (_refreshError) {
-        await clearStoredTokens();
-        dispatch(clearSession());
-        return null;
+        return account;
+      } catch (_error) {
+        if (!stored.refreshToken) {
+          await clearStoredTokens();
+          dispatch(clearSession());
+          return null;
+        }
+
+        try {
+          const refreshed = await authApi.refresh({ refreshToken: stored.refreshToken });
+          await persistTokens(refreshed.tokens);
+          dispatch(
+            setSession({
+              account: refreshed.account,
+              accessToken: refreshed.tokens.accessToken,
+              refreshToken: refreshed.tokens.refreshToken,
+            }),
+          );
+          return refreshed.account;
+        } catch (_refreshError) {
+          await clearStoredTokens();
+          dispatch(clearSession());
+          return null;
+        }
+      } finally {
+        dispatch(setInitialized(true));
       }
+    })();
+
+    try {
+      return await bootstrapPromise;
     } finally {
-      dispatch(setInitialized(true));
+      bootstrapPromise = null;
     }
-  }, [dispatch]);
+  }, [authState.accessToken, authState.account, authState.initialized, dispatch]);
 
   const refreshUser = useCallback(async () => {
     const account = await authApi.fetchMe();

@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackgroundDecor from "../../../components/onboardingShared/BackgroundDecor";
 import useAppAuth from "../../../hooks/useAppAuth";
+import { useSelector } from "react-redux";
 import { useAppLanguage } from "../../../utils/appLanguage";
 import { getAccountAppRoute } from "../../../utils/authRoutes";
 import { useTranslation } from "../../../utils/translator";
@@ -21,6 +22,8 @@ import { useTranslation } from "../../../utils/translator";
 export default function CurrentUserScreen() {
   const router = useRouter();
   const { initializeAuth, logout } = useAppAuth();
+  const authAccount = useSelector((state) => state.auth.account);
+  const authInitialized = useSelector((state) => state.auth.initialized);
   const { language, setLanguage } = useAppLanguage();
   const [account, setAccount] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,6 +53,14 @@ export default function CurrentUserScreen() {
 
     const boot = async () => {
       try {
+        if (authInitialized && authAccount) {
+          setAccount(authAccount);
+          if (authAccount.language) {
+            await setLanguage(authAccount.language);
+          }
+          return;
+        }
+
         const nextAccount = await initializeAuth();
         if (!mounted) return;
 
@@ -74,7 +85,7 @@ export default function CurrentUserScreen() {
     return () => {
       mounted = false;
     };
-  }, [initializeAuth, router, setLanguage]);
+  }, [authAccount, authInitialized, initializeAuth, router, setLanguage]);
 
   const accountName =
     account?.profile?.fullName ||

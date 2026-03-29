@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Switch,
@@ -22,6 +23,7 @@ export default function HealthWorkerProfile() {
     useMockWorkerAuth();
   const [notificationEnabled, setNotificationEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Translate UI text
   const editText = useTranslation("Edit");
@@ -179,6 +181,7 @@ export default function HealthWorkerProfile() {
           text: logoutConfirmText,
           style: "destructive",
           onPress: async () => {
+            setIsLoggingOut(true);
             const result = await logout();
             if (result.success) {
               Toast.show({
@@ -189,11 +192,9 @@ export default function HealthWorkerProfile() {
                 visibilityTime: 2000,
               });
 
-              // Navigate to onboarding after logout
-              setTimeout(() => {
-                router.replace("/Onboarding");
-              }, 2000);
+              router.replace("/Onboarding");
             } else {
+              setIsLoggingOut(false);
               Toast.show({
                 type: "error",
                 text1: errorText,
@@ -363,13 +364,23 @@ export default function HealthWorkerProfile() {
           <TouchableOpacity
             onPress={handleLogout}
             className="bg-[#D7EEEA]/30 rounded-2xl mb-3 px-5 py-4 h-[60px] justify-center"
+            disabled={isLoggingOut}
           >
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center flex-1">
                 <Ionicons name="log-out-outline" size={20} color="#293231" />
-                <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  {logoutText}
-                </Text>
+                {isLoggingOut ? (
+                  <View className="ml-4 flex-row items-center">
+                    <ActivityIndicator size="small" color="#293231" />
+                    <Text className="ml-2 text-[16px] font-medium text-[#293231]">
+                      {logoutText}
+                    </Text>
+                  </View>
+                ) : (
+                  <Text className="text-[16px] font-medium text-[#293231] ml-4">
+                    {logoutText}
+                  </Text>
+                )}
               </View>
               <Ionicons name="chevron-forward" size={20} color="#293231" />
             </View>
