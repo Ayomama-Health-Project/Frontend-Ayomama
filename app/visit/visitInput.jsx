@@ -1,392 +1,127 @@
-import { Ionicons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import Toast from "react-native-toast-message";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import useMockVisits from "../../hooks/useMockVisits";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const VisitInput = () => {
-  const [visitDate, setVisitDate] = useState(null);
-  const [visitTime, setVisitTime] = useState(null);
-  const [duration, setDuration] = useState("");
+  const [visitDate, setVisitDate] = useState("dd/mm/yyyy");
+  const [visitTime, setVisitTime] = useState("00:00am");
+  const [duration, setDuration] = useState("30 mins");
   const [serviceType, setServiceType] = useState("Antenatal visit");
   const [hospitalName, setHospitalName] = useState("");
   const [healthcareProvider, setHealthcareProvider] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const { createSchedule } = useMockVisits();
-
-  const dismissKeyboard = () => Keyboard.dismiss();
-
-  const onChangeDate = (event, selectedDate) => {
-    setShowDatePicker(false);
-    if (selectedDate) setVisitDate(selectedDate);
-  };
-
-  const onChangeTime = (event, selectedTime) => {
-    setShowTimePicker(false);
-    if (selectedTime) setVisitTime(selectedTime);
-  };
-
-  const formatDate = (date) =>
-    date
-      ? date.toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
-      : "dd/mm/yyyy";
-
-  const formatTime = (time) =>
-    time
-      ? time.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false, // 🔹 backend expects HH:mm
-        })
-      : "00:00";
-
-  // ✅ Format date for backend (YYYY-MM-DD)
-  const formatDateForBackend = (date) => {
-    if (!date) return null;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  // ✅ Create proper reminderDateTime by combining date and time
-  const createReminderDateTime = (date, time) => {
-    if (!date || !time) return null;
-
-    const combined = new Date(date);
-    combined.setHours(time.getHours());
-    combined.setMinutes(time.getMinutes());
-    combined.setSeconds(0);
-    combined.setMilliseconds(0);
-
-    return combined;
-  };
-
-  const handleSave = async () => {
-    dismissKeyboard();
-
-    if (
-      !visitDate ||
-      !visitTime ||
-      !duration ||
-      !hospitalName ||
-      !healthcareProvider
-    ) {
+  const handleSave = () => {
+    if (!hospitalName || !healthcareProvider) {
       Toast.show({
         type: "error",
-        text1: "Missing Fields ⚠️",
+        text1: "Missing Fields",
         text2: "Please fill in all the required fields before saving.",
         position: "top",
       });
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      // ✅ Create proper reminderDateTime
-      const reminderDateTime = createReminderDateTime(visitDate, visitTime);
-
-      if (!reminderDateTime || isNaN(reminderDateTime.getTime())) {
-        throw new Error("Invalid date/time combination");
-      }
-
-      // ✅ Prepare visit data for backend
-      const visitData = {
-        visitDate: formatDateForBackend(visitDate), // YYYY-MM-DD format
-        visitTime: formatTime(visitTime), // HH:mm format
-        reminderDateTime: reminderDateTime.toISOString(), // ISO string for backend
-        duration: parseInt(duration),
-        doctorName: healthcareProvider.trim(),
-        hospitalName: hospitalName.trim(),
-        serviceType: serviceType.trim(),
-      };
-
-      console.log("📤 Sending visit data:", visitData);
-
-      const result = await createSchedule(visitData);
-
-      if (result.success) {
-        Toast.show({
-          type: "success",
-          text1: "Visit Scheduled ✅",
-          text2: "Your visit has been saved successfully!",
-          position: "top",
-        });
-
-        // 🔄 Reset fields
-        setVisitDate(null);
-        setVisitTime(null);
-        setDuration("");
-        setServiceType("Antenatal visit");
-        setHospitalName("");
-        setHealthcareProvider("");
-      } else {
-        console.error("❌ Create visit error:", result.error);
-        Toast.show({
-          type: "error",
-          text1: "Error ❌",
-          text2: result.error || "Something went wrong, please try again.",
-          position: "top",
-        });
-      }
-    } catch (error) {
-      console.error("❌ Error in handleSave:", error);
-      Toast.show({
-        type: "error",
-        text1: "Validation Error ⚠️",
-        text2: "Please check your date and time inputs.",
-        position: "top",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    Toast.show({
+      type: "success",
+      text1: "Visit saved",
+      text2: "Your reminder has been saved locally for now.",
+      position: "top",
+    });
+    router.back();
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>
+      <LinearGradient
+        colors={["#DDF4EE", "rgba(221,244,238,0.78)", "rgba(255,255,255,0)"]}
+        style={{ position: "absolute", left: 0, right: 0, top: 0, height: 220 }}
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
+        keyboardVerticalOffset={Platform.OS === "ios" ? 24 : 12}
       >
-        <TouchableWithoutFeedback onPress={dismissKeyboard}>
-          <ScrollView
-            className="flex-1"
-            contentContainerStyle={{ flexGrow: 1 }}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View className="flex-1 bg-white px-6 pt-4 pb-8">
-              {/* Header */}
-              <View className="items-center flex flex-row justify-between mb-10 mt-4">
-                <TouchableOpacity onPress={() => router.back()}>
-                  <Ionicons name="arrow-back" size={25} />
-                </TouchableOpacity>
-                <Text className="text-2xl font-bold text-[#333333]">
-                  Set Reminder
-                </Text>
-                <TouchableOpacity onPress={() => router.push("/notifications")}>
-                  <Icon name="notifications" size={25} color="#000" />
-                </TouchableOpacity>
-              </View>
+        <ScrollView className="flex-1 px-6 pb-8 pt-4" contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          <View className="mb-10 mt-4 flex-row items-center justify-between">
+            <TouchableOpacity onPress={() => router.back()} activeOpacity={0.82}>
+              <Text className="text-[28px] text-[#293231]">←</Text>
+            </TouchableOpacity>
+            <Text className="text-[22px] font-bold text-[#333333]">Set Reminder</Text>
+            <View className="w-6" />
+          </View>
 
-              {/* Banner */}
-              <View className="flex flex-row justify-center items-center h-[166px] mb-8">
-                <LinearGradient
-                  colors={["#FBE9E2", "#A5DFD7"]}
-                  style={{
-                    borderRadius: 20,
-                    padding: 5,
-                    width: 256,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 166,
-                    borderColor: "#00D2B3",
-                    borderWidth: 1,
-                  }}
-                >
-                  <Image
-                    source={require("../../assets/images/clinicVisit.png")}
-                    style={{ height: 133, width: 195 }}
-                  />
-                </LinearGradient>
-              </View>
+        <View className="mb-8 items-center">
+          <View className="h-[166px] w-[256px] items-center justify-center rounded-[24px] border border-[#00D2B3] bg-[#F8F1ED]">
+            <Image
+              source={require("../../assets/images/clinicVisit.png")}
+              style={{ height: 133, width: 195 }}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
 
-              {/* Visit Date */}
-              <Text className="text-[16px] font-medium text-[#333333] mb-2">
-                Visit Date *
-              </Text>
-              <TouchableOpacity
-                onPress={() => setShowDatePicker(true)}
-                className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white"
-              >
-                <Icon
-                  name="calendar-today"
-                  size={22}
-                  color="#999"
-                  style={{ marginRight: 8 }}
-                />
-                <Text className="flex-1 text-[16px] text-[#333333]">
-                  {formatDate(visitDate)}
-                </Text>
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  mode="date"
-                  display="default"
-                  value={visitDate || new Date()}
-                  onChange={onChangeDate}
-                  minimumDate={new Date()} // Prevent past dates
-                />
-              )}
+        <Field label="Visit date" prefix="📅" value={visitDate} onChangeText={setVisitDate} />
+        <View className="mb-5 flex-row gap-4">
+          <View className="flex-1">
+            <Field label="Time" prefix="◔" value={visitTime} onChangeText={setVisitTime} />
+          </View>
+          <View className="flex-1">
+            <Field label="Duration" prefix="◔" value={duration} onChangeText={setDuration} />
+          </View>
+        </View>
+        <Field label="Service Type" prefix="⊞" value={serviceType} onChangeText={setServiceType} />
+        <Field
+          label="Hospital Name"
+          prefix="🏥"
+          value={hospitalName}
+          onChangeText={setHospitalName}
+          placeholder="Write hospital name"
+        />
+        <Field
+          label="Healthcare provider"
+          prefix="🩺"
+          value={healthcareProvider}
+          onChangeText={setHealthcareProvider}
+          placeholder="Write doctor/nurse name below"
+        />
 
-              {/* Time & Duration */}
-              <View className="flex-row justify-between">
-                <View className="flex-1 mr-3">
-                  <Text className="text-[16px] font-medium text-[#333333] mb-2">
-                    Time *
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => setShowTimePicker(true)}
-                    className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white"
-                  >
-                    <Icon
-                      name="access-time"
-                      size={22}
-                      color="#999"
-                      style={{ marginRight: 8 }}
-                    />
-                    <Text className="flex-1 text-[16px] text-[#333333]">
-                      {formatTime(visitTime)}
-                    </Text>
-                  </TouchableOpacity>
-                  {showTimePicker && (
-                    <DateTimePicker
-                      mode="time"
-                      display="default"
-                      value={visitTime || new Date()}
-                      onChange={onChangeTime}
-                    />
-                  )}
-                </View>
-
-                <View className="flex-1 ml-3">
-                  <Text className="text-[16px] font-medium text-[#333333] mb-2">
-                    Duration (minutes) *
-                  </Text>
-                  <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
-                    <Icon
-                      name="hourglass-empty"
-                      size={22}
-                      color="#999"
-                      style={{ marginRight: 8 }}
-                    />
-                    <TextInput
-                      value={duration}
-                      onChangeText={setDuration}
-                      placeholder="30"
-                      placeholderTextColor="#9CA3AF"
-                      keyboardType="numeric"
-                      className="flex-1 text-[16px] text-[#293231]"
-                    />
-                  </View>
-                </View>
-              </View>
-
-              {/* Service Type */}
-              <Text className="text-[16px] font-medium text-[#333333] mb-2 mt-4">
-                Service Type
-              </Text>
-              <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
-                <Icon
-                  name="medical-services"
-                  size={22}
-                  color="#999"
-                  style={{ marginRight: 8 }}
-                />
-                <TextInput
-                  value={serviceType}
-                  onChangeText={setServiceType}
-                  placeholder="Service type"
-                  placeholderTextColor="#9CA3AF"
-                  autoCapitalize="words"
-                  className="flex-1 text-[16px] text-[#293231]"
-                />
-              </View>
-
-              {/* Hospital Name */}
-              <Text className="text-[16px] font-medium text-[#333333] mb-2">
-                Hospital Name *
-              </Text>
-              <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
-                <Icon
-                  name="local-hospital"
-                  size={22}
-                  color="#999"
-                  style={{ marginRight: 8 }}
-                />
-                <TextInput
-                  value={hospitalName}
-                  onChangeText={setHospitalName}
-                  placeholder="Write hospital name"
-                  placeholderTextColor="#9CA3AF"
-                  autoCapitalize="words"
-                  className="flex-1 text-[16px] text-[#293231]"
-                />
-              </View>
-
-              {/* Healthcare Provider */}
-              <Text className="text-[16px] font-medium text-[#333333] mb-2">
-                Healthcare Provider *
-              </Text>
-              <View className="border border-[#E5E5E5] rounded-xl flex-row items-center px-4 py-5 mb-8 bg-white">
-                <Icon
-                  name="person"
-                  size={22}
-                  color="#999"
-                  style={{ marginRight: 8 }}
-                />
-                <TextInput
-                  value={healthcareProvider}
-                  onChangeText={setHealthcareProvider}
-                  placeholder="Doctor/Nurse name"
-                  placeholderTextColor="#9CA3AF"
-                  autoCapitalize="words"
-                  className="flex-1 text-[16px] text-[#293231]"
-                />
-              </View>
-
-              {/* Save Button */}
-              <TouchableOpacity
-                className="bg-[#00D2B3] rounded-xl py-5 items-center mt-4 mb-4 flex-row justify-center"
-                onPress={handleSave}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <ActivityIndicator size="small" color="#ffffff" />
-                    <Text className="text-white text-[18px] font-semibold ml-2">
-                      Saving...
-                    </Text>
-                  </>
-                ) : (
-                  <Text className="text-white text-[18px] font-semibold">
-                    Save Visit
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              {Platform.OS === "ios" && <View className="h-4" />}
-            </View>
-          </ScrollView>
-        </TouchableWithoutFeedback>
+          <View className="mt-auto pt-4">
+            <TouchableOpacity
+              onPress={handleSave}
+              activeOpacity={0.85}
+              className="mb-8 mt-4 h-12 items-center justify-center rounded-[16px] bg-[#0B7A66]"
+            >
+              <Text className="text-[16px] font-semibold text-white">Save Visit</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
+
+function Field({ label, prefix, value, onChangeText, placeholder }) {
+  return (
+    <View className="mb-5">
+      <Text className="mb-3 text-[16px] font-medium text-[#333333]">{label}</Text>
+      <View className="flex-row items-center rounded-[16px] border border-[#00D2B3] px-4 py-4">
+        <Text className="mr-3 text-[18px] text-[#293231]">{prefix}</Text>
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor="#7B7B7B"
+          className="flex-1 text-[16px] text-[#333333]"
+        />
+        <Text className="text-[16px] text-[#293231]">⌄</Text>
+      </View>
+    </View>
+  );
+}
 
 export default VisitInput;

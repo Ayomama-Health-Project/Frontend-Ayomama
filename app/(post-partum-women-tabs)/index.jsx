@@ -270,8 +270,7 @@ export default function HomeScreen() {
                   <View className="flex-1">
                     <Text className="text-[#293231] text-base text-[14px] leading-6">
                       {babyDescText}
-                      {"\n"}
-                      {"\n"}
+
                       {babyTipText}
                     </Text>
                   </View>

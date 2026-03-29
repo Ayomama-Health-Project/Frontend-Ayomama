@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import AuthFrame from "../../../components/auth/AuthFrame";
 import useAppAuth from "../../../hooks/useAppAuth";
@@ -91,64 +91,81 @@ export default function ForgotPassword() {
 
   return (
     <AuthFrame title={titleText} subtitle={subtitleText}>
-      <View className="mb-8 rounded-[28px] border border-[#E7EFED] bg-white px-5 py-5">
-        <View className="mb-5 h-14 w-14 items-center justify-center rounded-2xl bg-[#E8F6F2]">
-          <Ionicons name="mail-open-outline" size={26} color="#006D5B" />
-        </View>
-
-        <Text className="mb-2 text-sm font-semibold text-[#42514F]">
-          {emailLabel}
-        </Text>
-        <TextInput
-          value={email}
-          onChangeText={setEmail}
-          placeholder={emailPlaceholder}
-          placeholderTextColor="#9CA3AF"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          className="mb-4 rounded-2xl border border-[#D8E4E1] px-5 py-4 text-[#293231]"
-        />
-
-        <View className="rounded-2xl bg-[#F5FAF8] px-4 py-4">
-          <Text className="text-sm leading-6 text-[#5D6C69]">{flowHint}</Text>
-        </View>
-      </View>
-
-      <TouchableOpacity
-        className="rounded-2xl bg-[#006D5B] py-4"
-        onPress={handleSendCode}
-        disabled={isLoading}
-        activeOpacity={0.85}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+        keyboardVerticalOffset={Platform.OS === "ios" ? 24 : 0}
       >
-        {isLoading ? (
-          <View className="flex-row items-center justify-center">
-            <ActivityIndicator size="small" color="#FFFFFF" />
-            <Text className="ml-2 text-center text-base font-bold text-white">
-              {sendingCodeText}
-            </Text>
-          </View>
-        ) : (
-          <Text className="text-center text-base font-bold text-white">
-            {sendCodeText}
-          </Text>
-        )}
-      </TouchableOpacity>
+        <ScrollView
+          className="flex-1"
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1, justifyContent: "space-between" }}
+        >
+          <View>
+            <View className="mb-8 rounded-[28px] border border-[#E7EFED] bg-white px-5 py-5">
+              <View className="mb-5 h-14 w-14 items-center justify-center rounded-2xl bg-[#E8F6F2]">
+                <Ionicons name="mail-open-outline" size={26} color="#006D5B" />
+              </View>
 
-      <View className="items-center py-8">
-        <View className="flex-row items-center">
-          <Text className="font-medium text-gray-600">{helperText} </Text>
-          <TouchableOpacity
-            onPress={() =>
-              router.replace({
-                pathname: getLoginPath(role),
-                params: { type },
-              })
-            }
-          >
-            <Text className="font-bold text-[#006D5B]">{logInText}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+              <Text className="mb-2 text-sm font-semibold text-[#42514F]">
+                {emailLabel}
+              </Text>
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder={emailPlaceholder}
+                placeholderTextColor="#9CA3AF"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                className="mb-4 rounded-2xl border border-[#D8E4E1] px-5 py-4 text-[#293231]"
+              />
+
+              <View className="rounded-2xl bg-[#F5FAF8] px-4 py-4">
+                <Text className="text-sm leading-6 text-[#5D6C69]">{flowHint}</Text>
+              </View>
+            </View>
+          </View>
+
+          <View>
+            <TouchableOpacity
+              className="rounded-2xl bg-[#006D5B] py-4"
+              onPress={handleSendCode}
+              disabled={isLoading}
+              activeOpacity={0.85}
+            >
+              {isLoading ? (
+                <View className="flex-row items-center justify-center">
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                  <Text className="ml-2 text-center text-base font-bold text-white">
+                    {sendingCodeText}
+                  </Text>
+                </View>
+              ) : (
+                <Text className="text-center text-base font-bold text-white">
+                  {sendCodeText}
+                </Text>
+              )}
+            </TouchableOpacity>
+
+            <View className="items-center py-8">
+              <View className="flex-row items-center">
+                <Text className="font-medium text-gray-600">{helperText} </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.replace({
+                      pathname: getLoginPath(role),
+                      params: { type },
+                    })
+                  }
+                >
+                  <Text className="font-bold text-[#006D5B]">{logInText}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </AuthFrame>
   );
 }

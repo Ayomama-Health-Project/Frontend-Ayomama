@@ -5,7 +5,9 @@ import { useTranslation } from "../../utils/translator";
 
 export default function PartnerTabLayout() {
   const homeText = useTranslation("Home");
-  const messagesText = useTranslation("Messages");
+  const visitText = useTranslation("Visit");
+  const emergencyText = useTranslation("Emergency");
+  const hubText = useTranslation("Hub");
   const profileText = useTranslation("Profile");
 
   return (
@@ -25,11 +27,29 @@ export default function PartnerTabLayout() {
         }}
       />
       <Tabs.Screen
-        name="messages"
+        name="visit"
         options={{
-          title: messagesText,
+          title: visitText,
           tabBarIcon: ({ color }) => (
-            <Ionicons name="chatbubbles" size={24} color={color} />
+            <Ionicons name="clipboard" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="emergency"
+        options={{
+          title: emergencyText,
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="medkit" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="hub"
+        options={{
+          title: hubText,
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="sparkles" size={24} color={color} />
           ),
         }}
       />

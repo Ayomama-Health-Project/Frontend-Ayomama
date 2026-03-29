@@ -1,375 +1,143 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Alert, Image, ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useMemo, useState } from "react";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
 import Toast from "react-native-toast-message";
-import { SafeAreaView } from "react-native-safe-area-context";
-import useMockAuth from "../../hooks/useMockAuth";
-import { requestPushNotificationToken } from "../../utils/pushNotifications";
-import { useTranslation } from "../../utils/translator";
+import useAppAuth from "../../hooks/useAppAuth";
+import { ProfileMenuRow } from "../../components/shared/profile/shared";
 
 export default function Profile() {
   const router = useRouter();
-  const { user: authUser, account, logout, saveNotificationToken, deleteNotificationToken } =
-    useMockAuth();
-  const [notificationEnabled, setNotificationEnabled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const insets = useSafeAreaInsets();
+  const { account, logout } = useAppAuth();
+  const [notificationEnabled, setNotificationEnabled] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Translate UI text
-  const editText = useTranslation("Edit");
-  const settingPreferenceText = useTranslation("Setting & preference");
-  const notificationText = useTranslation("Notification");
-  const languageText = useTranslation("Language");
-  const securityText = useTranslation("Security");
-  const supportText = useTranslation("Support");
-  const helpCenterText = useTranslation("Help center");
-  const reportBugText = useTranslation("Report bug");
-  const logoutText = useTranslation("Log out");
-  const logoutTitleText = useTranslation("Logout");
-  const logoutMessageText = useTranslation("Are you sure you want to logout?");
-  const cancelText = useTranslation("Cancel");
-  const logoutConfirmText = useTranslation("Logout");
-  const loggedOutText = useTranslation("Logged Out");
-  const loggedOutSuccessText = useTranslation(
-    "You have been logged out successfully",
-  );
-  const errorText = useTranslation("Error");
-  const failedLogoutText = useTranslation("Failed to logout");
+  const name = useMemo(() => account?.profile?.fullName || "Grace Adam", [account?.profile?.fullName]);
+  const email = account?.email || "grace@gmail.com";
+  const avatar = account?.profilePicture
+    ? { uri: account.profilePicture }
+    : require("../../assets/images/profilepic.png");
 
-  // Use authenticated user data or fallback to default
-  const user = authUser || {
-    name: "Guest User",
-    email: "guest@example.com",
-  };
+  const performLogout = async () => {
+    if (isLoggingOut) return;
 
-  // Get avatar image source - use profilepic.png as default
-  const getAvatarSource = () => {
-    if (
-      user.avatar &&
-      typeof user.avatar === "string" &&
-      user.avatar.trim() !== ""
-    ) {
-      // If avatar is a URL string
-      return { uri: user.avatar };
-    } else if (user.avatar && typeof user.avatar === "object") {
-      // If avatar is already a require() object
-      return user.avatar;
-    } else {
-      // Default avatar
-      return require("../../assets/images/profilepic.png");
-    }
-  };
-
-  // Fetch notification setting on mount
-  useEffect(() => {
-    loadNotificationSetting();
-  }, [account]);
-
-  const loadNotificationSetting = async () => {
     try {
-      setNotificationEnabled(Boolean(account?.notifications?.enabled));
-    } catch (error) {
-      console.error("Error loading notification setting:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleNotificationToggle = async (value) => {
-    try {
-      setNotificationEnabled(value);
-      if (value) {
-        const expoPushToken = await requestPushNotificationToken();
-        if (expoPushToken) {
-          await saveNotificationToken({
-            platform: "android",
-            expoPushToken,
-            deviceId: "mother-profile",
-            enabled: true,
-          });
-        }
-      } else {
-        const tokenIds = account?.notifications?.tokens?.map((token) => token.id) || [];
-        await Promise.all(tokenIds.map((id) => deleteNotificationToken(id)));
-      }
-
+      setIsLoggingOut(true);
+      await logout();
       Toast.show({
         type: "success",
-        text1: value ? "Notifications Enabled" : "Notifications Disabled",
-        text2: value
-          ? "You'll receive daily reminders for your routine"
-          : "You won't receive notifications",
+        text1: "Logged out",
+        text2: "You have been logged out successfully.",
         position: "top",
-        visibilityTime: 2000,
       });
-    } catch (error) {
-      console.error("Error saving notification setting:", error);
+      router.replace("/Onboarding");
+    } catch (_error) {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Failed to save notification setting",
+        text1: "Logout failed",
+        text2: "We could not log you out just now. Please try again.",
         position: "top",
-        visibilityTime: 2000,
       });
-      // Revert the state if saving failed
-      setNotificationEnabled(!value);
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
-  const handleEditProfile = () => {
-    router.push("/profile/EditProfile");
-  };
+  const handleLogout = () => {
+    if (isLoggingOut) return;
 
-  const handleLanguage = () => {
-    router.push("/language-picker");
-  };
-
-  const handleSecurity = () => {
-    router.push("/profile/Security");
-  };
-
-  const handleHelpCenter = () => {
-    // TODO: Navigate to help center
-    console.log("Help center");
-  };
-
-  const handleReportBug = () => {
-    // TODO: Navigate to bug report
-    console.log("Report bug");
-  };
-
-  const handleLogout = async () => {
     Alert.alert(
-      logoutTitleText,
-      logoutMessageText,
+      "Log out",
+      "Are you sure you want to log out of your AYOMAMA account?",
       [
         {
-          text: cancelText,
+          text: "Cancel",
           style: "cancel",
         },
         {
-          text: logoutConfirmText,
+          text: "Log out",
           style: "destructive",
-          onPress: async () => {
-            setIsLoggingOut(true);
-            const result = await logout();
-            if (result.success) {
-              // Show toast before navigation
-              Toast.show({
-                type: "success",
-                text1: loggedOutText,
-                text2: loggedOutSuccessText,
-                position: "top",
-                visibilityTime: 2000,
-              });
-
-              router.replace("/Onboarding");
-            } else {
-              setIsLoggingOut(false);
-              Toast.show({
-                type: "error",
-                text1: errorText,
-                text2: result.error || failedLogoutText,
-                position: "top",
-                visibilityTime: 2000,
-              });
-            }
-          },
+          onPress: performLogout,
         },
       ],
-      { cancelable: true },
     );
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#FCFCFC]" edges={["top"]}>
-      <View className="flex-1">
-        {/* Profile Header with Gradient */}
-        <LinearGradient
-          colors={["#BCF2E9", "#FCFCFC"]}
-          style={{
-            paddingHorizontal: 24,
-            paddingTop: 16,
-            paddingBottom: 32,
-          }}
-        >
+    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
+      <LinearGradient
+        colors={["#DDF4EE", "rgba(221,244,238,0.78)", "rgba(255,255,255,0)"]}
+        style={{ position: "absolute", left: 0, right: 0, top: 0, height: 220 }}
+      />
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="px-5 pt-14">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center flex-1">
-              <Image
-                source={getAvatarSource()}
-                className="w-16 h-20 rounded-2xl"
-                resizeMode="cover"
-              />
-              <View className="ml-4 flex-1">
-                <Text
-                  className="text-xl font-bold text-[#293231]"
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {user.name || "User"}
-                </Text>
-                <Text
-                  className="text-[15px] text-[#6B7280] mt-1"
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {user.email || ""}
-                </Text>
+              <Image source={avatar} className="h-20 w-16 rounded-[18px]" resizeMode="cover" />
+              <View className="ml-6 flex-1">
+                <Text className="text-[18px] font-bold text-[#293231]">{name}</Text>
+                <Text className="mt-2 text-[15px] text-[#7B8786]">{email}</Text>
               </View>
             </View>
             <TouchableOpacity
-              onPress={handleEditProfile}
-              className="bg-[#006D5B] px-6 py-3 rounded-xl"
+              onPress={() => router.push("/profile/EditProfile")}
+              activeOpacity={0.84}
+              className="rounded-[14px] bg-[#0B7A66] px-7 py-3"
             >
-              <Text className="text-white font-semibold text-[15px]">
-                {editText}
-              </Text>
+              <Text className="text-[16px] font-semibold text-white">Edit</Text>
             </TouchableOpacity>
           </View>
-        </LinearGradient>
 
-        {/* Divider */}
-        <View className="h-[1px] bg-[#E5E5E5] mx-6" />
+          <View className="my-8 h-px bg-[#D8DDDC]" />
 
-        {/* Setting & preference Section */}
-        <View className="px-6 pt-6">
-          <Text className="text-[16px] text-[#6B7280] mb-4 font-medium">
-            {settingPreferenceText}
-          </Text>
-
-          {/* Notification Toggle */}
-          <View className="bg-[#D7EEEA]/30 rounded-2xl mb-3 px-5 py-4 h-[60px] justify-center">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center flex-1">
-                <Ionicons name="notifications" size={20} color="#293231" />
-                <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  {notificationText}
-                </Text>
-              </View>
+          <Text className="mb-5 text-[16px] font-medium text-[#7A7A7A]">Setting & preference</Text>
+          <ProfileMenuRow
+            icon="notifications"
+            label="Notification"
+            onPress={() => setNotificationEnabled((prev) => !prev)}
+            rightContent={
               <Switch
                 value={notificationEnabled}
-                onValueChange={handleNotificationToggle}
-                trackColor={{ false: "#D1D5DB", true: "#006D5B" }}
-                thumbColor={notificationEnabled ? "#FFFFFF" : "#F3F4F6"}
-                ios_backgroundColor="#D1D5DB"
-                disabled={isLoading}
+                onValueChange={setNotificationEnabled}
+                trackColor={{ false: "#E5E7EB", true: "#006D5B" }}
+                thumbColor="#FFFFFF"
+                ios_backgroundColor="#E5E7EB"
               />
-            </View>
-          </View>
+            }
+          />
+          <ProfileMenuRow icon="language" label="Language" onPress={() => router.push("/language-picker")} />
+          <ProfileMenuRow icon="shield-checkmark" label="Security" onPress={() => router.push("/profile/Security")} />
+          <ProfileMenuRow icon="medkit" label="Medical History" onPress={() => router.push("/profile/MedicalHistory")} />
 
-          {/* Language */}
-          <TouchableOpacity
-            onPress={handleLanguage}
-            className="bg-[#D7EEEA]/30 rounded-2xl mb-3 px-5 py-4 h-[60px] justify-center"
-          >
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center flex-1">
-                <Ionicons name="language" size={20} color="#293231" />
-                <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  {languageText}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#293231" />
-            </View>
-          </TouchableOpacity>
+          <View className="my-3 h-px bg-[#D8DDDC]" />
 
-          {/* Security */}
-          <TouchableOpacity
-            onPress={handleSecurity}
-            className="bg-[#D7EEEA]/30 rounded-2xl mb-3 px-5 py-4 h-[60px] justify-center"
-          >
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center flex-1">
-                <Ionicons name="shield-checkmark" size={20} color="#293231" />
-                <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  {securityText}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#293231" />
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* Divider */}
-        <View className="h-[1px] bg-[#E5E5E5] mx-6 my-6" />
-
-        {/* Support Section */}
-        <View className="px-6 pb-6">
-          <Text className="text-[16px] text-[#6B7280] mb-4 font-medium">
-            {supportText}
-          </Text>
-
-          {/* Help center */}
-          <TouchableOpacity
-            onPress={handleHelpCenter}
-            className="bg-[#D7EEEA]/30 rounded-2xl mb-3 px-5 py-4 h-[60px] justify-center"
-          >
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center flex-1">
-                <Ionicons name="help-circle" size={20} color="#293231" />
-                <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  {helpCenterText}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#293231" />
-            </View>
-          </TouchableOpacity>
-
-          {/* Report bug */}
-          <TouchableOpacity
-            onPress={handleReportBug}
-            className="bg-[#D7EEEA]/30 rounded-2xl mb-3 px-5 py-4 h-[60px] justify-center"
-          >
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center flex-1">
-                <Ionicons name="flag" size={20} color="#293231" />
-                <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                  {reportBugText}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#293231" />
-            </View>
-          </TouchableOpacity>
-
-          {/* Log out */}
-          <TouchableOpacity
+          <Text className="mb-5 mt-4 text-[16px] font-medium text-[#7A7A7A]">Support</Text>
+          <ProfileMenuRow
+            icon="help-circle"
+            label="Help center"
+            onPress={() =>
+              Toast.show({ type: "info", text1: "Help center", text2: "Help center is coming soon.", position: "top" })
+            }
+          />
+          <ProfileMenuRow
+            icon="flag"
+            label="Report bug"
+            onPress={() =>
+              Toast.show({ type: "info", text1: "Report bug", text2: "Bug reporting is coming soon.", position: "top" })
+            }
+          />
+          <ProfileMenuRow
+            icon="log-out-outline"
+            label={isLoggingOut ? "Logging out..." : "Log out"}
             onPress={handleLogout}
-            className="bg-[#D7EEEA]/30 rounded-2xl mb-3 px-5 py-4 h-[60px] justify-center"
-            disabled={isLoggingOut}
-          >
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center flex-1">
-                <Ionicons name="log-out-outline" size={20} color="#293231" />
-                {isLoggingOut ? (
-                  <View className="ml-4 flex-row items-center">
-                    <ActivityIndicator size="small" color="#293231" />
-                    <Text className="ml-2 text-[16px] font-medium text-[#293231]">
-                      {logoutText}
-                    </Text>
-                  </View>
-                ) : (
-                  <Text className="text-[16px] font-medium text-[#293231] ml-4">
-                    {logoutText}
-                  </Text>
-                )}
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#293231" />
-            </View>
-          </TouchableOpacity>
+          />
         </View>
-      </View>
-
-      {/* Toast component */}
+      </ScrollView>
     </SafeAreaView>
   );
 }

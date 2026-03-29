@@ -8,7 +8,7 @@ export default function TabLayout() {
   const homeText = useTranslation("Home");
   const visitText = useTranslation("Visit");
   const emergencyText = useTranslation("Emergency");
-  const learnText = useTranslation("Learn");
+  const hubText = useTranslation("Hub");
   const profileText = useTranslation("Profile");
 
   return (
@@ -58,9 +58,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="learn"
+        name="hub"
         options={{
-          title: learnText,
+          title: hubText,
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? "headset" : "headset"}

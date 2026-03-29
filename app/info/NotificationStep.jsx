@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, Image, Text, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import useMockAuth from "../../hooks/useMockAuth";
 import { getAccountAppRoute } from "../../utils/authRoutes";
@@ -8,6 +9,7 @@ import { useTranslation } from "../../utils/translator";
 
 export default function NotificationStep() {
   const { account } = useMockAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Translate all text
   const drugReminderText = useTranslation(
     "Don't forget to use your drug it is essential for your well being",
@@ -23,6 +25,7 @@ export default function NotificationStep() {
   );
   const turnOnNotificationText = useTranslation("Turn on notication");
   const skipText = useTranslation("Skip");
+  const pleaseWaitText = useTranslation("Please wait...");
   const notificationsEnabledText = useTranslation("Notifications Enabled!");
   const dailyRemindersText = useTranslation(
     "You'll receive daily reminders for your routine",
@@ -30,10 +33,8 @@ export default function NotificationStep() {
 
   const handleTurnOnNotification = async () => {
     try {
-      // Save notification preference to AsyncStorage
+      setIsSubmitting(true);
       await AsyncStorage.setItem("notificationsEnabled", "true");
-
-      // Show success toast
       Toast.show({
         type: "success",
         text1: notificationsEnabledText,
@@ -42,19 +43,24 @@ export default function NotificationStep() {
         visibilityTime: 2000,
       });
 
-      // Navigate to tabs after 2 seconds
-      setTimeout(() => {
-        router.replace(getAccountAppRoute(account));
-      }, 2000);
+      router.replace(getAccountAppRoute(account));
     } catch (error) {
       console.error("Error saving notification preference:", error);
-      // Still navigate even if saving fails
       router.replace(getAccountAppRoute(account));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleSkip = () => {
-    // Just navigate without saving notification preference
+  const handleSkip = async () => {
+    try {
+      setIsSubmitting(true);
+      await AsyncStorage.setItem("notificationsEnabled", "false");
+    } catch (_error) {
+      // best effort
+    } finally {
+      setIsSubmitting(false);
+    }
     router.replace(getAccountAppRoute(account));
   };
 
@@ -99,19 +105,30 @@ export default function NotificationStep() {
         <TouchableOpacity
           className="bg-[#006D5B] py-4 rounded-2xl"
           onPress={handleTurnOnNotification}
+          disabled={isSubmitting}
         >
-          <Text className="text-white text-center font-bold text-base">
-            {turnOnNotificationText}
-          </Text>
+          {isSubmitting ? (
+            <View className="flex-row items-center justify-center">
+              <ActivityIndicator size="small" color="#FFFFFF" />
+              <Text className="ml-2 text-white text-center font-bold text-base">
+                {pleaseWaitText}
+              </Text>
+            </View>
+          ) : (
+            <Text className="text-white text-center font-bold text-base">
+              {turnOnNotificationText}
+            </Text>
+          )}
         </TouchableOpacity>
 
         {/* Skip Button */}
         <TouchableOpacity
           className="py-4 rounded-2xl mt-4"
           onPress={handleSkip}
+          disabled={isSubmitting}
         >
           <Text className="text-center font-bold text-base text-gray-600">
-            {skipText}
+            {isSubmitting ? pleaseWaitText : skipText}
           </Text>
         </TouchableOpacity>
       </View>

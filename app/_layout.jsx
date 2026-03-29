@@ -44,12 +44,24 @@ export default function RootLayout() {
         <Stack.Screen name="healthinfo/HealthInfoStep" />
         <Stack.Screen name="profile/EditProfile" />
         <Stack.Screen name="profile/Security" />
+        <Stack.Screen name="profile/MedicalHistory" />
         <Stack.Screen name="chat/SmartChat" />
         <Stack.Screen name="community/index" />
+        <Stack.Screen name="community/messages" />
+        <Stack.Screen name="community/message-thread" />
+        <Stack.Screen name="community/health-workers" />
+        <Stack.Screen name="community/health-worker-detail" />
+        <Stack.Screen name="community/blogs" />
         <Stack.Screen name="babyDevelopment/development" />
         <Stack.Screen name="updateVitals/update" />
         <Stack.Screen name="visit/visitInput" />
         <Stack.Screen name="notifications" />
+        <Stack.Screen name="pregnant-mother/forms/update-vitals" />
+        <Stack.Screen name="pregnant-mother/forms/nutrition-plan" />
+        <Stack.Screen name="pregnant-mother/forms/add-meal" />
+        <Stack.Screen name="pregnant-mother/forms/journal" />
+        <Stack.Screen name="pregnant-mother/forms/new-entry" />
+        <Stack.Screen name="pregnant-mother/forms/edit-medication" />
         <Stack.Screen name="(pregnant-women-tabs)" options={{ gestureEnabled: false }} />
         <Stack.Screen name="(post-partum-women-tabs)" options={{ gestureEnabled: false }} />
         <Stack.Screen name="(health-worker-with-clinic-tabs)" options={{ gestureEnabled: false }} />

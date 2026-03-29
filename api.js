@@ -59,7 +59,14 @@ api.interceptors.response.use(
       console.error("Request Error:", error.message);
     }
 
-    if (error.response?.status === 401) {
+    const requestUrl = error.config?.url || "";
+    const authHeader =
+      error.config?.headers?.Authorization || error.config?.headers?.authorization;
+    const isSessionUnauthorized =
+      error.response?.status === 401 &&
+      (Boolean(authHeader) || requestUrl.includes("/api/v1/auth/refresh"));
+
+    if (isSessionUnauthorized) {
       if (!isHandlingUnauthorized) {
         isHandlingUnauthorized = true;
         Toast.show({

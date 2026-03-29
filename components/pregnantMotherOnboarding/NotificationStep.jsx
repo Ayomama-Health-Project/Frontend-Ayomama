@@ -1,16 +1,18 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 import { ActivityIndicator, Image, Text, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
+import useAppAuth from "../../hooks/useAppAuth";
+import { getAccountAppRoute } from "../../utils/authRoutes";
 import { useTranslation } from "../../utils/translator";
-
-const NOTIFICATION_PREVIEW =
-  "https://www.figma.com/api/mcp/asset/070188e8-50d7-43c2-86b1-fb4d2f27acfd";
 
 function PreviewCard({ text, topClassName }) {
   const translatedText = useTranslation(text);
   return (
     <View
-      className={`absolute left-1/2 z-20 h-[57px] w-[359px] -translate-x-1/2 rounded-[15px] bg-white px-6 py-3 shadow ${topClassName}`}
+      className={`rounded-[15px] bg-[#FCFCFC] px-4 py-4 shadow-lg ${topClassName}`}
     >
-      <Text className="text-[12px] font-light text-[#293231]">{translatedText}</Text>
+      <Text className="text-sm leading-5 text-gray-800">{translatedText}</Text>
     </View>
   );
 }
@@ -20,77 +22,123 @@ export default function NotificationStep({
   onSkipNotifications,
   title = "Never miss out on your daily routine",
   description = "When turn on, we will remind you of all your activities through out day",
-  primaryLabel = "Turn on notification",
-  secondaryLabel = "Another time",
+  primaryLabel = "Turn on notication",
+  secondaryLabel = "Skip",
   primaryLoading = false,
   secondaryLoading = false,
 }) {
+  const { account } = useAppAuth();
   const translatedTitle = useTranslation(title);
   const translatedDescription = useTranslation(description);
   const translatedPrimaryLabel = useTranslation(primaryLabel);
   const translatedSecondaryLabel = useTranslation(secondaryLabel);
   const pleaseWaitText = useTranslation("Please wait...");
+
+  const notificationsEnabledText = useTranslation("Notifications Enabled!");
+  const dailyRemindersText = useTranslation(
+    "You'll receive daily reminders for your routine",
+  );
+
+  const handleTurnOnNotification = async () => {
+    try {
+      await AsyncStorage.setItem("notificationsEnabled", "true");
+      Toast.show({
+        type: "success",
+        text1: notificationsEnabledText,
+        text2: dailyRemindersText,
+        position: "top",
+        visibilityTime: 2000,
+      });
+
+      if (onEnableNotifications) {
+        await onEnableNotifications();
+        return;
+      }
+
+      router.replace(getAccountAppRoute(account));
+    } catch (_error) {
+      if (onEnableNotifications) {
+        await onEnableNotifications();
+        return;
+      }
+      router.replace(getAccountAppRoute(account));
+    }
+  };
+
+  const handleSkip = async () => {
+    try {
+      await AsyncStorage.setItem("notificationsEnabled", "false");
+    } catch (_error) {
+      // best effort
+    }
+
+    if (onSkipNotifications) {
+      await onSkipNotifications();
+      return;
+    }
+
+    router.replace(getAccountAppRoute(account));
+  };
+
   return (
-    <View className="flex-1">
-      <View className="items-center pt-2">
-        <View className="relative h-[538px] w-full items-center">
-          <Image
-            source={{ uri: NOTIFICATION_PREVIEW }}
-            className="absolute top-[-6px] h-[838px] w-[403px]"
-            resizeMode="contain"
-          />
+    <View className="flex-1 relative">
+      <View className="absolute inset-0 items-center justify-start">
+        <Image
+          source={require("../../assets/images/device.png")}
+          className="h-full w-full rounded-xl"
+          resizeMode="cover"
+        />
+      </View>
 
-          <PreviewCard
-            text="Don’t forget to use your drug it is essential for your well being"
-            topClassName="top-[184px]"
-          />
-          <PreviewCard
-            text="Studies shows that hydration solves more than 50 % to boost immunity"
-            topClassName="top-[262px]"
-          />
+      <View className="absolute top-64 left-4 right-4">
+        <PreviewCard
+          text="Don’t forget to use your drug it is essential for your well being"
+          topClassName="mb-3"
+        />
+        <PreviewCard
+          text="Studies shows that hydration solves more than 50 % to boost immunity"
+          topClassName=""
+        />
+      </View>
 
-          <View className="absolute bottom-0 left-0 right-0 h-[80px] bg-[#FCFCFC]/90" />
-          <View className="absolute bottom-0 left-0 right-0 h-[120px] bg-[#FCFCFC]" />
-        </View>
+      <View className="absolute bottom-0 left-0 right-0 bg-[#FCFCFC] px-6 pb-6 pt-8 shadow-2xl">
+        <Text className="text-center text-3xl font-semibold text-gray-800">
+          {translatedTitle}
+        </Text>
+        <Text className="mb-6 mt-2 text-center text-gray-500">
+          {translatedDescription}
+        </Text>
 
-        <View className="mt-2 w-[338px] items-center">
-          <Text className="text-center text-[24px] font-medium text-[#293231]">
-            {translatedTitle}
-          </Text>
-          <Text className="mt-[15px] text-center text-[14px] font-medium leading-6 text-[#293231]/80">
-            {translatedDescription}
-          </Text>
-
-          <TouchableOpacity
-            activeOpacity={0.88}
-            onPress={onEnableNotifications}
-            disabled={primaryLoading || secondaryLoading}
-            className="mt-6 h-[46px] w-full items-center justify-center rounded-[15px] bg-[#006D5B]"
-          >
-            {primaryLoading ? (
-              <View className="flex-row items-center">
-                <ActivityIndicator size="small" color="#FFFFFF" />
-                <Text className="ml-2 text-[14px] font-semibold text-white">
-                  {translatedPrimaryLabel}
-                </Text>
-              </View>
-            ) : (
-              <Text className="text-[14px] font-semibold text-white">
-                {translatedPrimaryLabel}
+        <TouchableOpacity
+          activeOpacity={0.88}
+          onPress={handleTurnOnNotification}
+          disabled={primaryLoading || secondaryLoading}
+          className="rounded-2xl bg-[#006D5B] py-4"
+        >
+          {primaryLoading ? (
+            <View className="flex-row items-center justify-center">
+              <ActivityIndicator size="small" color="#FFFFFF" />
+              <Text className="ml-2 text-base font-bold text-white">
+                {pleaseWaitText}
               </Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            activeOpacity={0.86}
-            onPress={onSkipNotifications}
-            disabled={primaryLoading || secondaryLoading}
-          >
-            <Text className="mt-[11px] text-[14px] font-medium text-[#293231]/80">
-              {secondaryLoading ? pleaseWaitText : translatedSecondaryLabel}
+            </View>
+          ) : (
+            <Text className="text-center text-base font-bold text-white">
+              {translatedPrimaryLabel}
             </Text>
-          </TouchableOpacity>
-        </View>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.86}
+          onPress={handleSkip}
+          disabled={primaryLoading || secondaryLoading}
+          className="mt-4 rounded-2xl py-4"
+        >
+          <Text className="text-center text-base font-bold text-gray-600">
+            {secondaryLoading ? pleaseWaitText : translatedSecondaryLabel}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
