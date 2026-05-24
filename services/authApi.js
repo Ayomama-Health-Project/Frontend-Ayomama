@@ -23,6 +23,7 @@ export const authApi = {
   changePassword: (payload) => unwrap(api.patch("/api/v1/me/password", payload)),
   updateLanguage: (payload) => unwrap(api.patch("/api/v1/me/language", payload)),
   updateOnboarding: (payload) => unwrap(api.patch("/api/v1/me/onboarding", payload)),
+  fetchNotifications: () => unwrap(api.get("/api/v1/me/notifications")),
   createNotificationToken: (payload) =>
     unwrap(api.post("/api/v1/me/notification-tokens", payload)),
   deleteNotificationToken: (id) => unwrap(api.delete(`/api/v1/me/notification-tokens/${id}`)),

@@ -1,8 +1,10 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { clearStoredTokens, getStoredTokens, persistTokens } from "../utils/authStorage";
 import { authApi } from "../services/authApi";
+import { connectSocket, disconnectSocket } from "../services/socket";
+import { motherApi } from "../services/motherApi";
 import {
   clearSession,
   hydrateTokens,
@@ -174,6 +176,7 @@ export default function useAppAuth() {
     } catch (_error) {
       // Best effort logout.
     } finally {
+      disconnectSocket();
       await clearStoredTokens();
       dispatch(clearSession());
       queryClient.clear();
@@ -222,6 +225,11 @@ export default function useAppAuth() {
   const changePassword = (payload) => authApi.changePassword(payload);
   const createPartnerInvite = (payload) => authApi.createPartnerInvite(payload);
   const fetchHealthProfessionals = (limit) => authApi.fetchHealthProfessionals(limit);
+  const switchMotherType = (motherType) =>
+    updateMutation.mutateAsync({
+      action: () => motherApi.switchMotherType(motherType),
+      payload: undefined,
+    });
 
   const forgotPassword = (payload) => authApi.forgotPassword(payload);
   const verifyResetOtp = (payload) => authApi.verifyResetOtp(payload);
@@ -229,6 +237,15 @@ export default function useAppAuth() {
 
   const currentAccount = authState.account || meQuery.data || null;
   const user = mapAccountToLegacyUser(currentAccount);
+
+  useEffect(() => {
+    if (authState.accessToken && currentAccount) {
+      connectSocket(authState.accessToken);
+      return;
+    }
+
+    disconnectSocket();
+  }, [authState.accessToken, currentAccount]);
 
   return {
     account: currentAccount,
@@ -263,5 +280,6 @@ export default function useAppAuth() {
     changePassword,
     createPartnerInvite,
     fetchHealthProfessionals,
+    switchMotherType,
   };
 }

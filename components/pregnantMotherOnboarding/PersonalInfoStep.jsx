@@ -86,6 +86,8 @@ function EmergencyContactBlock({
 export default function PersonalInfoStep({
   fullName,
   setFullName,
+  babyName,
+  setBabyName,
   address,
   setAddress,
   emergencyContacts,
@@ -99,6 +101,8 @@ export default function PersonalInfoStep({
   const enterFullNameText = useTranslation("Enter full name");
   const homeAddressText = useTranslation("Home Address");
   const enterHomeAddressText = useTranslation("Enter home address");
+  const babyNameText = useTranslation("Baby Name or Nickname");
+  const babyNamePlaceholderText = useTranslation("What would you like us to call your baby?");
   const emergencyContactText = useTranslation("Emergency contact");
   const addAnotherContactText = useTranslation("Add another contact");
   return (
@@ -122,6 +126,15 @@ export default function PersonalInfoStep({
               value={address}
               onChangeText={setAddress}
               placeholder={enterHomeAddressText}
+            />
+          </View>
+
+          <View className="gap-[5px]">
+            <Label>{babyNameText}</Label>
+            <InputField
+              value={babyName}
+              onChangeText={setBabyName}
+              placeholder={babyNamePlaceholderText}
             />
           </View>
 

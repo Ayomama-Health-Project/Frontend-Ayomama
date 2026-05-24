@@ -64,3 +64,36 @@ export function CommunityTabs({ active, onChange }) {
     </View>
   );
 }
+
+export function EmptyStateCard({ title, description }) {
+  return (
+    <View className="items-center rounded-[24px] border border-[#E4ECE8] bg-white px-6 py-10">
+      <View className="h-14 w-14 items-center justify-center rounded-full bg-[#EAF7F3]">
+        <Ionicons name="sparkles-outline" size={24} color="#0B7A66" />
+      </View>
+      <Text className="mt-4 text-center text-[17px] font-semibold text-[#293231]">{title}</Text>
+      <Text className="mt-2 text-center text-[14px] leading-6 text-[#6B7472]">{description}</Text>
+    </View>
+  );
+}
+
+export function CommunitySectionSkeleton({ variant = "posts" }) {
+  const rows =
+    variant === "workers" ? 3 : variant === "blogs" ? 2 : variant === "messages" ? 4 : 3;
+
+  return (
+    <View>
+      {Array.from({ length: rows }, (_, index) => (
+        <View
+          key={`${variant}-${index}`}
+          className="mb-4 overflow-hidden rounded-[20px] border border-[#E4ECE8] bg-white px-4 py-4"
+        >
+          <View className="mb-3 h-4 w-28 rounded-full bg-[#E6EEEB]" />
+          <View className="mb-2 h-3 rounded-full bg-[#EEF4F1]" />
+          <View className="mb-2 h-3 w-[90%] rounded-full bg-[#EEF4F1]" />
+          <View className="h-3 w-[70%] rounded-full bg-[#EEF4F1]" />
+        </View>
+      ))}
+    </View>
+  );
+}

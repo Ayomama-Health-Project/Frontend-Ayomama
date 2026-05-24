@@ -83,3 +83,36 @@ export function SheetListItem({ title, subtitle, icon = "call", onPress, actionL
     </View>
   );
 }
+
+export function VisitSkeleton() {
+  return (
+    <View className="gap-5">
+      <View className="rounded-[28px] bg-white/70 px-4 py-4">
+        <View className="h-5 w-40 rounded-full bg-[#EAF3F0]" />
+        <View className="mt-4 flex-row gap-3">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <View key={index} className="h-[62px] w-[52px] rounded-[18px] bg-[#F3F7F6]" />
+          ))}
+        </View>
+        <View className="mt-5 h-36 rounded-[24px] bg-[#F7FBFA]" />
+      </View>
+      <View className="rounded-[28px] bg-white px-4 py-4">
+        <View className="h-5 w-36 rounded-full bg-[#EAF3F0]" />
+        <View className="mt-4 h-20 rounded-[20px] bg-[#F7FBFA]" />
+        <View className="mt-3 h-20 rounded-[20px] bg-[#F7FBFA]" />
+      </View>
+    </View>
+  );
+}
+
+export function VisitEmptyState({
+  title = "No visits scheduled yet",
+  description = "Once a visit is added, the full appointment details will appear here.",
+}) {
+  return (
+    <View className="rounded-[24px] border border-[#DDEAE6] bg-white px-5 py-8">
+      <Text className="text-center text-[18px] font-bold text-[#293231]">{title}</Text>
+      <Text className="mt-3 text-center text-[14px] leading-6 text-[#66706E]">{description}</Text>
+    </View>
+  );
+}

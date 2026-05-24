@@ -21,21 +21,29 @@ import { uploadImageToCloudinary } from "../../utils/cloudinary";
 
 export default function EditProfile() {
   const router = useRouter();
-  const { user, updateProfileInformation } = useAppAuth();
+  const { account, updateProfileInformation, refreshUser } = useAppAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [babyName, setBabyName] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [avatar, setAvatar] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      setName(user.name || "");
-      setEmail(user.email || "");
-      setPhone(user.phone || "");
-      setAvatar(user.avatar || "");
+    if (account) {
+      setName(account?.profile?.fullName || "");
+      setEmail(account?.email || "");
+      setPhone(account?.profile?.phoneNumber || "");
+      setAvatar(account?.profilePicture || "");
+      setBabyName(account?.profile?.babyName || account?.profile?.babyNickname || "");
+      setDueDate(
+        account?.profile?.dueDate
+          ? new Date(account.profile.dueDate).toISOString().split("T")[0]
+          : "",
+      );
     }
-  }, [user]);
+  }, [account]);
 
   const getAvatarSource = () => {
     if (avatar && typeof avatar === "string" && avatar.trim() !== "") {
@@ -50,8 +58,10 @@ export default function EditProfile() {
       await updateProfileInformation({
         fullName: name,
         phoneNumber: phone,
+        ...(account?.role === "mother" ? { babyName, babyNickname: babyName, dueDate: dueDate || null } : {}),
         profilePicture: avatar || undefined,
       });
+      await refreshUser();
       Toast.show({
         type: "success",
         text1: "Profile updated",
@@ -152,6 +162,19 @@ export default function EditProfile() {
               <View className="mb-5">
                 <EditableTextField value={email} onChangeText={setEmail} placeholder="Enter your email" editable={false} icon="mail-outline" />
               </View>
+              <View className="mb-10">
+                {account?.role === "mother" ? (
+                  <>
+                    <View className="mb-5">
+                      <EditableTextField value={babyName} onChangeText={setBabyName} placeholder="Enter baby name or nickname" />
+                    </View>
+                    <View className="mb-5">
+                      <EditableTextField value={dueDate} onChangeText={setDueDate} placeholder="YYYY-MM-DD" icon="calendar-outline" />
+                    </View>
+                  </>
+                ) : null}
+              </View>
+
               <View className="mb-10">
                 <EditableTextField value={phone} onChangeText={setPhone} placeholder="Enter your phone number" keyboardType="phone-pad" />
               </View>

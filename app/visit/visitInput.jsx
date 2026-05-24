@@ -1,19 +1,42 @@
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import { Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Toast from "react-native-toast-message";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { motherApi } from "../../services/motherApi";
 
 const VisitInput = () => {
-  const [visitDate, setVisitDate] = useState("dd/mm/yyyy");
-  const [visitTime, setVisitTime] = useState("00:00am");
+  const params = useLocalSearchParams();
+  const [visitDate, setVisitDate] = useState("");
+  const [visitTime, setVisitTime] = useState("");
   const [duration, setDuration] = useState("30 mins");
   const [serviceType, setServiceType] = useState("Antenatal visit");
   const [hospitalName, setHospitalName] = useState("");
   const [healthcareProvider, setHealthcareProvider] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const visitId = params.visitId;
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (!params.visitId) return;
+    const scheduledFor = params.scheduledFor ? new Date(String(params.scheduledFor)) : null;
+    setVisitDate(
+      scheduledFor
+        ? `${String(scheduledFor.getDate()).padStart(2, "0")}/${String(scheduledFor.getMonth() + 1).padStart(2, "0")}/${scheduledFor.getFullYear()}`
+        : "",
+    );
+    setVisitTime(
+      scheduledFor
+        ? scheduledFor.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true }).toLowerCase()
+        : "",
+    );
+    setDuration(params.durationMinutes ? `${params.durationMinutes} mins` : "30 mins");
+    setServiceType(String(params.serviceType || "Antenatal visit"));
+    setHospitalName(String(params.hospitalName || ""));
+    setHealthcareProvider(String(params.healthcareProvider || ""));
+  }, [params]);
+
+  const handleSave = async () => {
     if (!hospitalName || !healthcareProvider) {
       Toast.show({
         type: "error",
@@ -24,13 +47,41 @@ const VisitInput = () => {
       return;
     }
 
-    Toast.show({
-      type: "success",
-      text1: "Visit saved",
-      text2: "Your reminder has been saved locally for now.",
-      position: "top",
-    });
-    router.back();
+    try {
+      setIsSaving(true);
+      const [day, month, year] = visitDate.split("/");
+      const timeBits = visitTime.replace("am", " am").replace("pm", " pm");
+      const scheduledFor = new Date(`${year}-${month}-${day} ${timeBits}`);
+      const payload = {
+        serviceType,
+        hospitalName,
+        healthcareProvider,
+        scheduledFor: scheduledFor.toISOString(),
+        durationMinutes: Number.parseInt(duration, 10) || 30,
+        notes: "",
+      };
+      if (visitId) {
+        await motherApi.updateVisit(visitId, payload);
+      } else {
+        await motherApi.createVisit(payload);
+      }
+      Toast.show({
+        type: "success",
+        text1: visitId ? "Visit updated" : "Visit saved",
+        text2: visitId ? "Your appointment has been updated successfully." : "Your appointment reminder has been saved successfully.",
+        position: "top",
+      });
+      router.back();
+    } catch (_error) {
+      Toast.show({
+        type: "error",
+        text1: "Save failed",
+        text2: "We could not save this visit right now.",
+        position: "top",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -50,7 +101,7 @@ const VisitInput = () => {
             <TouchableOpacity onPress={() => router.back()} activeOpacity={0.82}>
               <Text className="text-[28px] text-[#293231]">←</Text>
             </TouchableOpacity>
-            <Text className="text-[22px] font-bold text-[#333333]">Set Reminder</Text>
+            <Text className="text-[22px] font-bold text-[#333333]">{visitId ? "Edit Visit" : "Set Reminder"}</Text>
             <View className="w-6" />
           </View>
 
@@ -92,10 +143,11 @@ const VisitInput = () => {
           <View className="mt-auto pt-4">
             <TouchableOpacity
               onPress={handleSave}
+              disabled={isSaving}
               activeOpacity={0.85}
-              className="mb-8 mt-4 h-12 items-center justify-center rounded-[16px] bg-[#0B7A66]"
+              className={`mb-8 mt-4 h-12 items-center justify-center rounded-[16px] ${isSaving ? "bg-[#6FAEA4]" : "bg-[#0B7A66]"}`}
             >
-              <Text className="text-[16px] font-semibold text-white">Save Visit</Text>
+              <Text className="text-[16px] font-semibold text-white">{isSaving ? "Saving..." : "Save Visit"}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

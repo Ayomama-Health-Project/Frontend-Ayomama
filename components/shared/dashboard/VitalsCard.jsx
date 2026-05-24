@@ -15,6 +15,11 @@ function VitalTile({ icon, label, value, accent }) {
 }
 
 export default function VitalsCard({ vitals, onOpenUpdate }) {
+  const formatDisplayValue = (value, suffix) => {
+    if (!value) return "--";
+    return /[a-zA-Z°]/.test(String(value)) ? value : `${value}${suffix}`;
+  };
+
   return (
     <Card>
       <Text className="mb-4 text-[18px] font-medium text-[#223130]">Your Vitals Overview</Text>
@@ -26,10 +31,10 @@ export default function VitalsCard({ vitals, onOpenUpdate }) {
         />
       </View>
       <View className="flex-row flex-wrap justify-between gap-y-3">
-        <VitalTile icon="water-outline" label="Blood Pressure" value={vitals.bloodPressure} accent="#FF4D4F" />
-        <VitalTile icon="barbell-outline" label="Weight" value={vitals.weight} accent="#223130" />
-        <VitalTile icon="thermometer-outline" label="Temperature" value={vitals.temperature} accent="#223130" />
-        <VitalTile icon="water-outline" label="Blood Level" value={vitals.bloodLevel} accent="#FF4D4F" />
+        <VitalTile icon="water-outline" label="Blood Pressure" value={formatDisplayValue(vitals.bloodPressure, " mmHg")} accent="#FF4D4F" />
+        <VitalTile icon="barbell-outline" label="Weight" value={formatDisplayValue(vitals.weight, " kg")} accent="#223130" />
+        <VitalTile icon="thermometer-outline" label="Temperature" value={formatDisplayValue(vitals.temperature, "°C")} accent="#223130" />
+        <VitalTile icon="water-outline" label="Blood Level" value={formatDisplayValue(vitals.bloodLevel, " g/dl")} accent="#FF4D4F" />
       </View>
       <TouchableOpacity
         activeOpacity={0.85}

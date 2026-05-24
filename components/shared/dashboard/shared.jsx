@@ -95,3 +95,47 @@ export function Field({ label, value, onChangeText, placeholder, keyboardType = 
     </View>
   );
 }
+
+export function DashboardSkeletonCard({ height = 160 }) {
+  return (
+    <View
+      className="rounded-[28px] border border-[#E3ECE8] bg-white p-4"
+      style={{
+        height,
+        shadowColor: "#0D1B1E",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.05,
+        shadowRadius: 18,
+      }}
+    >
+      <View className="h-5 w-36 rounded-full bg-[#EAF3F0]" />
+      <View className="mt-4 h-4 w-full rounded-full bg-[#F0F6F4]" />
+      <View className="mt-2 h-4 w-[85%] rounded-full bg-[#F0F6F4]" />
+      <View className="mt-2 h-4 w-[70%] rounded-full bg-[#F0F6F4]" />
+      <View className="mt-5 h-10 w-32 rounded-full bg-[#EAF3F0]" />
+    </View>
+  );
+}
+
+export function DashboardScreenSkeleton({ showHeader = true }) {
+  return (
+    <View className="gap-5">
+      {showHeader ? (
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center">
+            <View className="h-12 w-12 rounded-full bg-[#EAF3F0]" />
+            <View className="ml-3">
+              <View className="h-4 w-20 rounded-full bg-[#EAF3F0]" />
+              <View className="mt-2 h-5 w-28 rounded-full bg-[#F0F6F4]" />
+            </View>
+          </View>
+          <View className="h-10 w-10 rounded-full bg-[#EAF3F0]" />
+        </View>
+      ) : null}
+      <DashboardSkeletonCard height={220} />
+      <DashboardSkeletonCard height={150} />
+      <DashboardSkeletonCard height={270} />
+      <DashboardSkeletonCard height={230} />
+    </View>
+  );
+}

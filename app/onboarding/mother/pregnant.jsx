@@ -47,6 +47,7 @@ export default function PregnantOnboarding() {
   const [step, setStep] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [fullName, setFullName] = useState("");
+  const [babyName, setBabyName] = useState("");
   const [address, setAddress] = useState("");
   const [emergencyContacts, setEmergencyContacts] = useState([
     { phone: "", name: "", relationship: "" },
@@ -160,6 +161,7 @@ export default function PregnantOnboarding() {
     () => ({
       selectedLanguage,
       fullName,
+      babyName,
       address,
       emergencyContacts,
       pregnancyType,
@@ -174,6 +176,7 @@ export default function PregnantOnboarding() {
     [
       selectedLanguage,
       fullName,
+      babyName,
       address,
       emergencyContacts,
       pregnancyType,
@@ -208,6 +211,7 @@ export default function PregnantOnboarding() {
 
     setSelectedLanguage(draft.selectedLanguage || account.language || "");
     setFullName(draft.fullName || account.profile?.fullName || "");
+    setBabyName(draft.babyName || account.profile?.babyName || account.profile?.babyNickname || "");
     setAddress(draft.address || account.profile?.address || "");
     setEmergencyContacts(
       restoredEmergencyContacts?.length
@@ -332,6 +336,9 @@ export default function PregnantOnboarding() {
     try {
       await updateProfileInformation({
         fullName,
+        ...(babyName.trim()
+          ? { babyName: babyName.trim(), babyNickname: babyName.trim() }
+          : {}),
         address,
         emergencyContacts: emergencyContacts.map((contact) => ({
           name: contact.name,
@@ -339,9 +346,21 @@ export default function PregnantOnboarding() {
           relationship: contact.relationship,
         })),
         ...(pregnancyType === "weeks" ? { pregnancyWeek: Number(weeks || 0) } : {}),
-        ...(pregnancyType === "last_period"
+        ...(pregnancyType === "unknown"
           ? {
               lastPeriodDate:
+                dateData.year && dateData.month && dateData.day
+                  ? new Date(
+                      `${dateData.year}-${String(
+                        MONTHS.indexOf(dateData.month) + 1,
+                      ).padStart(2, "0")}-${String(dateData.day).padStart(2, "0")}`,
+                    ).toISOString()
+                  : undefined,
+            }
+          : {}),
+        ...(pregnancyType === "due_date"
+          ? {
+              dueDate:
                 dateData.year && dateData.month && dateData.day
                   ? new Date(
                       `${dateData.year}-${String(
@@ -443,6 +462,8 @@ export default function PregnantOnboarding() {
             <PersonalInfoStep
               fullName={fullName}
               setFullName={setFullName}
+              babyName={babyName}
+              setBabyName={setBabyName}
               address={address}
               setAddress={setAddress}
               emergencyContacts={emergencyContacts}

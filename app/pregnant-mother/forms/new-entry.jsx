@@ -4,10 +4,12 @@ import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, TouchableWithoutF
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
+import { motherApi } from "../../../services/motherApi";
 
 export default function NewEntryPage() {
   const router = useRouter();
-  const [entry, setEntry] = useState("Today, my baby smiled for the first time 💞");
+  const [entry, setEntry] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -30,21 +32,45 @@ export default function NewEntryPage() {
         </View>
         <View className="mb-4 mt-auto flex-row gap-4 pt-8">
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => setEntry("")}
             activeOpacity={0.85}
             className="h-12 flex-1 items-center justify-center rounded-[14px] border border-[#0C7A67] bg-white"
           >
-            <Text className="text-[16px] font-semibold text-[#2E3937]">Delete</Text>
+            <Text className="text-[16px] font-semibold text-[#2E3937]">Clear</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              Toast.show({ type: "success", text1: "Note saved", text2: "Journal entry saved locally.", position: "top" });
-              router.back();
+            onPress={async () => {
+              if (!entry.trim()) {
+                Toast.show({ type: "info", text1: "Write something first", text2: "Add a few thoughts before saving your journal entry.", position: "top" });
+                return;
+              }
+              try {
+                setIsSaving(true);
+                const data = await motherApi.fetchDashboardSummary();
+                const existingEntries = data.summary?.journalEntries || [];
+                await motherApi.updateDashboardSummary({
+                  journalEntries: [
+                    {
+                      body: entry.trim(),
+                      meta: "Just now",
+                      createdAtLabel: "Today",
+                    },
+                    ...existingEntries,
+                  ],
+                });
+                Toast.show({ type: "success", text1: "Note saved", text2: "Your journal entry has been added to the dashboard.", position: "top" });
+                router.back();
+              } catch (_error) {
+                Toast.show({ type: "error", text1: "Save failed", text2: "We could not save your journal entry right now.", position: "top" });
+              } finally {
+                setIsSaving(false);
+              }
             }}
+            disabled={isSaving}
             activeOpacity={0.85}
-            className="h-12 flex-1 items-center justify-center rounded-[14px] bg-[#0C7A67]"
+            className={`h-12 flex-1 items-center justify-center rounded-[14px] ${isSaving ? "bg-[#6BAFA2]" : "bg-[#0C7A67]"}`}
           >
-            <Text className="text-[16px] font-semibold text-white">Save Note</Text>
+            <Text className="text-[16px] font-semibold text-white">{isSaving ? "Saving..." : "Save Note"}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

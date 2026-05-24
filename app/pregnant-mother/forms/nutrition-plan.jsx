@@ -1,10 +1,12 @@
 import { Tabs, TabsTab, TabsTabList, TabsTabPanel, TabsTabPanels, Text } from "@gluestack-ui/themed";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image, TouchableOpacity, View } from "react-native";
 import PageHeader from "../../../components/pregnant-mother/forms/PageHeader";
 import { INITIAL_MEALS } from "../../../components/shared/dashboard/constants";
+import { motherApi } from "../../../services/motherApi";
 
 function Macro({ color, label }) {
   return (
@@ -50,11 +52,19 @@ function MealCard({ item }) {
 
 export default function NutritionPlanPage() {
   const router = useRouter();
-  const grouped = {
-    Breakfast: INITIAL_MEALS.filter((item) => item.category === "Breakfast"),
-    Lunch: INITIAL_MEALS.filter((item) => item.category === "Lunch"),
-    Dinner: INITIAL_MEALS.filter((item) => item.category === "Dinner"),
-  };
+  const [meals, setMeals] = useState(INITIAL_MEALS);
+
+  useEffect(() => {
+    motherApi.fetchDashboardSummary().then((data) => {
+      setMeals((data.summary?.nutritionPlan || []).length ? data.summary.nutritionPlan : INITIAL_MEALS);
+    }).catch(() => setMeals(INITIAL_MEALS));
+  }, []);
+
+  const grouped = useMemo(() => ({
+    Breakfast: meals.filter((item) => item.category === "Breakfast"),
+    Lunch: meals.filter((item) => item.category === "Lunch"),
+    Dinner: meals.filter((item) => item.category === "Dinner"),
+  }), [meals]);
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={["top", "bottom"]}>

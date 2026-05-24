@@ -3,12 +3,30 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Image, Text, View } from "react-native";
 import { PillButton } from "./shared";
 
-export default function UpcomingVisitCard({ onViewDetails, onAddToCalendar }) {
+export default function UpcomingVisitCard({
+  appointment,
+  onViewDetails,
+  onAddToCalendar,
+  cardTitle = "Upcoming Visit",
+  primaryActionLabel = "View Details",
+  secondaryActionLabel = "Add to Calendar",
+  hideSecondaryAction = false,
+}) {
+  const title = appointment?.serviceType || "Tomorrow, Antenatal Checkup!";
+  const dateLabel = appointment?.scheduledFor
+    ? new Date(appointment.scheduledFor).toLocaleString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        day: "numeric",
+        month: "short",
+      })
+    : "10:30 am July 20th";
+
   return (
     <View>
       <View className="mb-4 flex-row items-center">
         <Ionicons name="calendar-outline" size={20} color="#223130" />
-        <Text className="ml-2 text-[18px] font-bold text-[#223130]">Upcoming Visit</Text>
+        <Text className="ml-2 text-[18px] font-bold text-[#223130]">{cardTitle}</Text>
       </View>
       <LinearGradient
         colors={["#DFF4EE", "#FBE4DA"]}
@@ -17,8 +35,8 @@ export default function UpcomingVisitCard({ onViewDetails, onAddToCalendar }) {
         style={{ borderRadius: 28, padding: 16 }}
       >
         <View className="items-center">
-          <Text className="text-center text-[18px] font-bold text-[#223130]">Tomorrow, Antenatal Checkup!</Text>
-          <Text className="mt-1 text-[13px] text-[#243533]">10:30 am July 20th</Text>
+          <Text className="text-center text-[18px] font-bold text-[#223130]">{title}</Text>
+          <Text className="mt-1 text-[13px] text-[#243533]">{dateLabel}</Text>
         </View>
         <Image
           source={require("../../../assets/images/clinicVisit.png")}
@@ -28,11 +46,13 @@ export default function UpcomingVisitCard({ onViewDetails, onAddToCalendar }) {
       </LinearGradient>
       <View className="mt-4 flex-row gap-3">
         <View className="flex-1">
-          <PillButton label="View Details" onPress={onViewDetails} />
+          <PillButton label={primaryActionLabel} onPress={onViewDetails} />
         </View>
-        <View className="flex-1">
-          <PillButton label="Add to Calendar" tone="secondary" onPress={onAddToCalendar} />
-        </View>
+        {!hideSecondaryAction ? (
+          <View className="flex-1">
+            <PillButton label={secondaryActionLabel} tone="secondary" onPress={onAddToCalendar} />
+          </View>
+        ) : null}
       </View>
     </View>
   );

@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { Alert, Linking } from "react-native";
 import Toast from "react-native-toast-message";
 import SharedProfileScreen from "../../components/shared/profile/SharedProfileScreen";
 import useAppAuth from "../../hooks/useAppAuth";
@@ -9,7 +10,7 @@ import { useTranslation } from "../../utils/translator";
 
 export default function PartnerProfile() {
   const router = useRouter();
-  const { account, logout, saveNotificationToken, deleteNotificationToken } =
+  const { account, logout, saveNotificationToken, deleteNotificationToken, refreshUser } =
     useAppAuth();
   const [notificationsOn, setNotificationsOn] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -28,6 +29,20 @@ export default function PartnerProfile() {
   useEffect(() => {
     setNotificationsOn(Boolean(account?.notifications?.enabled));
   }, [account]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshUser().catch(() => null);
+    }, [refreshUser]),
+  );
+
+  const avatarSource = useMemo(
+    () =>
+      account?.profilePicture
+        ? { uri: account.profilePicture }
+        : null,
+    [account?.profilePicture],
+  );
 
   const handleToggleNotifications = async (value) => {
     const nextValue = typeof value === "boolean" ? value : !notificationsOn;
@@ -70,11 +85,7 @@ export default function PartnerProfile() {
     <SharedProfileScreen
       name={account?.profile?.fullName || partnerText}
       email={account?.email || "partner@ayomama.app"}
-      avatar={
-        account?.profilePicture
-          ? { uri: account.profilePicture }
-          : require("../../assets/images/profilepic.png")
-      }
+      avatar={avatarSource}
       roleLabel={profileText}
       subtitle={supportingText}
       notificationEnabled={notificationsOn}
@@ -83,20 +94,17 @@ export default function PartnerProfile() {
       onLanguage={() => router.push("/language-picker")}
       onSecurity={() => router.push("/profile/Security")}
       onHelp={() =>
-        Toast.show({
-          type: "info",
-          text1: helpCenterText,
-          text2: "Help center is coming soon.",
-          position: "top",
-        })
+        router.push("/chat/SmartChat")
       }
       onBug={() =>
-        Toast.show({
-          type: "info",
-          text1: reportBugText,
-          text2: "Bug reporting is coming soon.",
-          position: "top",
-        })
+        Linking.openURL("mailto:support@ayomama.app?subject=AYOMAMA%20Bug%20Report").catch(() =>
+          Toast.show({
+            type: "error",
+            text1: reportBugText,
+            text2: "We could not open your mail app right now.",
+            position: "top",
+          }),
+        )
       }
       onLogout={handleLogout}
       isLoggingOut={isLoggingOut}

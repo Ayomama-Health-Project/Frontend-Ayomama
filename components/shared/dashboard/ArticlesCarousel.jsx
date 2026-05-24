@@ -8,7 +8,7 @@ export default function ArticlesCarousel({ articles }) {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 16 }}>
         {articles.map((article) => (
           <Card key={article.id} className="mr-4 w-[220px] p-0 overflow-hidden">
-            <Image source={{ uri: article.image }} className="h-32 w-full" />
+            <Image source={{ uri: article.image || article.coverImage }} className="h-32 w-full" />
             <View className="p-3">
               <View className="self-start rounded-full bg-[#E9F7F3] px-3 py-1">
                 <Text className="text-[11px] font-semibold text-[#006D5B]">{article.category}</Text>

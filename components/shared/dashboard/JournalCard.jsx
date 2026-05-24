@@ -6,8 +6,11 @@ export default function JournalCard({ entries, onAddEntry }) {
     <Card>
       <SectionTitle icon="book-outline" title="Journal & Reflection" />
       <View className="gap-3">
-        {entries.map((entry) => (
-          <View key={entry.id} className="rounded-[22px] border border-[#E8EFEC] bg-[#FBFCFC] px-4 py-4">
+        {entries.map((entry, index) => (
+          <View
+            key={entry.id || entry._id || `${entry.meta || "journal"}-${index}`}
+            className="rounded-[22px] border border-[#E8EFEC] bg-[#FBFCFC] px-4 py-4"
+          >
             <Text className="text-[13px] leading-6 text-[#243533]">{entry.body}</Text>
             <Text className="mt-3 text-[11px] text-[#7A8784]">{entry.meta}</Text>
           </View>

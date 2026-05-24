@@ -6,8 +6,11 @@ export default function NutritionCard({ meals, onEditPlan }) {
     <Card>
       <SectionTitle title="Nutrition Today" rightLabel="Edit Plan" onPressRight={onEditPlan} />
       <View className="gap-3">
-        {meals.map((item) => (
-          <View key={item.id} className="rounded-[22px] border border-[#E8EFEC] bg-[#FBFCFC] px-4 py-3">
+        {meals.map((item, index) => (
+          <View
+            key={item.id || item._id || `${item.category || "meal"}-${item.meal || "entry"}-${index}`}
+            className="rounded-[22px] border border-[#E8EFEC] bg-[#FBFCFC] px-4 py-3"
+          >
             <View className="flex-row items-center justify-between">
               <Text className="text-[12px] font-semibold uppercase tracking-[1px] text-[#006D5B]">
                 {item.category}
