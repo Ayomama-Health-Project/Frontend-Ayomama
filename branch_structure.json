@@ -1,0 +1,24 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "Dev",
+    "README",
+    "development",
+    "ft/language",
+    "main"
+  ],
+  "parent": {
+    "Dev": "main",
+    "README": "main",
+    "development": "main",
+    "ft/language": "main",
+    "main": null
+  },
+  "order": [
+    "main",
+    "Dev",
+    "README",
+    "development",
+    "ft/language"
+  ]
+}
