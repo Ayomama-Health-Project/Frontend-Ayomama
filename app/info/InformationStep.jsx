@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 import PickerModal from "../../components/PickerModal";
-import useAuthStore from "../../store/useAuthStore";
+import useMockAuth from "../../hooks/useMockAuth";
 import { useTranslation } from "../../utils/translator";
 
 export default function InformationStep({ onNext, onBack }) {
@@ -20,7 +20,7 @@ export default function InformationStep({ onNext, onBack }) {
     updateProfileInformation,
     isLoading: authLoading,
     user,
-  } = useAuthStore();
+  } = useMockAuth();
 
   const [fullName, setFullName] = useState(user?.name || "");
   const [address, setAddress] = useState(user?.address || "");
@@ -475,7 +475,6 @@ export default function InformationStep({ onNext, onBack }) {
         </ScrollView>
 
         {/* Toast component */}
-        <Toast />
       </View>
     </TouchableWithoutFeedback>
   );

@@ -1,6 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRef, useState } from "react";
 import { Dimensions, FlatList, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Antenatal from "./AntenatalStep";
 import Information from "./InformationStep";
 import Language from "./LanguageStep";
@@ -37,7 +38,7 @@ export default function InfoCarousel() {
   };
 
   return (
-    <View className="flex-1 pt-4">
+    <SafeAreaView className="flex-1 pt-4" edges={["top"]}>
       <LinearGradient
         colors={["#B5FFFC", "#FFDEE9"]}
         style={{
@@ -50,7 +51,7 @@ export default function InfoCarousel() {
         }}
       />
       {/* Pagination dots at the top inside the bg */}
-      <View className="flex-row justify-center items-center pt-12 pb-4 z-10">
+      <View className="flex-row justify-center items-center pt-4 pb-4 z-10">
         {steps.map((_, idx) => (
           <View
             key={idx}
@@ -90,6 +91,6 @@ export default function InfoCarousel() {
         extraData={currentIndex}
         style={{ zIndex: 1 }}
       />
-    </View>
+    </SafeAreaView>
   );
 }

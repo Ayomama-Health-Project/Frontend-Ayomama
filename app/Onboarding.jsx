@@ -1,6 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -10,6 +11,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useRedirectAuthenticatedUser from "../hooks/useRedirectAuthenticatedUser";
+import { getAccountAppRoute } from "../utils/authRoutes";
 import { useTranslation } from "../utils/translator";
 
 const { width } = Dimensions.get("window");
@@ -17,64 +20,149 @@ const { width } = Dimensions.get("window");
 const Onboarding = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
+  const isTransitioning = useRef(false);
   const router = useRouter();
+  const { isCheckingAuthScreenAccess } = useRedirectAuthenticatedUser(getAccountAppRoute);
 
   // Translate all text
   const slide1Text = useTranslation(
-    "Your pregnancy journey guided with care and love"
+    "Your pregnancy journey guided with care and love",
   );
   const slide2Text = useTranslation(
-    "Together with your partner every step of the way"
+    "A circle of mothers, bound by love and care",
   );
-  const signUpText = useTranslation("Sign Up");
-  const logInText = useTranslation("Log In");
+  const slide3Text = useTranslation(
+    "A circle of mothers, bound by love and care",
+  );
+  const slide4Text = useTranslation("A soft way to move through motherhood");
+  const slide5Text = useTranslation("Help is always near just one tap away");
+  const slide6Text = useTranslation(
+    "We're here with you from pregnancy to postpartum",
+  );
+  const slide7Text = useTranslation("Keep track of all your patients");
 
-  const slides = [
-    {
-      key: "1",
-      title: slide1Text,
-      image: require("../assets/images/Pregnantblackwoman.png"),
-    },
-    {
-      key: "2",
-      title: slide2Text,
-      image: require("../assets/images/Husbandandwife.png"),
-    },
-  ];
+  const signInText = useTranslation("Sign in");
+  const signUpText = useTranslation("Sign up");
+  const skipText = useTranslation("Skip");
+
+  const slides = useMemo(
+    () => [
+      {
+        title: slide1Text,
+        image: require("../assets/images/Pregnantblackwoman.png"),
+      },
+      {
+        title: slide2Text,
+        image: require("../assets/images/Husbandandwife.png"),
+      },
+      {
+        title: slide3Text,
+        image: require("../assets/images/women.png"),
+      },
+      {
+        title: slide4Text,
+        image: require("../assets/images/motherandbaby.png"),
+      },
+      {
+        title: slide5Text,
+        image: require("../assets/images/healthworker.png"),
+      },
+      {
+        title: slide6Text,
+        image: require("../assets/images/healthworkerandmother.png"),
+      },
+      {
+        title: slide7Text,
+        image: require("../assets/images/nurse.png"),
+      },
+    ],
+    [
+      slide1Text,
+      slide2Text,
+      slide3Text,
+      slide4Text,
+      slide5Text,
+      slide6Text,
+      slide7Text,
+    ],
+  );
+
+  // Extended data: append a clone of the first slide for seamless looping
+  const extendedData = useMemo(
+    () => [...slides, { ...slides[0], _clone: true }],
+    [slides],
+  );
+
+  const getItemLayout = useCallback(
+    (_, index) => ({
+      length: width,
+      offset: width * index,
+      index,
+    }),
+    [],
+  );
 
   const handleScroll = (event) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / width);
-    setCurrentIndex(index);
+    if (index < slides.length) {
+      setCurrentIndex(index);
+    } else {
+      setCurrentIndex(0);
+    }
   };
 
   const renderItem = ({ item }) => (
     <View style={{ width }} className="flex-1 items-center justify-center px-5">
       <Image
         source={item.image}
-        className="w-[500px] h-[450px] mb-5"
+        className="w-[400px] h-[400px] mb-5"
         resizeMode="contain"
       />
-      <Text className="text-2xl font-bold text-center w-11/12 mb-4">
+      <Text className="text-[24px] font-bold text-center text-[#293231] w-[90%] leading-8">
         {item.title}
       </Text>
     </View>
   );
 
-  // Automatic slide
+  // Infinite auto-scroll: animate to clone, then silently reset
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => {
-        const nextIndex = (prevIndex + 1) % slides.length;
-        flatListRef.current?.scrollToIndex({
-          index: nextIndex,
-          animated: true,
-        });
-        return nextIndex;
+      if (isTransitioning.current) return;
+
+      setCurrentIndex((prev) => {
+        const next = prev + 1;
+
+        if (next >= slides.length) {
+          // Animate to the clone (last item in extendedData)
+          isTransitioning.current = true;
+          flatListRef.current?.scrollToIndex({
+            index: slides.length,
+            animated: true,
+          });
+
+          // After animation completes, silently jump back to real first slide
+          setTimeout(() => {
+            flatListRef.current?.scrollToOffset({
+              offset: 0,
+              animated: false,
+            });
+            isTransitioning.current = false;
+          }, 600);
+
+          return 0;
+        }
+
+        flatListRef.current?.scrollToIndex({ index: next, animated: true });
+        return next;
       });
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [slides.length]);
+
+  if (isCheckingAuthScreenAccess) {
+    return null;
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -88,8 +176,9 @@ const Onboarding = () => {
           left: 0,
         }}
       />
+
       {/* Logo */}
-      <View className="mt-5 ml-5 items-start">
+      <View className="px-5 items-start">
         <Image
           source={require("../assets/images/AyomamaLogo.png")}
           className="w-24 h-24"
@@ -100,44 +189,46 @@ const Onboarding = () => {
       {/* Carousel */}
       <FlatList
         ref={flatListRef}
-        data={slides}
+        data={extendedData}
         renderItem={renderItem}
-        keyExtractor={(item) => item.key}
+        keyExtractor={(_, i) => String(i)}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
+        scrollEventThrottle={16}
+        getItemLayout={getItemLayout}
+        initialNumToRender={2}
+        maxToRenderPerBatch={3}
+        windowSize={3}
       />
 
-      {/*Pagination Dots */}
-      <View className="flex-row justify-center items-center mt-4">
-        {slides.map((_, dotIndex) => (
-          <View
-            key={dotIndex}
-            className={`mx-1 rounded-full ${
-              currentIndex === dotIndex
-                ? "bg-black w-3 h-3"
-                : "bg-gray-300 w-2.5 h-2.5"
-            }`}
-          />
-        ))}
-      </View>
+      {/* Bottom Section */}
+      <View className="px-5 pb-3">
+        {/* Action Buttons */}
+        <View className="flex-row justify-center gap-4 mb-2">
+          {/* Sign In Button */}
+          <TouchableOpacity
+            className="flex-1 flex-row items-center justify-center border-2 border-[#293231] py-3.5 rounded-2xl"
+            onPress={() => router.push("/account/selection?action=login")}
+          >
+            <Text className="text-[#293231] text-[15px] font-bold mr-2">
+              {signInText}
+            </Text>
+            <Ionicons name="arrow-forward" size={18} color="#293231" />
+          </TouchableOpacity>
 
-      {/* Buttons */}
-      <View className="flex-row justify-center gap-4 mb-8 mt-6">
-        <TouchableOpacity
-          className="bg-black py-3 px-8 rounded-full"
-          onPress={() => router.push("/AccountSelection?action=signup")}
-        >
-          <Text className="text-white text-base font-bold">{signUpText}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className="border-2 border-black py-3 px-8 rounded-full"
-          onPress={() => router.push("/AccountSelection?action=login")}
-        >
-          <Text className="text-black text-base font-bold">{logInText}</Text>
-        </TouchableOpacity>
+          {/* Sign Up Button */}
+          <TouchableOpacity
+            className="flex-1 flex-row items-center justify-center bg-[#006D5B] py-3.5 rounded-2xl"
+            onPress={() => router.push("/account/selection?action=signup")}
+          >
+            <Text className="text-white text-[15px] font-bold mr-2">
+              {signUpText}
+            </Text>
+            <Ionicons name="arrow-forward" size={18} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );

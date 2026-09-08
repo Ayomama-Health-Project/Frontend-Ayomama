@@ -1,511 +1,512 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Image,
-  KeyboardAvoidingView,
-  Platform,
+  RefreshControl,
   ScrollView,
-  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import CommentInputModal from "../../components/community/CommentInputModal";
-import ReplyModal from "../../components/community/ReplyModal";
-import ViewCommentsModal from "../../components/community/ViewCommentsModal";
-import { useTranslation } from "../../utils/translator";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  BackHeader,
+  CommunitySectionSkeleton,
+  CommunityTabs,
+  EmptyStateCard,
+} from "../../components/shared/hub/shared";
+import { motherApi } from "../../services/motherApi";
 
-const isIOS = Platform.OS === "ios";
+function formatRelativeDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  const diffMs = Date.now() - date.getTime();
+  const diffHours = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60)));
+  if (diffHours < 1) return "Just now";
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+}
 
-export default function Community() {
+function getProfileImage(profilePicture) {
+  if (profilePicture) {
+    return { uri: profilePicture };
+  }
+  return require("../../assets/images/profilepic.png");
+}
+
+function PostCard({ item, onToggleLike, onComment, onReply }) {
+  return (
+    <View
+      className="mb-5 rounded-[18px] bg-[#F3F6F4] px-4 py-4"
+      style={{ borderLeftWidth: 3, borderLeftColor: "#FF8A57" }}
+    >
+      <View className="flex-row">
+        <Image source={getProfileImage(item.author?.profilePicture)} className="mr-3 h-12 w-12 rounded-full" />
+        <View className="flex-1">
+          <View className="flex-row items-start justify-between">
+            <Text className="text-[16px] font-bold text-[#293231]">{item.author?.fullName || "AYOMAMA User"}</Text>
+            <Text className="text-[14px] font-semibold text-[#0B7A66]">{formatRelativeDate(item.createdAt)}</Text>
+          </View>
+          <Text className="mt-2 text-[16px] leading-7 text-[#293231]">{item.content}</Text>
+          {!!item.comments?.length && (
+            <View className="mt-3 gap-2 rounded-[14px] bg-white px-3 py-3">
+              {item.comments.slice(0, 2).map((comment) => (
+                <View key={comment.id} className="border-b border-[#EEF2F0] pb-2">
+                  <Text className="text-[13px] font-semibold text-[#293231]">{comment.authorName}</Text>
+                  <Text className="mt-1 text-[13px] leading-6 text-[#56615E]">{comment.content}</Text>
+                  <View className="mt-2 flex-row items-center gap-3">
+                    <Text className="text-[11px] text-[#81908B]">{formatRelativeDate(comment.createdAt)}</Text>
+                    <TouchableOpacity onPress={() => onReply(item.id, comment.id)} activeOpacity={0.82}>
+                      <Text className="text-[12px] font-semibold text-[#0B7A66]">Reply</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+          <View className="mt-3 flex-row items-center justify-end gap-4">
+            <TouchableOpacity onPress={() => onToggleLike(item.id)} activeOpacity={0.82}>
+              <Text className="text-[14px] text-[#0B7A66]">{item.liked ? "♥" : "♡"} {item.likes}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => onComment(item.id)} activeOpacity={0.82}>
+              <Text className="text-[14px] text-[#0B7A66]">◧ {item.commentsCount || 0}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => onComment(item.id)} activeOpacity={0.82}>
+              <Text className="text-[14px] font-semibold text-[#0B7A66]">Comment</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function ThreadRow({ item, onPress }) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.82}
+      className="mb-4 flex-row items-center border-b border-[#D8E0DD] pb-4"
+    >
+      <Image source={getProfileImage(item.participant?.profilePicture)} className="mr-4 h-11 w-11 rounded-full" />
+      <View className="flex-1">
+        <View className="flex-row items-center justify-between">
+          <Text className="text-[16px] font-bold text-[#293231]">{item.title}</Text>
+          <Text className="text-[14px] font-semibold text-[#0B7A66]">
+            {formatRelativeDate(item.latestMessageAt)}
+          </Text>
+        </View>
+        <Text className="mt-1 text-[15px] text-[#3D4644]">{item.preview}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+function WorkerCard({ item, onPress, onToggleFollow }) {
+  return (
+    <View className="mb-5 rounded-[18px] bg-white px-3 py-3">
+      <TouchableOpacity onPress={onPress} activeOpacity={0.82} className="flex-row items-center">
+        <Image source={getProfileImage(item.profilePicture)} className="mr-4 h-16 w-16 rounded-full border-2 border-[#0B7A66]" />
+        <View className="flex-1">
+          <Text className="text-[16px] font-bold text-[#293231]">{item.fullName}</Text>
+          <Text className="mt-1 text-[15px] text-[#3D4644]">{item.role}</Text>
+          <Text className="mt-2 text-[15px] font-bold text-[#00D2B3]">
+            {item.following ? "Following" : "Not following"}
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <View className="mt-4 flex-row gap-3">
+        <TouchableOpacity
+          onPress={() => onToggleFollow(item.id)}
+          activeOpacity={0.82}
+          className={`flex-1 items-center justify-center rounded-[14px] px-4 py-3 ${item.following ? "border border-[#00D2B3] bg-white" : "bg-[#0B7A66]"}`}
+        >
+          <Text className={`text-[14px] font-medium ${item.following ? "text-[#293231]" : "text-white"}`}>
+            {item.following ? "Unfollow" : "Follow"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={onPress}
+          activeOpacity={0.82}
+          className="rounded-[14px] bg-[#F8ECE5] px-4 py-3"
+        >
+          <Text className="text-[14px] font-medium text-[#293231]">Message</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+function BlogCard({ item }) {
+  return (
+    <View className="mb-6 overflow-hidden rounded-[20px] border border-[#E6ECE9] bg-white">
+      <Image
+        source={item.coverImage ? { uri: item.coverImage } : require("../../assets/images/profilepic.png")}
+        style={{ width: "100%", height: 160 }}
+        resizeMode="cover"
+      />
+      <View className="px-4 py-4">
+        <View className="self-start rounded-full bg-[#F7EDE8] px-3 py-1">
+          <Text className="text-[12px] text-[#8A817D]">{item.category}</Text>
+        </View>
+        <Text className="mt-3 text-[17px] font-medium text-[#293231]">{item.title}</Text>
+        <Text className="mt-2 text-[15px] text-[#697270]">{item.excerpt}</Text>
+        <View className="mt-4 border-t border-[#E8E8E8] pt-4">
+          <Text className="text-[14px] text-[#8C8C8C]">
+            {item.publishedAt ? new Date(item.publishedAt).toLocaleDateString() : ""}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+export default function CommunityScreen() {
   const router = useRouter();
-  const [messageText, setMessageText] = useState("");
+  const params = useLocalSearchParams();
+  const [active, setActive] = useState("community");
+  const [search, setSearch] = useState("");
+  const [composerText, setComposerText] = useState("");
+  const [replyTarget, setReplyTarget] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [threads, setThreads] = useState([]);
+  const [workers, setWorkers] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState({
+    posts: true,
+    threads: true,
+    workers: true,
+    blogs: true,
+  });
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Translate all text
-  const communityText = useTranslation("Community");
-  const replySentText = useTranslation("Reply sent! 💬");
-  const replyPostedText = useTranslation("Your reply has been posted");
-  const commentAddedText = useTranslation("Comment added! 💬");
-  const commentPostedText = useTranslation("Your comment has been posted");
-  const messageSentText = useTranslation("Message sent! 📨");
-  const messagePostedText = useTranslation(
-    "Your message has been posted to the community"
+  const requestedTab = String(params.tab || "community");
+
+  useEffect(() => {
+    if (["community", "messages", "workers", "blogs"].includes(requestedTab)) {
+      setActive(requestedTab);
+    }
+  }, [requestedTab]);
+
+  const loadCommunity = async () => {
+    const results = await Promise.allSettled([
+      motherApi.fetchCommunityPosts(),
+      motherApi.fetchCommunityThreads(),
+      motherApi.fetchCommunityHealthWorkers(),
+      motherApi.fetchBlogs(),
+    ]);
+
+    if (results[0].status === "fulfilled") {
+      setPosts(results[0].value);
+    }
+    if (results[1].status === "fulfilled") {
+      setThreads(results[1].value);
+    }
+    if (results[2].status === "fulfilled") {
+      setWorkers(results[2].value);
+    }
+    if (results[3].status === "fulfilled") {
+      setBlogs(results[3].value);
+    }
+
+    setLoading({
+      posts: false,
+      threads: false,
+      workers: false,
+      blogs: false,
+    });
+  };
+
+  useEffect(() => {
+    loadCommunity().catch(() => {
+      setLoading({
+        posts: false,
+        threads: false,
+        workers: false,
+        blogs: false,
+      });
+      Toast.show({
+        type: "error",
+        text1: "Community unavailable",
+        text2: "We could not load the community right now.",
+        position: "top",
+      });
+    });
+  }, []);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadCommunity();
+    } catch (_error) {
+      Toast.show({
+        type: "error",
+        text1: "Refresh failed",
+        text2: "Please try again in a moment.",
+        position: "top",
+      });
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const filteredPosts = useMemo(
+    () =>
+      posts.filter((item) =>
+        [item.author?.fullName, item.content].join(" ").toLowerCase().includes(search.toLowerCase()),
+      ),
+    [posts, search],
   );
-  const shareThoughtsText = useTranslation(
-    "Share your thoughts with other mothers..."
+  const filteredThreads = useMemo(
+    () =>
+      threads.filter((item) =>
+        [item.title, item.preview].join(" ").toLowerCase().includes(search.toLowerCase()),
+      ),
+    [threads, search],
   );
-  const repliesText = useTranslation("Replies");
-  const replyText = useTranslation("Reply");
-  const commentText = useTranslation("Comment");
-  const viewCommentsText = useTranslation("View Comments");
+  const filteredWorkers = useMemo(
+    () =>
+      workers.filter((item) =>
+        [item.fullName, item.role].join(" ").toLowerCase().includes(search.toLowerCase()),
+      ),
+    [workers, search],
+  );
+  const filteredBlogs = useMemo(
+    () =>
+      blogs.filter((item) =>
+        [item.title, item.excerpt, item.category].join(" ").toLowerCase().includes(search.toLowerCase()),
+      ),
+    [blogs, search],
+  );
 
-  // Modal states
-  const [replyModalVisible, setReplyModalVisible] = useState(false);
-  const [commentModalVisible, setCommentModalVisible] = useState(false);
-  const [viewCommentsModalVisible, setViewCommentsModalVisible] =
-    useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [replyTextInput, setReplyTextInput] = useState("");
-  const [commentTextInput, setCommentTextInput] = useState("");
-  const [expandedReplies, setExpandedReplies] = useState({});
+  const handleCreate = async () => {
+    const trimmed = composerText.trim();
+    if (!trimmed) return;
 
-  // Mock community posts data with replies and comments
-  const posts = [
-    {
-      id: 1,
-      author: "Mama Zee",
-      avatar: require("../../assets/images/profilepic.png"),
-      content:
-        "My people 😊 who else no dey sleep well? This pikin don turn DJ for my belle.",
-      isLiked: false,
-      borderColor: "#00D2B3",
-      replies: [],
-      comments: [],
-      repliesCount: 0,
-      commentsCount: 0,
-      likesCount: 12,
-    },
-    {
-      id: 2,
-      author: "Mama Zee",
-      avatar: require("../../assets/images/profilepic.png"),
-      content:
-        "Na so e dey start o! The baby dey practice legwork for inside womb",
-      isLiked: false,
-      borderColor: "#FF7F50",
-      replies: [],
-      comments: [],
-      repliesCount: 0,
-      commentsCount: 0,
-      likesCount: 8,
-    },
-    {
-      id: 3,
-      author: "Mama Zee",
-      avatar: require("../../assets/images/profilepic.png"),
-      content:
-        "My people 😊 who else no dey sleep well? This pikin don turn DJ for my belle.",
-      isLiked: false,
-      borderColor: "#00D2B3",
-      replies: [],
-      comments: [],
-      repliesCount: 0,
-      commentsCount: 0,
-      likesCount: 15,
-    },
-    {
-      id: 4,
-      author: "Mama Zee",
-      avatar: require("../../assets/images/profilepic.png"),
-      content:
-        "My people 😊 who else no dey sleep well? This pikin don turn DJ for my belle.",
-      isLiked: false,
-      borderColor: "#FF7F50",
-      replies: [],
-      comments: [],
-      repliesCount: 0,
-      commentsCount: 0,
-      likesCount: 5,
-    },
-    {
-      id: 5,
-      author: "Mama Zee",
-      avatar: require("../../assets/images/profilepic.png"),
-      content:
-        "My people 😊 who else no dey sleep well? This pikin don turn DJ for my belle.",
-      isLiked: false,
-      borderColor: "#00D2B3",
-      replies: [],
-      comments: [],
-      repliesCount: 0,
-      commentsCount: 0,
-      likesCount: 20,
-    },
-  ];
-
-  const [postsState, setPostsState] = useState(posts);
-
-  const handleLike = (postId) => {
-    setPostsState((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? {
-              ...post,
-              isLiked: !post.isLiked,
-              likesCount: post.isLiked
-                ? post.likesCount - 1
-                : post.likesCount + 1,
-            }
-          : post
-      )
-    );
+    try {
+      if (active === "community") {
+        const created = await motherApi.createCommunityPost({ content: trimmed });
+        setPosts((prev) => [created, ...prev]);
+      } else if (active === "messages") {
+        const created = await motherApi.createCommunityThread({ title: trimmed });
+        setThreads((prev) => [created, ...prev]);
+      } else if (replyTarget?.postId) {
+        const updated = await motherApi.addCommunityComment(replyTarget.postId, {
+          content: trimmed,
+          ...(replyTarget.commentId ? { parentCommentId: replyTarget.commentId } : {}),
+        });
+        setPosts((prev) => prev.map((post) => (post.id === updated.id ? updated : post)));
+        setReplyTarget(null);
+      }
+      setComposerText("");
+    } catch (_error) {
+      Toast.show({
+        type: "error",
+        text1: "Action failed",
+        text2: "We could not save that right now.",
+        position: "top",
+      });
+    }
   };
 
-  const handleReply = (post) => {
-    setSelectedPost(post);
-    setReplyModalVisible(true);
+  const handleToggleLike = async (postId) => {
+    try {
+      const updated = await motherApi.toggleCommunityPostLike(postId);
+      setPosts((prev) => prev.map((post) => (post.id === updated.id ? updated : post)));
+    } catch (_error) {
+      Toast.show({
+        type: "error",
+        text1: "Like failed",
+        text2: "We could not update that reaction right now.",
+        position: "top",
+      });
+    }
   };
 
-  const handleComment = (post) => {
-    setSelectedPost(post);
-    setCommentModalVisible(true);
-  };
-
-  const handleViewComments = (post) => {
-    setSelectedPost(post);
-    setViewCommentsModalVisible(true);
-  };
-
-  const toggleReplies = (postId) => {
-    setExpandedReplies((prev) => ({
-      ...prev,
-      [postId]: !prev[postId],
-    }));
-  };
-
-  const submitReply = () => {
-    if (replyTextInput.trim() && selectedPost) {
-      const newReply = {
-        id: Date.now(),
-        author: "You",
-        avatar: require("../../assets/images/profilepic.png"),
-        content: replyTextInput,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-
-      setPostsState((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === selectedPost.id
-            ? {
-                ...post,
-                replies: [...post.replies, newReply],
-                repliesCount: post.repliesCount + 1,
-              }
-            : post
-        )
+  const handleToggleFollow = async (workerId) => {
+    try {
+      const updated = await motherApi.toggleHealthWorkerFollow(workerId);
+      setWorkers((prev) =>
+        prev.map((worker) =>
+          worker.id === updated.workerId ? { ...worker, following: updated.following } : worker,
+        ),
       );
-
+    } catch (_error) {
       Toast.show({
-        type: "success",
-        text1: replySentText,
-        text2: replyPostedText,
+        type: "error",
+        text1: "Follow failed",
+        text2: "We could not update this health worker right now.",
         position: "top",
-        visibilityTime: 2000,
       });
-
-      setReplyTextInput("");
-      setReplyModalVisible(false);
-      setSelectedPost(null);
     }
   };
 
-  const submitComment = () => {
-    if (commentTextInput.trim() && selectedPost) {
-      const newComment = {
-        id: Date.now(),
-        author: "You",
-        avatar: require("../../assets/images/profilepic.png"),
-        content: commentTextInput,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
+  const renderSection = () => {
+    if (active === "community") {
+      if (loading.posts) return <CommunitySectionSkeleton variant="posts" />;
+      if (!filteredPosts.length) {
+        return (
+          <EmptyStateCard
+            title="No community posts yet"
+            description="When posts are available, they will show up here for you to read and engage with."
+          />
+        );
+      }
+      return filteredPosts.map((item) => (
+        <PostCard
+          key={item.id}
+          item={item}
+          onToggleLike={handleToggleLike}
+          onComment={(postId) => setReplyTarget({ postId })}
+          onReply={(postId, commentId) => setReplyTarget({ postId, commentId })}
+        />
+      ));
+    }
 
-      setPostsState((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === selectedPost.id
-            ? {
-                ...post,
-                comments: [...post.comments, newComment],
-                commentsCount: post.commentsCount + 1,
-              }
-            : post
-        )
+    if (active === "messages") {
+      if (loading.threads) return <CommunitySectionSkeleton variant="messages" />;
+      if (!filteredThreads.length) {
+        return (
+          <EmptyStateCard
+            title="No message threads yet"
+            description="Start a conversation with a health worker or support thread here."
+          />
+        );
+      }
+      return filteredThreads.map((item) => (
+        <ThreadRow
+          key={item.id}
+          item={item}
+          onPress={() =>
+            router.push({
+              pathname: "/community/message-thread",
+              params: {
+                threadId: item.id,
+                threadName: item.title,
+              },
+            })
+          }
+        />
+      ));
+    }
+
+    if (active === "workers") {
+      if (loading.workers) return <CommunitySectionSkeleton variant="workers" />;
+      if (!filteredWorkers.length) {
+        return (
+          <EmptyStateCard
+            title="No health workers found"
+            description="Try another search to find health workers in this community."
+          />
+        );
+      }
+      return filteredWorkers.map((item) => (
+        <WorkerCard
+          key={item.id}
+          item={item}
+          onToggleFollow={handleToggleFollow}
+          onPress={() =>
+            router.push({
+              pathname: "/community/health-worker-detail",
+              params: {
+                workerId: item.id,
+                name: item.fullName,
+                role: item.role,
+                phone: item.phone,
+                email: item.email,
+                address: item.address,
+                following: item.following ? "true" : "false",
+              },
+            })
+          }
+        />
+      ));
+    }
+
+    if (loading.blogs) return <CommunitySectionSkeleton variant="blogs" />;
+    if (!filteredBlogs.length) {
+      return (
+        <EmptyStateCard
+          title="No blog stories yet"
+          description="Fresh maternal health stories and practical guidance will appear here as soon as they are published."
+        />
       );
-
-      Toast.show({
-        type: "success",
-        text1: commentAddedText,
-        text2: commentPostedText,
-        position: "top",
-        visibilityTime: 2000,
-      });
-
-      setCommentTextInput("");
-      setCommentModalVisible(false);
-      setSelectedPost(null);
     }
-  };
-
-  const handleSendMessage = () => {
-    if (messageText.trim()) {
-      Toast.show({
-        type: "success",
-        text1: messageSentText,
-        text2: messagePostedText,
-        position: "top",
-        visibilityTime: 2000,
-      });
-      setMessageText("");
-    }
+    return filteredBlogs.map((item) => <BlogCard key={item.id} item={item} />);
   };
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
-    >
-      <View className="flex-1 bg-[#FCFCFC]">
-        <StatusBar barStyle="dark-content" />
-
-        {/* Fixed Header */}
-        <View
-          className="bg-white"
-          style={{
-            paddingTop: isIOS ? 50 : StatusBar.currentHeight || 24,
-            paddingBottom: 16,
-            paddingHorizontal: 24,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-          }}
-        >
-          <View className="flex-row items-center justify-center">
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="absolute left-0"
-            >
-              <Ionicons name="arrow-back" size={24} color="#293231" />
-            </TouchableOpacity>
-            <Text className="text-[#293231] text-xl font-bold">
-              {communityText}
-            </Text>
+    <SafeAreaView className="flex-1 bg-[#F8F5F0]" edges={["top", "bottom"]}>
+      <BackHeader title="Community" onBack={() => router.back()} />
+      <ScrollView
+        className="flex-1 px-5"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#0B7A66"
+            colors={["#0B7A66"]}
+          />
+        }
+      >
+        {active === "community" ? null : (
+          <View className="mb-4 flex-row items-center rounded-[14px] bg-white px-4 py-3">
+            <Ionicons name="search-outline" size={18} color="#293231" />
+            <TextInput
+              placeholder={
+                active === "messages"
+                  ? "Search messages..."
+                  : active === "workers"
+                    ? "Search health workers..."
+                    : "Search blogs..."
+              }
+              value={search}
+              onChangeText={setSearch}
+              placeholderTextColor="#697270"
+              className="ml-3 flex-1 text-[16px]"
+            />
           </View>
-        </View>
+        )}
 
-        <ScrollView
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 100 }}
-        >
-          {/* Community Posts */}
-          <View className="px-6 pt-4">
-            {postsState.map((post) => (
-              <View
-                key={post.id}
-                className="bg-[#E8F5F3] rounded-2xl p-4 mb-4"
-                style={{
-                  borderLeftWidth: 4,
-                  borderLeftColor: post.borderColor,
-                }}
-              >
-                <View className="flex-row items-start justify-between mb-3">
-                  <View className="flex-row items-start flex-1">
-                    <Image
-                      source={post.avatar}
-                      className="w-10 h-10 rounded-full mr-3"
-                      resizeMode="cover"
-                    />
-                    <View className="flex-1">
-                      <Text className="text-[#293231] font-bold text-base mb-1">
-                        {post.author}
-                      </Text>
-                      <Text className="text-[#293231] text-sm leading-5">
-                        {post.content}
-                      </Text>
-                    </View>
-                  </View>
-                  <View className="items-center">
-                    <TouchableOpacity onPress={() => handleLike(post.id)}>
-                      <Ionicons
-                        name={post.isLiked ? "heart" : "heart-outline"}
-                        size={24}
-                        color={post.isLiked ? "#EF476F" : "#EF476F"}
-                      />
-                    </TouchableOpacity>
-                    {post.likesCount > 0 && (
-                      <Text className="text-[#EF476F] text-xs font-semibold mt-1">
-                        {post.likesCount}
-                      </Text>
-                    )}
-                  </View>
-                </View>
+        <CommunityTabs active={active} onChange={setActive} />
 
-                {/* Reply and Comment Buttons */}
-                <View className="flex-row items-center justify-between mt-2">
-                  <View className="flex-row items-center">
-                    {post.repliesCount > 0 && (
-                      <TouchableOpacity
-                        onPress={() => toggleReplies(post.id)}
-                        className="flex-row items-center mr-3"
-                      >
-                        <Text className="text-[#00695C] text-xs font-medium">
-                          {post.repliesCount}{" "}
-                          {post.repliesCount === 1 ? "reply" : "replies"}
-                        </Text>
-                        <Ionicons
-                          name={
-                            expandedReplies[post.id]
-                              ? "chevron-up"
-                              : "chevron-down"
-                          }
-                          size={16}
-                          color="#00695C"
-                          style={{ marginLeft: 4 }}
-                        />
-                      </TouchableOpacity>
-                    )}
-                    {post.commentsCount > 0 && (
-                      <TouchableOpacity
-                        onPress={() => handleViewComments(post)}
-                        className="flex-row items-center"
-                      >
-                        <Text className="text-[#FF7F50] text-xs font-medium">
-                          View {post.commentsCount}{" "}
-                          {post.commentsCount === 1 ? "comment" : "comments"}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                  <View className="flex-row items-center">
-                    <TouchableOpacity
-                      onPress={() => handleReply(post)}
-                      className="flex-row items-center mr-4"
-                    >
-                      <Ionicons
-                        name="arrow-undo-outline"
-                        size={16}
-                        color="#00695C"
-                      />
-                      <Text className="text-[#00695C] text-sm ml-1 font-medium">
-                        {replyText}
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => handleComment(post)}
-                      className="flex-row items-center"
-                    >
-                      <Ionicons
-                        name="chatbubble-outline"
-                        size={16}
-                        color="#00695C"
-                      />
-                      <Text className="text-[#00695C] text-sm ml-1 font-medium">
-                        {commentText}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+        <View className="mt-6">{renderSection()}</View>
+      </ScrollView>
 
-                {/* Display Replies - Collapsible */}
-                {post.replies.length > 0 && expandedReplies[post.id] && (
-                  <View className="mt-3 ml-4 pl-4 border-l-2 border-[#00D2B3]">
-                    {post.replies.map((reply) => (
-                      <View key={reply.id} className="mb-2">
-                        <View className="flex-row items-start">
-                          <Image
-                            source={reply.avatar}
-                            className="w-6 h-6 rounded-full mr-2"
-                            resizeMode="cover"
-                          />
-                          <View className="flex-1">
-                            <Text className="text-[#293231] font-semibold text-xs">
-                              {reply.author}
-                            </Text>
-                            <Text className="text-[#293231] text-xs mt-1">
-                              {reply.content}
-                            </Text>
-                            <Text className="text-[#9CA3AF] text-xs mt-1">
-                              {reply.timestamp}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                    ))}
-                  </View>
-                )}
-              </View>
-            ))}
-          </View>
-        </ScrollView>
-
-        {/* Message Input - Fixed at Bottom */}
-        <View
-          className="bg-[#E8F5F3] px-6 py-4"
-          style={{
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 4,
-          }}
-        >
-          <View className="flex-row items-center">
-            <View className="flex-1 bg-white rounded-full px-4 py-3 mr-3">
-              <TextInput
-                className="text-[#293231]"
-                placeholder={shareThoughtsText}
-                placeholderTextColor="#9CA3AF"
-                value={messageText}
-                onChangeText={setMessageText}
-                multiline={false}
-              />
-            </View>
+      {active === "community" || active === "messages" || replyTarget ? (
+        <View className="border-t border-[#E4ECE8] bg-white px-5 pb-6 pt-4">
+          <View className="flex-row items-center rounded-[16px] bg-[#F6F8F7] px-4 py-3">
+            <TextInput
+              placeholder={
+                replyTarget
+                  ? "Write a reply..."
+                  : active === "community"
+                    ? "Share something with the community..."
+                    : "Enter a thread title..."
+              }
+              value={composerText}
+              onChangeText={setComposerText}
+              placeholderTextColor="#697270"
+              className="flex-1 text-[15px]"
+            />
             <TouchableOpacity
-              onPress={handleSendMessage}
-              className="w-12 h-12 rounded-full bg-white items-center justify-center"
+              onPress={handleCreate}
+              activeOpacity={0.82}
+              className={`ml-3 rounded-full px-4 py-2 ${composerText.trim() ? "bg-[#0B7A66]" : "bg-[#DDE5E2]"}`}
             >
-              <Ionicons name="send" size={24} color="#293231" />
+              <Text className={`text-[13px] font-semibold ${composerText.trim() ? "text-white" : "text-[#7F8986]"}`}>
+                Send
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Reply Modal */}
-        <ReplyModal
-          visible={replyModalVisible}
-          selectedPost={selectedPost}
-          replyText={replyTextInput}
-          setReplyText={setReplyTextInput}
-          onClose={() => {
-            setReplyModalVisible(false);
-            setReplyTextInput("");
-            setSelectedPost(null);
-          }}
-          onSubmit={submitReply}
-        />
-
-        {/* Comment Input Modal */}
-        <CommentInputModal
-          visible={commentModalVisible}
-          selectedPost={selectedPost}
-          commentText={commentTextInput}
-          setCommentText={setCommentTextInput}
-          onClose={() => {
-            setCommentModalVisible(false);
-            setCommentTextInput("");
-            setSelectedPost(null);
-          }}
-          onSubmit={submitComment}
-        />
-
-        {/* View Comments Modal */}
-        <ViewCommentsModal
-          visible={viewCommentsModalVisible}
-          selectedPost={selectedPost}
-          onClose={() => {
-            setViewCommentsModalVisible(false);
-            setSelectedPost(null);
-          }}
-        />
-      </View>
-    </KeyboardAvoidingView>
+      ) : null}
+    </SafeAreaView>
   );
 }

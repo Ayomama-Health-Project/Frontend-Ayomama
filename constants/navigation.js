@@ -2,7 +2,7 @@ export const AppRoutes = {
   SPLASH: "index",
   ONBOARDING: "Onboarding",
   AUTH: "auth",
-  HOME: "(tabs)",
+  HOME: "(mother-tabs)",
   VISIT: "visit",
   EMERGENCY: "emergency",
   LEARN: "learn",

@@ -1,42 +1,84 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
-  Platform,
+  ActivityIndicator,
   ScrollView,
-  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import Toast from "react-native-toast-message";
+import { SafeAreaView } from "react-native-safe-area-context";
+import useMockAuth from "../../hooks/useMockAuth";
+import { getAccountAppRoute } from "../../utils/authRoutes";
 import { useTranslation } from "../../utils/translator";
 
 export default function UpdateVitalsStep() {
   const router = useRouter();
-  const isIOS = Platform.OS === "ios";
+  const { submitAntenatalData, isLoading, account } = useMockAuth();
+
+  // Form state
+  const [bloodPressure, setBloodPressure] = useState("");
+  const [temperature, setTemperature] = useState("");
+  const [weight, setWeight] = useState("");
+  const [bloodLevel, setBloodLevel] = useState("");
 
   // Translate all text
   const antenatalUpdateText = useTranslation("Antenatal Update");
   const bloodPressureText = useTranslation("Blood pressure");
   const bloodPressurePlaceholder = useTranslation(
-    "Enter blood pressure (e.g., 120/80)"
+    "Enter blood pressure (e.g., 120/80)",
   );
   const temperatureText = useTranslation("Temperature");
   const temperaturePlaceholder = useTranslation(
-    "Enter temperature (e.g., 36.8°C)"
+    "Enter temperature (e.g., 36.8°C)",
   );
   const weightText = useTranslation("Weight");
   const weightPlaceholder = useTranslation("Enter weight (e.g., 65kg)");
   const bloodLevelText = useTranslation("Blood level");
   const bloodLevelPlaceholder = useTranslation(
-    "Enter blood level (e.g., 12.5g/dl)"
+    "Enter blood level (e.g., 12.5g/dl)",
   );
   const proceedText = useTranslation("Proceed");
 
-  const handleProceed = () => {
-    // Navigate to home or wherever needed after updating vitals
-    router.push("/(tabs)");
+  const handleProceed = async () => {
+    if (!bloodPressure && !temperature && !weight && !bloodLevel) {
+      Toast.show({
+        type: "error",
+        text1: "Missing Fields",
+        text2: "Please fill in at least one vital.",
+        position: "top",
+      });
+      return;
+    }
+
+    const result = await submitAntenatalData({
+      bloodPressure: bloodPressure || undefined,
+      temperature: temperature || undefined,
+      weight: weight || undefined,
+      bloodLevel: bloodLevel || undefined,
+      date: new Date().toISOString(),
+    });
+
+    if (result.success) {
+      Toast.show({
+        type: "success",
+        text1: "Vitals Updated",
+        text2: result.message || "Your vitals have been saved.",
+        position: "top",
+      });
+      setTimeout(() => router.push(getAccountAppRoute(account)), 1500);
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Update Failed",
+        text2: result.error || "Failed to update vitals.",
+        position: "top",
+      });
+    }
   };
 
   const handleBack = () => {
@@ -44,7 +86,7 @@ export default function UpdateVitalsStep() {
   };
 
   return (
-    <View className="flex-1">
+    <SafeAreaView className="flex-1">
       <LinearGradient
         colors={["#B5FFFC", "#FFDEE9"]}
         style={{
@@ -59,7 +101,7 @@ export default function UpdateVitalsStep() {
       {/* Fixed Header */}
       <View
         style={{
-          paddingTop: isIOS ? 50 : StatusBar.currentHeight || 24,
+          paddingTop: 16,
           paddingBottom: 16,
           paddingHorizontal: 24,
         }}
@@ -86,6 +128,8 @@ export default function UpdateVitalsStep() {
             <TextInput
               placeholder={bloodPressurePlaceholder}
               placeholderTextColor="#D1D5DB"
+              value={bloodPressure}
+              onChangeText={setBloodPressure}
               className="bg-white rounded-2xl px-4 py-4 text-[#293231] text-base"
               style={{
                 shadowColor: "#000",
@@ -102,6 +146,8 @@ export default function UpdateVitalsStep() {
             <TextInput
               placeholder={temperaturePlaceholder}
               placeholderTextColor="#D1D5DB"
+              value={temperature}
+              onChangeText={setTemperature}
               className="bg-white rounded-2xl px-4 py-4 text-[#293231] text-base"
               style={{
                 shadowColor: "#000",
@@ -118,6 +164,8 @@ export default function UpdateVitalsStep() {
             <TextInput
               placeholder={weightPlaceholder}
               placeholderTextColor="#D1D5DB"
+              value={weight}
+              onChangeText={setWeight}
               className="bg-white rounded-2xl px-4 py-4 text-[#293231] text-base"
               style={{
                 shadowColor: "#000",
@@ -134,6 +182,8 @@ export default function UpdateVitalsStep() {
             <TextInput
               placeholder={bloodLevelPlaceholder}
               placeholderTextColor="#D1D5DB"
+              value={bloodLevel}
+              onChangeText={setBloodLevel}
               className="bg-white rounded-2xl px-4 py-4 text-[#293231] text-base"
               style={{
                 shadowColor: "#000",
@@ -151,19 +201,26 @@ export default function UpdateVitalsStep() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleProceed}
+          disabled={isLoading}
           className="bg-[#006D5B] rounded-2xl py-4 items-center justify-center"
           style={{
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.1,
             shadowRadius: 4,
+            opacity: isLoading ? 0.7 : 1,
           }}
         >
-          <Text className="text-white font-semibold text-base">
-            {proceedText}
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text className="text-white font-semibold text-base">
+              {proceedText}
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
-    </View>
+
+    </SafeAreaView>
   );
 }
