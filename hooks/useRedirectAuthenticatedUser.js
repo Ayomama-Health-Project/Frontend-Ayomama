@@ -1,6 +1,5 @@
-import { useRouter } from "expo-router";
+import { useIsFocused, useRouter } from "expo-router";
 import { useEffect } from "react";
-import { useIsFocused } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 
 export default function useRedirectAuthenticatedUser(resolveRoute) {
